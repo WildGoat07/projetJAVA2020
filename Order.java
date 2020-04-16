@@ -14,6 +14,16 @@ public final class Order implements Serializable {
     private List<Product> products;
     private Price reduction;
     /**
+     * Constructor.
+     * The order has no reduction.
+     * @param customer person who made this order
+     * @param beginDate beginning of the rental
+     * @param endDate ending of the rental
+     */
+    public Order(Person customer, LocalDate beginDate, LocalDate endDate) {
+        this(customer, beginDate, endDate, new Price());
+    }
+    /**
      * Constructor
      * @param customer person who made this order
      * @param beginDate beginning of the rental
