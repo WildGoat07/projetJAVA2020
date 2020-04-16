@@ -6,25 +6,16 @@ import java.text.NumberFormat;
 /**
  * Defines a price
  */
-public class Price extends Number implements Comparable<Price> {
-    /**
-     * euros of this price
-     */
-    protected int euros;
-    /**
-     * cents of this price
-     */
-    protected int cents;
-    /**
-     * true if the price is negative
-     */
-    protected boolean negative;
+public final class Price extends Number implements Comparable<Price> {
+    private int euros;
+    private int cents;
+    private boolean negative;
     /**
      * Constructor.
      */
     public Price() {
-        setEuros(0);
-        setCents(0);
+        euros = 0;
+        cents = 0;
         negative = false;
     }
     /**
@@ -32,9 +23,9 @@ public class Price extends Number implements Comparable<Price> {
      * @param copy price to copy from
      */
     public Price(Price copy) {
-        setEuros(copy.getEuros());
-        setCents(copy.getCents());
-        setNegative(copy.isNegative());
+        euros = copy.euros;
+        cents = copy.cents;
+        negative = copy.negative;
     }
     /**
      * Constructor.
@@ -56,10 +47,10 @@ public class Price extends Number implements Comparable<Price> {
      * @param euros euros of the price to create.
      */
     public Price(float euros) {
-        setNegative(euros < 0);
+        negative = euros < 0;
         euros = Math.abs(euros);
-        setEuros((int)euros);
-        setCents((int)Math.round((euros-getEuros())*100));
+        this.euros = (int)euros;
+        this.cents = (int)Math.round((euros-this.euros)*100);
     }
     /**
      * Constructor.
@@ -90,9 +81,9 @@ public class Price extends Number implements Comparable<Price> {
     public void setCents(int cents) {
         int euros = cents / 100;
         if (cents < 0)
-            setEuros(getEuros()+euros - 1);
+            this.euros += euros - 1;
         else
-            setEuros(getEuros()+euros);
+            this.euros += euros;
         this.cents = ((cents%100)+100)%100;
     }
     /**
@@ -102,11 +93,11 @@ public class Price extends Number implements Comparable<Price> {
      */
     public void setEuros(int euros) {
         if (euros >= 0) {
-            setNegative(false);
+            negative = false;
             this.euros = euros;
         }
         else {
-            setNegative(true);
+            negative = true;
             this.euros = -euros;
         }
     }
@@ -118,17 +109,10 @@ public class Price extends Number implements Comparable<Price> {
         return negative;
     }
     /**
-     * Use this to change the sign of the price
-     * @param negative true if the price have to be negative
-     */
-    protected void setNegative(boolean negative) {
-        this.negative = negative;
-    }
-    /**
      * Inverts the sign of the price.
      */
     public void invert() {
-        setNegative(!isNegative());
+        negative = !negative;
     }
     /**
      * Inverts the sign of the price.
@@ -145,12 +129,11 @@ public class Price extends Number implements Comparable<Price> {
      * @param other other price to add from.
      */
     public void add(Price other) {
-        System.out.println(this + ":" + other);
         float value = floatValue()+other.floatValue();
-        setNegative(value < 0);
+        negative = value < 0;
         value = Math.abs(value);
-        setEuros((int)value);
-        setCents((int)Math.round((value - getEuros())*100));
+        euros = (int)value;
+        cents = (int)Math.round((value - euros)*100);
     }
     /**
      * Subtracts another price to the current one
@@ -196,10 +179,10 @@ public class Price extends Number implements Comparable<Price> {
      */
     public void multiply(float other) {
         float value = floatValue()*other;
-        setNegative(value < 0);
+        negative = value < 0;
         value = Math.abs(value);
-        setEuros((int)value);
-        setCents((int)Math.round((value - getEuros())*100));
+        euros = (int)value;
+        cents = (int)Math.round((value - euros)*100);
     }
     /**
      * Divides the current price by a value
@@ -241,22 +224,22 @@ public class Price extends Number implements Comparable<Price> {
     }
     @Override
     public int intValue() {
-        return getEuros() * (isNegative()?-1:1);
+        return euros * (negative ?-1:1);
     }
 
     @Override
     public long longValue() {
-        return getEuros() * (isNegative()?-1:1);
+        return euros * (negative ?-1:1);
     }
 
     @Override
     public float floatValue() {
-        return (getEuros() + .01f * getCents())* (isNegative()?-1:1);
+        return (euros + .01f * cents)* (negative ?-1:1);
     }
 
     @Override
     public double doubleValue() {
-        return (getCents() + .01 * getCents())* (isNegative()?-1:1);
+        return (euros + .01 * cents)* (negative ?-1:1);
     }
     @Override
     public String toString() {
@@ -269,7 +252,7 @@ public class Price extends Number implements Comparable<Price> {
      */
     public String toString(String icon) {
         NumberFormat formatter = new DecimalFormat("00");
-        return (isNegative()?"-":"") + getEuros() + "." + formatter.format(getCents()) + " " + icon;
+        return (negative ?"-":"") + euros + "." + formatter.format(cents) + " " + icon;
     }
     @Override
     public boolean equals(Object obj) {
