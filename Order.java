@@ -11,8 +11,11 @@ public final class Order implements Serializable {
     transient private Person customer;
     private LocalDate beginDate;
     private LocalDate endDate;
-    private List<Product> products;
+    transient private List<Product> products;
+    private List<UUID> productIds;
+    private UUID customerID;
     private Price reduction;
+    private UUID id;
     /**
      * Constructor.
      * The order has no reduction.
@@ -36,14 +39,26 @@ public final class Order implements Serializable {
         this.endDate = endDate;
         this.reduction = reduction;
         products = new ArrayList<Product>();
+        productIds = new ArrayList<UUID>();
+        customerID = customer.getID();
+        id = UUID.randomUUID();
+    }
+    /**
+     * Returns the unique identifier of this order
+     * @return UUID of the order
+     */
+    public UUID getID() {
+        return id;
     }
     /**
      * Adds a new product to the order
      * @param product product to add
      */
     public void addProduct(Product product) {
-        if (!products.contains(product))
+        if (!products.contains(product)) {
             products.add(product);
+            productIds.add(product.getID());
+        }
     }
     /**
      * Gets a read only list of all the products in the order
@@ -58,6 +73,7 @@ public final class Order implements Serializable {
      */
     public void removeProduct(Product product) {
         products.remove(product);
+        productIds.remove(product.getID());
     }
     /**
      * Gets the final price of the order

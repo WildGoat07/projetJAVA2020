@@ -10,7 +10,11 @@ public class Person implements Serializable {
         this.surname = surname;
         id = UUID.randomUUID();
     }
-    public UUID getUUID() {
+    /**
+     * Returns the unique identifier of this person
+     * @return UUID of the person
+     */
+    public UUID getID() {
         return id;
     }
 }

@@ -34,7 +34,7 @@ public class DVD implements Numeric {
         pricePerDay = price;
         this.title = title;
         this.director = director;
-        directorID = director.getUUID();
+        directorID = director.getID();
         id = UUID.randomUUID();
     }
     @Override

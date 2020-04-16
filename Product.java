@@ -13,6 +13,7 @@ public interface Product extends Serializable {
     utilities.Price getPrice(long days);
     /**
      * Returns the unique identifier of this product
+     * @return UUID of the product
      */
     UUID getID();
     /**
