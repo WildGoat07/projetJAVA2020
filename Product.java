@@ -1,13 +1,13 @@
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.*;
 
 /**
- * Basic product. Every product has a location price, an unique identifier and a title
+ * Basic product. Every product has a rental price, an unique identifier and a title
  */
 public interface Product extends Serializable {
     /**
-     * Returns the price for the location for a certain amount of days
-     * @param days number of days for the location
+     * Returns the price for the rental for a certain amount of days
+     * @param days number of days for the rental
      * @return The price
      */
     utilities.Price getPrice(int days);

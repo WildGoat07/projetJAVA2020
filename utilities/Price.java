@@ -7,8 +7,17 @@ import java.text.NumberFormat;
  * Defines a price
  */
 public class Price extends Number implements Comparable {
+    /**
+     * euros of this price
+     */
     protected int euros;
+    /**
+     * cents of this price
+     */
     protected int cents;
+    /**
+     * true if the price is negative
+     */
     protected boolean negative;
     /**
      * Constructor.
@@ -108,7 +117,10 @@ public class Price extends Number implements Comparable {
     public boolean isNegative() {
         return negative;
     }
-
+    /**
+     * Use this to change the sign of the price
+     * @param negative true if the price have to be negative
+     */
     protected void setNegative(boolean negative) {
         this.negative = negative;
     }
