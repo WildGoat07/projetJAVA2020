@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public class ProductInStock implements Serializable{
+public class ProductInStock implements Serializable {
     public Product product;
     public int quantity;
     public ProductInStock(Product p, int q) {

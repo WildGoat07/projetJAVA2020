@@ -63,6 +63,7 @@ public final class Order implements Serializable {
      * @param products list of products to search into
      */
     public void linkData(List<Person> people, List<Product> products) {
+        this.products = new ArrayList<Product>();
         for (UUID id : productIds) {
             for (Product product : products) {
                 if (id.equals(product.getID())) {

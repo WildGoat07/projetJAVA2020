@@ -1,15 +1,22 @@
 import java.io.*;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
 /**
  * Defines the company that sells stuff
  */
-public class Business implements Serializable {
+public class Business {
     private List<ProductInStock> stock;
     private List<Order> orders;
     private List<Person> people;
+    /**
+     * Constructor
+     */
+    public Business() {
+        stock = new ArrayList<ProductInStock>();
+        orders = new ArrayList<Order>();
+        people = new ArrayList<Person>();
+    }
 
     /**
      * Gets a read only list of every registered product
@@ -184,22 +191,25 @@ public class Business implements Serializable {
                 return inStock;
         return null;
     }
-    /**
-     * Constructor
-     */
-    public Business() {
-        stock = new ArrayList<ProductInStock>();
-        orders = new ArrayList<Order>();
-        people = new ArrayList<Person>();
+    public void saveToStream(OutputStream stream) throws IOException {
+        ObjectOutputStream writer = new ObjectOutputStream(stream);
+        writer.writeObject(people);
+        writer.writeObject(stock);
+        writer.writeObject(orders);
     }
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
-    {
-        List<Product> products = getStock();
+    public static Business loadFromStream(InputStream stream) throws IOException, ClassNotFoundException {
+        Business result = new Business();
+        ObjectInputStream reader = new ObjectInputStream(stream);
+        result.people = (List<Person>)reader.readObject();
+        result.stock = (List<ProductInStock>)reader.readObject();
+        List<Product> products = result.getStock();
         for (Product product : products)
             if (product instanceof DVD)
-                ((DVD)product).linkDirector(people);
-        for (Order order : orders)
-            order.linkData(people, products);
+                ((DVD)product).linkDirector(result.people);
+                result.orders = (List<Order>)reader.readObject();
+        for (Order order : result.orders)
+            order.linkData(result.people, products);
+        return result;
     }
     /**
      * Gets a list of the products available for renting at the current time

@@ -17,4 +17,18 @@ public class Person implements Serializable {
     public UUID getID() {
         return id;
     }
+    /**
+     * Gets the name of the person
+     * @return name of the person
+     */
+    public String getName() {
+        return name;
+    }
+    /**
+     * Gets the surname of the person
+     * @return surname of the person
+     */
+    public String getSurname() {
+        return surname;
+    }
 }
