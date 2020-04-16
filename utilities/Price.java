@@ -264,6 +264,10 @@ public final class Price extends Number implements Comparable<Price> {
             return super.equals(obj);
     }
     @Override
+    public int hashCode() {
+        return Float.valueOf(floatValue()).hashCode();
+    }
+    @Override
     public int compareTo(Price other) {
         return Float.valueOf(floatValue()).compareTo(other.floatValue());
     }
