@@ -32,7 +32,7 @@ public class CD implements Numeric {
         releaseDate = release;
     }
     @Override
-    public Price getPrice(int days) {
+    public Price getPrice(long days) {
         return Price.multiply(days, pricePerDay);
     }
 

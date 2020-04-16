@@ -39,7 +39,7 @@ public class Dictionnary implements Document {
         return language;
     }
     @Override
-    public Price getPrice(int days) {
+    public Price getPrice(long days) {
         return Price.multiply(perDayPrice, days);
     }
 

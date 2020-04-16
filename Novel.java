@@ -19,7 +19,7 @@ public class Novel extends Book {
         pricePerDay = price;
     }
     @Override
-    public Price getPrice(int days) {
+    public Price getPrice(long days) {
         return Price.multiply(pricePerDay, days);
     }
 }

@@ -26,7 +26,7 @@ public abstract class Book implements Document {
         return id;
     }
     @Override
-    public abstract utilities.Price getPrice(int days);
+    public abstract utilities.Price getPrice(long days);
     @Override
     public String getTitle() {
         return title;

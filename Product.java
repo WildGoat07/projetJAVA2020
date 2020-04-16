@@ -10,7 +10,7 @@ public interface Product extends Serializable {
      * @param days number of days for the rental
      * @return The price
      */
-    utilities.Price getPrice(int days);
+    utilities.Price getPrice(long days);
     /**
      * Returns the unique identifier of this product
      */

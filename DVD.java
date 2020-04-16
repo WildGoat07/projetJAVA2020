@@ -38,7 +38,7 @@ public class DVD implements Numeric {
         id = UUID.randomUUID();
     }
     @Override
-    public Price getPrice(int days) {
+    public Price getPrice(long days) {
         return Price.multiply(days, pricePerDay);
     }
 
