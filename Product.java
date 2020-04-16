@@ -21,5 +21,4 @@ public interface Product extends Serializable {
      * @return The title of the product
      */
     String getTitle();
-
 }

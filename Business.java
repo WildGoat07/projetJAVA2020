@@ -1,0 +1,276 @@
+import java.io.*;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.*;
+
+/**
+ * Defines the company that sells stuff
+ */
+public class Business implements Serializable {
+    private List<ProductInStock> stock;
+    private List<Order> orders;
+    private List<Person> people;
+
+    /**
+     * Gets a read only list of every registered product
+     * @return list of registered products
+     */
+    public List<Product> getStock() {
+        List<Product> result = new ArrayList<Product>();
+        for (ProductInStock productInStock : stock)
+            result.add(productInStock.product);
+        return Collections.unmodifiableList(result);
+    }
+    /**
+     * Gets the quantity of a single product in stock (not rented)
+     * @param p product to find
+     * @return the number of products in stock
+     */
+    public int getProductCountInStock(Product p) {
+        int registered = 0;
+        {
+            ProductInStock inStock = productExistsInStock(p);
+            if (inStock != null)
+                registered = inStock.quantity;
+        }
+        if (registered == 0)
+            return 0;
+        for (Order order : orders)
+            for (Product product : order.getProducts())
+                if (product.equals(p))
+                    registered--;
+        return registered;
+    }
+    /**
+     * Gets the quantity of a single product (in stock and rented)
+     * @param p product to find
+     * @return the number of products in this small and decaying dead world
+     */
+    public int getRegisteredProductCount(Product p) {
+        ProductInStock inStock = productExistsInStock(p);
+        if (inStock != null)
+            return inStock.quantity;
+        else
+            return 0;
+    }
+    /**
+     * Gets the quantity of a single rented product (not in stock)
+     * @param p product to find
+     * @return the number of rented products
+     */
+    public int getRentedProductCount(Product p) {
+        return getRegisteredProductCount(p) - getProductCountInStock(p);
+    }
+    /**
+     * Gets a read only list of orders
+     * @return list of orders
+     */
+    public List<Order> getOrders() {
+        return Collections.unmodifiableList(orders);
+    }
+    /**
+     * Gets a read only list of people in the world
+     * @return a list of people
+     */
+    public List<Person> getPeople() {
+        return Collections.unmodifiableList(people);
+    }
+    /**
+     * Adds a person to the world
+     * @param p person to add
+     */
+    public void addPerson(Person p) {
+        if (!people.contains(p))
+            people.add(p);
+    }
+    /**
+     * Sends a specific person in the world into the realms of death where they
+     * will burn until they can no longer breath with their burnt lungs
+     * @param p person to remove
+     * @throws Exception this person is still required somewhere in the orders or the DVDs
+     */
+    public void removePerson(Person p) throws Exception {
+        for (Order order : orders)
+            if (order.getCustomer().equals(p))
+                throw new Exception("This person has already bought something !");
+        for (Product product : getStock())
+        if (product instanceof DVD)
+            if (((DVD)product).director.equals(p))
+                throw new Exception("This person is a director !");
+        people.remove(p);
+    }
+    /**
+     * Adds an order to the list of orders
+     * @param o order to add
+     * @throws Exception the customer is not registered or a product is either out of stock, or doesn't exist 
+     */
+    public void addOrder(Order o) throws Exception {
+        if (!orders.contains(o)) {
+            if (!people.contains(o.getCustomer()))
+                throw new Exception("The person is missing for this order");
+            for (Product product : o.getProducts()) {
+                if (productExistsInStock(product) == null)
+                    throw new Exception("One of the products of the order doesn't exists");
+                if (getProductCountInStock(product) == 0)
+                    throw new Exception("There is no more product in stock");
+            }
+            orders.add(o);
+        }
+    }
+    /**
+     * Removes an order
+     * @param o order to remove
+     */
+    public void removeOrder(Order o) {
+        orders.remove(o);
+    }
+    /**
+     * Adds a new product in the stock
+     * @param p product to add
+     * @param count the quantity of this product
+     * @throws Exception if the director of a DVD is not registered
+     */
+    public void addProduct(Product p, int count) throws Exception {
+        ProductInStock inStock = productExistsInStock(p);
+        if (inStock != null)
+            inStock.quantity += count;
+        else {
+            if (p instanceof DVD)
+                if (!people.contains(((DVD)p).getDirector()))
+                    throw new Exception("The director is missing for this DVD");
+                stock.add(new ProductInStock(p, count));
+        }
+    }
+    /**
+     * Removes a certain quantity of a product from the stock
+     * @param p product to remove
+     * @param count quantity to remove
+     * @throws Exception there is no product in stock, or not enough
+     */
+    public void removeProduct(Product p, int count) throws Exception {
+        if (getProductCountInStock(p) >= count)
+            productExistsInStock(p).quantity += count;
+        else
+            throw new Exception("Not enough product in stock to remove");
+    }
+    /**
+     * Entirely removes a product from the registered products
+     * @param p product to remove
+     * @throws Exception the product is required in an order
+     */
+    public void removeProduct(Product p) throws Exception {
+        ProductInStock currProduct;
+        ListIterator<ProductInStock> it = stock.listIterator();
+        while (it.hasNext()) {
+            currProduct = it.next();
+            if (currProduct.product.equals(p)) {
+                if (getRentedProductCount(p) == 0) {
+                    it.remove();
+                    return;
+                }
+                else
+                    throw new Exception("This product is mentioned in an order");
+            }
+        }
+    }
+    /**
+     * Returns a reference to the stock value of a product
+     * @param p product to find
+     * @return the stock value, or null if no product has been found
+     */
+    public ProductInStock productExistsInStock(Product p) {
+        for (ProductInStock inStock : stock)
+            if (inStock.product.equals(p))
+                return inStock;
+        return null;
+    }
+    /**
+     * Constructor
+     */
+    public Business() {
+        stock = new ArrayList<ProductInStock>();
+        orders = new ArrayList<Order>();
+        people = new ArrayList<Person>();
+    }
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        List<Product> products = getStock();
+        for (Product product : products)
+            if (product instanceof DVD)
+                ((DVD)product).linkDirector(people);
+        for (Order order : orders)
+            order.linkData(people, products);
+    }
+    /**
+     * Gets a list of the products available for renting at the current time
+     * @return list of available products
+     */
+    public List<Product> getAvailableProducts() {
+        return getAvailableProducts(LocalDate.now());
+    }
+    /**
+     * Gets a list of the products available for renting at a specific time
+     * @param time time for the products availability
+     * @return list of available products
+     */
+    public List<Product> getAvailableProducts(LocalDate time) {
+        List<Product> result = new ArrayList<Product>();
+        for (ProductInStock inStock : stock) {
+            int rented = 0;
+            for (Order order : orders)
+                if (time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
+                    rented++;
+            if (rented < inStock.quantity)
+                result.add(inStock.product);
+            }
+        return result;
+    }
+    /**
+     * Gets a list of all the rented products at the current time
+     * @return list of rented products
+     */
+    public List<Product> getRentedProducts() {
+        return getRentedProducts(LocalDate.now());
+    }
+    /**
+     * Gets a list of all the rented products at a specific time
+     * @param time time for the rented products
+     * @return list of rented products
+     */
+    public List<Product> getRentedProducts(LocalDate time) {
+        List<Product> result = new ArrayList<Product>();
+        for (ProductInStock inStock : stock) {
+            int rented = 0;
+            for (Order order : orders)
+                if (time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
+                    rented++;
+            if (rented > 0)
+                result.add(inStock.product);
+            }
+        return result;
+    }
+    /**
+     * Gets a list of all the registered products that are out of stock at the current time
+     * @return list of out of stock products
+     */
+    public List<Product> geUnavailableProducts() {
+        return geUnavailableProducts(LocalDate.now());
+    }
+    /**
+     * Gets a list of all the registered products that are out of stock at a specific time
+     * @param time time for the out of stock products
+     * @return list of out of stock products
+     */
+    public List<Product> geUnavailableProducts(LocalDate time) {
+        List<Product> result = new ArrayList<Product>();
+        for (ProductInStock inStock : stock) {
+            int rented = 0;
+            for (Order order : orders)
+                if (time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
+                    rented++;
+            if (rented == inStock.quantity)
+                result.add(inStock.product);
+        }
+        return result;
+    }
+}

@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.UUID;
 import utilities.Price;
 
@@ -36,6 +37,17 @@ public class DVD implements Numeric {
         this.director = director;
         directorID = director.getID();
         id = UUID.randomUUID();
+    }
+    /**
+     * Finds the director by its ID in a list of people (use after deserialisation)
+     * @param people list of people to search into
+     */
+    public void linkDirector(List<Person> people) {
+        for (Person person : people) {
+            if (person.getID().equals(directorID)) {
+                director = person;
+            }
+        }
     }
     @Override
     public Price getPrice(long days) {

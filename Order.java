@@ -58,6 +58,27 @@ public final class Order implements Serializable {
         return endDate;
     }
     /**
+     * Use this to link data after deserialisation
+     * @param people list of people to search into
+     * @param products list of products to search into
+     */
+    public void linkData(List<Person> people, List<Product> products) {
+        for (UUID id : productIds) {
+            for (Product product : products) {
+                if (id.equals(product.getID())) {
+                    this.products.add(product);
+                    break;
+                }
+            }
+        }
+        for (Person person : people) {
+            if (person.getID().equals(customerID)) {
+                this.customer = person;
+                break;
+            }
+        }
+    }
+    /**
      * Returns the unique identifier of this order
      * @return UUID of the order
      */
