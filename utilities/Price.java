@@ -6,7 +6,7 @@ import java.text.NumberFormat;
 /**
  * Defines a price
  */
-public class Price extends Number implements Comparable {
+public class Price extends Number implements Comparable<Price> {
     /**
      * euros of this price
      */
@@ -275,18 +275,13 @@ public class Price extends Number implements Comparable {
     public boolean equals(Object obj) {
         if (obj instanceof Price) {
             Price other = (Price)obj;
-            return getEuros() == other.getEuros() && getCents() == other.getCents() && isNegative() == other.isNegative();
+            return compareTo(other) == 0;
         }
         else
             return super.equals(obj);
     }
     @Override
-    public int compareTo(Object o) {
-        if (o instanceof Price) {
-            Price other = (Price)o;
-            return Float.valueOf(floatValue()).compareTo(other.floatValue());
-        }
-        else
-            return 0;
+    public int compareTo(Price other) {
+        return Float.valueOf(floatValue()).compareTo(other.floatValue());
     }
 }
