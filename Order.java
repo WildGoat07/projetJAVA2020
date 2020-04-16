@@ -44,11 +44,39 @@ public final class Order implements Serializable {
         id = UUID.randomUUID();
     }
     /**
+     * Gets the date of the beginning of the rental
+     * @return date
+     */
+    public LocalDate getBeginningRental() {
+        return beginDate;
+    }
+    /**
+     * Gets the date of the end of the rental
+     * @return date
+     */
+    public LocalDate getEndingRental() {
+        return endDate;
+    }
+    /**
      * Returns the unique identifier of this order
      * @return UUID of the order
      */
     public UUID getID() {
         return id;
+    }
+    /**
+     * Gets the price reduction.
+     * @return the reduction
+     */
+    public Price getReduction() {
+        return reduction;
+    }
+    /**
+     * Gets the customer who made the order
+     * @return the customer
+     */
+    public Person getCustomer() {
+        return customer;
     }
     /**
      * Adds a new product to the order
@@ -87,6 +115,9 @@ public final class Order implements Serializable {
         if (customer instanceof LoyalCustomer)
             total.multiply(.9f);
         total.add(reduction);
-        return total;
+        if (total.compareTo(new Price()) == -1)
+            return new Price();
+        else
+            return total;
     }
 }
