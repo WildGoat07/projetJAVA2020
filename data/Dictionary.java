@@ -28,15 +28,20 @@ public class Dictionary implements Document {
     protected byte[] imageData;
     /**
      * Constructor.
-     * @param language language of this dictionnary
      * @param price price of a day of rental of this dictionnary
+     * @param language language of this dictionnary
      * @param title title of the dictionnary
+     * @param image image of the dictionnary
      */
-    public Dictionary(Locale language, Price price, String title) {
+    public Dictionary(Price price, Locale language, String title, InputStream image) throws IOException {
         this.language = language;
         perDayPrice = price;
         id = UUID.randomUUID();
         this.title = title;
+        if (image == null)
+            imageData = null;
+        else
+            imageData = image.readAllBytes();
     }
     /**
      * Gets the language
@@ -63,16 +68,5 @@ public class Dictionary implements Document {
     @Override
     public InputStream getImage() {
         return new ByteArrayInputStream(imageData);
-    }
-    /**
-     * Changes the image to another one. null to remove the image.
-     * @param stream stream containing the image data
-     * @throws IOException thrown by the input stream
-     */
-    public void setImage(InputStream stream) throws IOException {
-        if (stream == null)
-            imageData = null;
-        else
-            imageData = stream.readAllBytes();
     }
 }

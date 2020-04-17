@@ -120,16 +120,12 @@ public class Application {
      * Sends a specific person in the world into the realms of death where they
      * will burn until they can no longer breath with their burnt lungs
      * @param p person to remove
-     * @throws Exception this person is still required somewhere in the orders or the DVDs
+     * @throws Exception this person is still required somewhere in the orders
      */
     public void removePerson(Person p) throws Exception {
         for (Order order : orders)
             if (order.getCustomer().equals(p))
                 throw new Exception("This person has already bought something !");
-        for (Product product : getStock())
-        if (product instanceof DVD)
-            if (((DVD)product).director.equals(p))
-                throw new Exception("This person is a director !");
         people.remove(p);
     }
     /**
@@ -167,12 +163,8 @@ public class Application {
         ProductInStock inStock = productExistsInStock(p);
         if (inStock != null)
             inStock.quantity += count;
-        else {
-            if (p instanceof DVD)
-                if (!people.contains(((DVD)p).getDirector()))
-                    throw new Exception("The director is missing for this DVD");
-                stock.add(new ProductInStock(p, count));
-        }
+        else
+            stock.add(new ProductInStock(p, count));
     }
     /**
      * Removes a certain quantity of a product from the stock
@@ -230,13 +222,9 @@ public class Application {
         ObjectInputStream reader = new ObjectInputStream(stream);
         result.people = (List<Person>)reader.readObject();
         result.stock = (List<ProductInStock>)reader.readObject();
-        List<Product> products = result.getStock();
-        for (Product product : products)
-            if (product instanceof DVD)
-                ((DVD)product).linkDirector(result.people);
         result.orders = (List<Order>)reader.readObject();
         for (Order order : result.orders)
-            order.linkData(result.people, products);
+            order.linkData(result.people, result.getStock());
         result.currentAppFrenchVersion = reader.readBoolean();
         result.frenchVersion = result.currentAppFrenchVersion;
         return result;

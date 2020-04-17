@@ -21,11 +21,7 @@ public class DVD implements Numeric {
     /**
      * director of this DVD
      */
-    transient protected Person director;
-    /**
-     * Id of the director (for serialisation purpose only)
-     */
-    protected UUID directorID;
+    protected String director;
     /**
      * the byte array of the image
      */
@@ -37,24 +33,17 @@ public class DVD implements Numeric {
      * @param price price of one day of rental
      * @param title title of the DVD
      * @param director director of this DVD
+     * @param image image of this DVD
      */
-    public DVD(Price price, String title, Person director) {
+    public DVD(Price price, String title, String director, InputStream image) throws IOException {
         pricePerDay = price;
         this.title = title;
         this.director = director;
-        directorID = director.getID();
         id = UUID.randomUUID();
-    }
-    /**
-     * Finds the director by its ID in a list of people (use after deserialisation)
-     * @param people list of people to search into
-     */
-    public void linkDirector(List<Person> people) {
-        for (Person person : people) {
-            if (person.getID().equals(directorID)) {
-                director = person;
-            }
-        }
+        if (image == null)
+            imageData = null;
+        else
+            imageData = image.readAllBytes();
     }
     @Override
     public Price getPrice(long days) {
@@ -74,23 +63,12 @@ public class DVD implements Numeric {
      * Gets the director
      * @return the director of the DVD
      */
-    public Person getDirector() {
+    public String getDirector() {
         return director;
     }
 
     @Override
     public InputStream getImage() {
         return new ByteArrayInputStream(imageData);
-    }
-    /**
-     * Changes the image to another one. null to remove the image.
-     * @param stream stream containing the image data
-     * @throws IOException thrown by the input stream
-     */
-    public void setImage(InputStream stream) throws IOException {
-        if (stream == null)
-            imageData = null;
-        else
-            imageData = stream.readAllBytes();
     }
 }

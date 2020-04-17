@@ -34,11 +34,16 @@ public class CD implements Numeric {
      * @param price   the price of one day of rental
      * @param title   the title of the CD
      * @param release the day of the release
+     * @param image the image of the CD
      */
-    public CD(Price price, String title, LocalDate release) {
+    public CD(Price price, String title, LocalDate release, InputStream image) throws IOException {
         pricePerDay = price;
         this.title = title;
         releaseDate = release;
+        if (image == null)
+            imageData = null;
+        else
+            imageData = image.readAllBytes();
     }
 
     @Override
@@ -68,16 +73,5 @@ public class CD implements Numeric {
     @Override
     public InputStream getImage() {
         return new ByteArrayInputStream(imageData);
-    }
-    /**
-     * Changes the image to another one. null to remove the image.
-     * @param stream stream containing the image data
-     * @throws IOException thrown by the input stream
-     */
-    public void setImage(InputStream stream) throws IOException {
-        if (stream == null)
-            imageData = null;
-        else
-            imageData = stream.readAllBytes();
     }
 }

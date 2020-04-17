@@ -1,6 +1,7 @@
 package data;
 
 import java.util.*;
+
 import java.io.*;
 
 /**
@@ -23,10 +24,17 @@ public abstract class Book implements Document {
     /**
      * Constructor.
      * @param author author of the book
+     * @param title title of the book
+     * @param image image of the book
      */
-    protected Book(String author) {
+    protected Book(String author, String title, InputStream image) throws IOException {
         id = UUID.randomUUID();
         this.author = author;
+        this.title = title;
+        if (image == null)
+            imageData = null;
+        else
+            imageData = image.readAllBytes();
     }
     @Override
     public UUID getID() {
@@ -49,16 +57,5 @@ public abstract class Book implements Document {
     @Override
     public InputStream getImage() {
         return new ByteArrayInputStream(imageData);
-    }
-    /**
-     * Changes the image to another one. null to remove the image.
-     * @param stream stream containing the image data
-     * @throws IOException thrown by the input stream
-     */
-    public void setImage(InputStream stream) throws IOException {
-        if (stream == null)
-            imageData = null;
-        else
-            imageData = stream.readAllBytes();
     }
 }
