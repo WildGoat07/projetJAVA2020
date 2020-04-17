@@ -226,17 +226,14 @@ public final class Price extends Number implements Comparable<Price> {
     public int intValue() {
         return euros * (negative ?-1:1);
     }
-
     @Override
     public long longValue() {
         return euros * (negative ?-1:1);
     }
-
     @Override
     public float floatValue() {
         return (euros + .01f * cents)* (negative ?-1:1);
     }
-
     @Override
     public double doubleValue() {
         return (euros + .01 * cents)* (negative ?-1:1);

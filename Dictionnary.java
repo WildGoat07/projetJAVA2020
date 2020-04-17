@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 import utilities.*;
 
@@ -19,6 +20,10 @@ public class Dictionnary implements Document {
      * the title of the dictionnary
      */
     protected String title;
+    /**
+     * the byte array of the image
+     */
+    protected byte[] imageData;
     /**
      * Constructor.
      * @param language language of this dictionnary
@@ -52,5 +57,20 @@ public class Dictionnary implements Document {
     public String getTitle() {
         return title;
     }
-    
+
+    @Override
+    public InputStream getImage() {
+        return new ByteArrayInputStream(imageData);
+    }
+    /**
+     * Changes the image to another one. null to remove the image.
+     * @param stream stream containing the image data
+     * @throws IOException thrown by the input stream
+     */
+    public void setImage(InputStream stream) throws IOException {
+        if (stream == null)
+            imageData = null;
+        else
+            imageData = stream.readAllBytes();
+    }
 }

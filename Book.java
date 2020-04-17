@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 /**
  * Defines a book with an author
@@ -13,6 +14,10 @@ public abstract class Book implements Document {
      * author of the book
      */
     protected String author;
+    /**
+     * the byte array of the image
+     */
+    protected byte[] imageData;
     /**
      * Constructor.
      * @param author author of the book
@@ -37,5 +42,21 @@ public abstract class Book implements Document {
      */
     public String getAuthor() {
         return author;
+    }
+
+    @Override
+    public InputStream getImage() {
+        return new ByteArrayInputStream(imageData);
+    }
+    /**
+     * Changes the image to another one. null to remove the image.
+     * @param stream stream containing the image data
+     * @throws IOException thrown by the input stream
+     */
+    public void setImage(InputStream stream) throws IOException {
+        if (stream == null)
+            imageData = null;
+        else
+            imageData = stream.readAllBytes();
     }
 }

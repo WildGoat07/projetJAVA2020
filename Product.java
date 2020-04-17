@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.*;
+import java.io.*;
 
 /**
  * Basic product. Every product has a rental price, an unique identifier and a title
@@ -21,4 +22,9 @@ public interface Product extends Serializable {
      * @return The title of the product
      */
     String getTitle();
+    /**
+     * Gets a stream containing the image data of this product
+     * @return the image data or null if no image is provided
+     */
+    InputStream getImage();
 }

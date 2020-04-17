@@ -1,5 +1,6 @@
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.io.*;
+
 import utilities.Price;
 
 /**
@@ -23,6 +24,10 @@ public class DVD implements Numeric {
      * Id of the director (for serialisation purpose only)
      */
     protected UUID directorID;
+    /**
+     * the byte array of the image
+     */
+    protected byte[] imageData;
     private UUID id;
 
     /**
@@ -69,5 +74,21 @@ public class DVD implements Numeric {
      */
     public Person getDirector() {
         return director;
+    }
+
+    @Override
+    public InputStream getImage() {
+        return new ByteArrayInputStream(imageData);
+    }
+    /**
+     * Changes the image to another one. null to remove the image.
+     * @param stream stream containing the image data
+     * @throws IOException thrown by the input stream
+     */
+    public void setImage(InputStream stream) throws IOException {
+        if (stream == null)
+            imageData = null;
+        else
+            imageData = stream.readAllBytes();
     }
 }

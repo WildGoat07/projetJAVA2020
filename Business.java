@@ -17,7 +17,6 @@ public class Business {
         orders = new ArrayList<Order>();
         people = new ArrayList<Person>();
     }
-
     /**
      * Gets a read only list of every registered product
      * @return list of registered products
