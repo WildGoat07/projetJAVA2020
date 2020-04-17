@@ -3,6 +3,9 @@ package data;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Defines a random person
+ */
 public class Person implements Serializable {
     private UUID id;
     protected String name;
