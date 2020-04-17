@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import javax.imageio.ImageIO;
+
+import data.*;
+
 import java.awt.*;
 import java.io.*;
 
@@ -62,5 +65,20 @@ public class Functions {
      */
     public static Image resizeImage(int width, int height, Image img) {
         return img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+    }
+    public static String getProductType(Product product, boolean french) {
+        if (product instanceof Comic)
+            return french ? "BD":"Comic";
+        if (product instanceof CD)
+            return "CD";
+        if (product instanceof data.Dictionary)
+            return french ? "Dictionnaire":"Dictionary";
+        if (product instanceof DVD)
+            return "DVD";
+        if (product instanceof Novel)
+            return french ? "Roman":"Novel";
+        if (product instanceof SchoolBook)
+            return french ? "Livre scolaire":"School book";
+        return null;
     }
 }

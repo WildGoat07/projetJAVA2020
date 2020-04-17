@@ -31,11 +31,11 @@ public class DVD implements Numeric {
     /**
      * Constructor.
      * @param price price of one day of rental
-     * @param title title of the DVD
      * @param director director of this DVD
+     * @param title title of the DVD
      * @param image image of this DVD
      */
-    public DVD(Price price, String title, String director, InputStream image) throws IOException {
+    public DVD(Price price, String director, String title, InputStream image) throws IOException {
         pricePerDay = price;
         this.title = title;
         this.director = director;
