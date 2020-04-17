@@ -41,7 +41,7 @@ public class Application {
         stock = new ArrayList<ProductInStock>();
         orders = new ArrayList<Order>();
         people = new ArrayList<Person>();
-        currentAppFrenchVersion = Locale.getDefault().getISO3Language() == Locale.FRENCH.getISO3Language();
+        currentAppFrenchVersion = Locale.getDefault().getISO3Language().equals(Locale.FRENCH.getISO3Language());
         frenchVersion = currentAppFrenchVersion;
     }
     /**
@@ -223,6 +223,7 @@ public class Application {
         writer.writeObject(stock);
         writer.writeObject(orders);
         writer.writeBoolean(frenchVersion);
+        writer.flush();
     }
     public static Application loadFromStream(InputStream stream) throws IOException, ClassNotFoundException {
         Application result = new Application();
