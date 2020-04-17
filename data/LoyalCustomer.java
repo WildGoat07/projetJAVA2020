@@ -1,3 +1,5 @@
+package data;
+
 /**
  * A loyal customer has reductions
  */

@@ -1,19 +1,21 @@
+package data;
+
 import utilities.Price;
 
 /**
- * Defines a book used in schools
+ * Defines a comic strip
  */
-public class SchoolBook extends Book {
+public class Comic extends Book{
     /**
-     * The price of the school book for one day of rental
+     * The price of the comic for one day of rental
      */
     protected Price pricePerDay;
     /**
      * Constructor.
      * @param price price of one day of rental
-     * @param author author of the school book
+     * @param author author of the comic
      */
-    public SchoolBook(Price price, String author) {
+    public Comic(Price price, String author) {
         super(author);
         pricePerDay = price;
     }

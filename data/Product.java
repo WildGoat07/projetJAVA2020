@@ -1,4 +1,5 @@
-import java.io.Serializable;
+package data;
+
 import java.util.*;
 import java.io.*;
 

@@ -1,20 +1,21 @@
+package data;
+
 import utilities.Price;
 
 /**
- * Defines a novel
+ * Defines a book used in schools
  */
-public class Novel extends Book {
-
+public class SchoolBook extends Book {
     /**
-     * The price of the novel for one day of rental
+     * The price of the school book for one day of rental
      */
     protected Price pricePerDay;
     /**
      * Constructor.
      * @param price price of one day of rental
-     * @param author author of the novel
+     * @param author author of the school book
      */
-    public Novel(Price price, String author) {
+    public SchoolBook(Price price, String author) {
         super(author);
         pricePerDay = price;
     }

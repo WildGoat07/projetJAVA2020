@@ -1,61 +1,49 @@
+package data;
+
 import java.util.*;
 import java.io.*;
 
-import utilities.*;
-
 /**
- * Defines an actual dictionnary
+ * Defines a book with an author
  */
-public class Dictionnary implements Document {
-    /**
-     * the language of the dictionnary
-     */
-    protected Locale language;
-    /**
-     * the price of one day of rental
-     */
-    protected Price perDayPrice;
+public abstract class Book implements Document {
     private UUID id;
     /**
-     * the title of the dictionnary
+     * title of the book
      */
     protected String title;
+    /**
+     * author of the book
+     */
+    protected String author;
     /**
      * the byte array of the image
      */
     protected byte[] imageData;
     /**
      * Constructor.
-     * @param language language of this dictionnary
-     * @param price price of a day of rental of this dictionnary
-     * @param title title of the dictionnary
+     * @param author author of the book
      */
-    public Dictionnary(Locale language, Price price, String title) {
-        this.language = language;
-        perDayPrice = price;
+    protected Book(String author) {
         id = UUID.randomUUID();
-        this.title = title;
+        this.author = author;
     }
-    /**
-     * Gets the language
-     * @return the language of this dictionnary
-     */
-    public Locale getLanguage() {
-        return language;
-    }
-    @Override
-    public Price getPrice(long days) {
-        return Price.multiply(perDayPrice, days);
-    }
-
     @Override
     public UUID getID() {
         return id;
     }
-
+    @Override
+    public abstract utilities.Price getPrice(long days);
     @Override
     public String getTitle() {
         return title;
+    }
+    /**
+     * Gets the author's name
+     * @return the name of the author of this book
+     */
+    public String getAuthor() {
+        return author;
     }
 
     @Override

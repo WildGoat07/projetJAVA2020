@@ -1,21 +1,48 @@
+package data;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
-
 /**
  * Defines the company that sells stuff
  */
-public class Business {
+public class Application {
     private List<ProductInStock> stock;
     private List<Order> orders;
     private List<Person> people;
+    private boolean currentAppFrenchVersion;
+    private boolean frenchVersion;
+    /**
+     * Changes the language to either french or english.
+     * These changes only applies after creating a new Application (restart)
+     * @param value true for french, false for english
+     */
+    public void setFrench(boolean value) {
+        frenchVersion = value;
+    }
+    /**
+     * Gets the current language of the application
+     * @return true if french, false for english
+     */
+    public boolean isCurrentFrench() {
+        return currentAppFrenchVersion;
+    }
+    /**
+     * Gets the langage of the application for the next time it will be saved
+     * @return true if french, false for english
+     */
+    public boolean isFrench() {
+        return frenchVersion;
+    }
     /**
      * Constructor
      */
-    public Business() {
+    public Application() {
         stock = new ArrayList<ProductInStock>();
         orders = new ArrayList<Order>();
         people = new ArrayList<Person>();
+        currentAppFrenchVersion = Locale.getDefault().getISO3Language() == Locale.FRENCH.getISO3Language();
+        frenchVersion = currentAppFrenchVersion;
     }
     /**
      * Gets a read only list of every registered product
@@ -195,9 +222,10 @@ public class Business {
         writer.writeObject(people);
         writer.writeObject(stock);
         writer.writeObject(orders);
+        writer.writeBoolean(frenchVersion);
     }
-    public static Business loadFromStream(InputStream stream) throws IOException, ClassNotFoundException {
-        Business result = new Business();
+    public static Application loadFromStream(InputStream stream) throws IOException, ClassNotFoundException {
+        Application result = new Application();
         ObjectInputStream reader = new ObjectInputStream(stream);
         result.people = (List<Person>)reader.readObject();
         result.stock = (List<ProductInStock>)reader.readObject();
@@ -205,9 +233,11 @@ public class Business {
         for (Product product : products)
             if (product instanceof DVD)
                 ((DVD)product).linkDirector(result.people);
-                result.orders = (List<Order>)reader.readObject();
+        result.orders = (List<Order>)reader.readObject();
         for (Order order : result.orders)
             order.linkData(result.people, products);
+        result.currentAppFrenchVersion = reader.readBoolean();
+        result.frenchVersion = result.currentAppFrenchVersion;
         return result;
     }
     /**
