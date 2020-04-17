@@ -6,9 +6,9 @@ import java.io.*;
 import utilities.*;
 
 /**
- * Defines an actual dictionnary
+ * Defines an actual dictionary
  */
-public class Dictionnary implements Document {
+public class Dictionary implements Document {
     /**
      * the language of the dictionnary
      */
@@ -32,7 +32,7 @@ public class Dictionnary implements Document {
      * @param price price of a day of rental of this dictionnary
      * @param title title of the dictionnary
      */
-    public Dictionnary(Locale language, Price price, String title) {
+    public Dictionary(Locale language, Price price, String title) {
         this.language = language;
         perDayPrice = price;
         id = UUID.randomUUID();
