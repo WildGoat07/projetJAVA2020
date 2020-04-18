@@ -8,14 +8,10 @@ import javax.swing.*;
 import data.*;
 
 public class MainWindow extends JFrame {
-    private Application app;
     private JTabbedPane tab;
-    private Locale langage;
     public MainWindow(data.Application app) throws Exception {
         super();
-        this.app = app;
-        langage = app.isCurrentFrench() ? Locale.FRENCH : Locale.ENGLISH;
-        setSize(900, 600);
+        setSize(1200, 700);
         setTitle("Videoworld");
         tab = new JTabbedPane();
         add(tab);

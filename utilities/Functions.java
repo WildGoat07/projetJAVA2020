@@ -1,6 +1,7 @@
 package utilities;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.imageio.ImageIO;
@@ -28,6 +29,19 @@ public class Functions {
             if (test.test(p))
                 result.add(p);
         });
+        return result;
+    }
+    /**
+     * Uses a function to convert every item in the list into another type
+     * @param <T> initial type
+     * @param <U> final type
+     * @param list list to convert
+     * @param fct function to use to convert
+     * @return the list with converted items
+     */
+    public static <T, U> java.util.List<U> convert(Iterable<T> list, Function<T, U> fct) {
+        final java.util.List<U> result = new ArrayList<U>();
+        list.forEach((p) -> result.add(fct.apply(p)));
         return result;
     }
     /**

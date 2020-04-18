@@ -10,6 +10,8 @@ import data.*;
 
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import utilities.*;
 
@@ -25,6 +27,18 @@ public class Products extends JPanel {
     private JPanel productsList;
     private boolean useCurrentTime;
     private LocalDate customDate;
+    private JLabel minPrice;
+    private JLabel maxPrice;
+    private JLabel minStock;
+    private JLabel maxStock;
+    private JLabel minRented;
+    private JLabel maxRented;
+    private JSlider minPriceSlider;
+    private JSlider maxPriceSlider;
+    private JSlider minStockSlider;
+    private JSlider maxStockSlider;
+    private JSlider minRentedSlider;
+    private JSlider maxRentedSlider;
 
     private Comparator<Product> currentComparator;
     private Comparator<Product> nameComparator = new Comparator<Product>() {
@@ -104,7 +118,6 @@ public class Products extends JPanel {
             JPanel Filters = new JPanel();
             add(Filters, BorderLayout.WEST);
             Filters.setLayout(new BoxLayout(Filters, BoxLayout.Y_AXIS));
-            
             final JCheckBox docs = new JCheckBox("Documents");
             final JCheckBox books = new JCheckBox(app.isCurrentFrench()?"Livres":"Books");
             final JCheckBox numerics = new JCheckBox(app.isCurrentFrench()?"Numérique":"Numeric");
@@ -271,6 +284,73 @@ public class Products extends JPanel {
                     picker.setVisible(true);
                 }
             });
+            Filters.add(Box.createRigidArea(new Dimension(1, 20)));
+            minPrice = new JLabel();
+            Filters.add(minPrice);
+            minPriceSlider = new JSlider(0, 100, 0);
+            minPriceSlider.addChangeListener(new ChangeListener(){
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    update();
+                    revalidate();
+                }
+            });
+            Filters.add(minPriceSlider);
+            maxPrice = new JLabel();
+            Filters.add(maxPrice);
+            maxPriceSlider = new JSlider(0, 100, 100);
+            maxPriceSlider.addChangeListener(new ChangeListener(){
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    update();
+                    revalidate();
+                }
+            });
+            Filters.add(maxPriceSlider);
+            minStock = new JLabel();
+            Filters.add(minStock);
+            minStockSlider = new JSlider(0, 100, 0);
+            minStockSlider.addChangeListener(new ChangeListener(){
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    update();
+                    revalidate();
+                }
+            });
+            Filters.add(minStockSlider);
+            maxStock = new JLabel();
+            Filters.add(maxStock);
+            maxStockSlider = new JSlider(0, 100, 100);
+            maxStockSlider.addChangeListener(new ChangeListener(){
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    update();
+                    revalidate();
+                }
+            });
+            Filters.add(maxStockSlider);
+            minRented = new JLabel();
+            Filters.add(minRented);
+            minRentedSlider = new JSlider(0, 100, 0);
+            minRentedSlider.addChangeListener(new ChangeListener(){
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    update();
+                    revalidate();
+                }
+            });
+            Filters.add(minRentedSlider);
+            maxRented = new JLabel();
+            Filters.add(maxRented);
+            maxRentedSlider = new JSlider(0, 100, 100);
+            maxRentedSlider.addChangeListener(new ChangeListener(){
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    update();
+                    revalidate();
+                }
+            });
+            Filters.add(maxRentedSlider);
         }
         productTypes.addActionListener(new ActionListener() {
             @Override
@@ -306,7 +386,37 @@ public class Products extends JPanel {
                 toDisplay = app.geUnavailableProducts(getTime());
                 break;
         }
+        float lowestPrice = Collections.min(Functions.convert(app.getStock(), (p) -> p.getPrice(1).floatValue()));
+        float highestPrice = Collections.max(Functions.convert(app.getStock(), (p) -> p.getPrice(1).floatValue()));
+        float lowestStock = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
+        float highestStock = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
+        float lowestRented = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
+        float highestRented = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
+        float choosenLowestPrice = (minPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
+        float choosenHighestPrice = (maxPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
+        float choosenLowestStock = Math.round((minStockSlider.getValue()/100f)*(highestStock-lowestStock)+lowestStock);
+        float choosenHighestStock = Math.round((maxStockSlider.getValue()/100f)*(highestStock-lowestStock)+lowestStock);
+        float choosenLowestRented = Math.round((minRentedSlider.getValue()/100f)*(highestRented-lowestRented)+lowestRented);
+        float choosenHighestRented = Math.round((maxRentedSlider.getValue()/100f)*(highestRented-lowestRented)+lowestRented);
+        minPrice.setText((app.isCurrentFrench()?"Prix minimum : ":"Minimum price : ") + new Price(choosenLowestPrice).toString());
+        maxPrice.setText((app.isCurrentFrench()?"Prix maximum : ":"Maximum price : ") + new Price(choosenHighestPrice).toString());
+        minStock.setText((app.isCurrentFrench()?"Stock minimum : ":"Minimum stock : ") + Integer.valueOf((int)choosenLowestStock).toString());
+        maxStock.setText((app.isCurrentFrench()?"Stock maximum : ":"Maximum stock : ") + Integer.valueOf((int)choosenHighestStock).toString());
+        minRented.setText((app.isCurrentFrench()?"Loués minimum : ":"Minimum rented : ") + Integer.valueOf((int)choosenLowestRented).toString());
+        maxRented.setText((app.isCurrentFrench()?"Loués maximum : ":"Maximum rented : ") + Integer.valueOf((int)choosenHighestRented).toString());
         toDisplay = Functions.where(toDisplay, (p) -> {
+            if (p.getPrice(1).floatValue() < choosenLowestPrice)
+                return false;
+            if ((float)app.getProductCountInStock(p) < choosenLowestStock)
+                return false;
+            if ((float)app.getRentedProductCount(p) < choosenLowestRented)
+                return false;
+            if (p.getPrice(1).floatValue() > choosenHighestPrice)
+                return false;
+            if ((float)app.getProductCountInStock(p) > choosenHighestStock)
+                return false;
+            if ((float)app.getRentedProductCount(p) > choosenHighestRented)
+                return false;
             if (comics.isSelected() && p instanceof Comic)
                 return true;
             if (novels.isSelected() && p instanceof Novel)
