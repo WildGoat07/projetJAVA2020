@@ -7,6 +7,7 @@ import java.util.*;
 import java.awt.*;
 import javax.swing.*;
 import data.*;
+
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -22,6 +23,9 @@ public class Products extends JPanel {
     private JCheckBox cds;
     private JComboBox<String> productTypes;
     private JPanel productsList;
+    private boolean useCurrentTime;
+    private LocalDate customDate;
+
     private Comparator<Product> currentComparator;
     private Comparator<Product> nameComparator = new Comparator<Product>() {
         @Override
@@ -74,9 +78,6 @@ public class Products extends JPanel {
     private Comparator<Product> reverseCategComparator = categComparator.reversed();
     private Comparator<Product> reverseInStockComparator = inStockComparator.reversed();
     private Comparator<Product> reverseRentedComparator = rentedComparator.reversed();
-    private boolean useCurrentTime;
-    private LocalDate customDate;
-
     private LocalDate getTime() {
         return useCurrentTime?LocalDate.now():customDate;
     }
@@ -86,6 +87,8 @@ public class Products extends JPanel {
         setLayout(new BorderLayout());
         currentComparator = nameComparator;
         {
+            useCurrentTime = true;
+            customDate = LocalDate.now();
             JPanel bar = new JPanel();
             add(bar, BorderLayout.NORTH);
             bar.setLayout(new BoxLayout(bar, BoxLayout.X_AXIS));
@@ -101,6 +104,7 @@ public class Products extends JPanel {
             JPanel Filters = new JPanel();
             add(Filters, BorderLayout.WEST);
             Filters.setLayout(new BoxLayout(Filters, BoxLayout.Y_AXIS));
+            
             final JCheckBox docs = new JCheckBox("Documents");
             final JCheckBox books = new JCheckBox(app.isCurrentFrench()?"Livres":"Books");
             final JCheckBox numerics = new JCheckBox(app.isCurrentFrench()?"Numérique":"Numeric");
@@ -208,6 +212,65 @@ public class Products extends JPanel {
             dvds.setSelected(true);
             dvds.setBorder(new EmptyBorder(0, 20, 0, 0));
             Filters.add(dvds);
+
+            Filters.add(Box.createRigidArea(new Dimension(1, 20)));
+            JCheckBox currentDate = new JCheckBox(app.isCurrentFrench()?"Date actuelle":"Current date");
+            currentDate.setSelected(true);
+            Filters.add(currentDate);
+            JButton changeDate = new JButton(app.isCurrentFrench()?"Changer la date":"Change the date", new ImageIcon("images/cal.png"));
+            changeDate.setEnabled(false);
+            Filters.add(changeDate);
+            JLabel displayDate = new JLabel(customDate.toString());
+            displayDate.setEnabled(false);
+            Filters.add(displayDate);
+            currentDate.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    changeDate.setEnabled(!currentDate.isSelected());
+                    displayDate.setEnabled(!currentDate.isSelected());
+                    useCurrentTime = currentDate.isSelected();
+                    update();
+                    revalidate();
+                }
+            });
+            changeDate.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    DatePicker picker = new DatePicker(customDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH);
+                    picker.setTitle(app.isCurrentFrench()?"Choisir une nouvelle date":"Select a new date");
+                    picker.addWindowListener(new WindowListener() {
+                        @Override
+                        public void windowOpened(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowClosing(WindowEvent e) {
+                            LocalDate res = picker.getResult();
+                            if (res != null) {
+                                customDate = res;
+                                displayDate.setText(customDate.toString());
+                                update();
+                                revalidate();
+                            }
+                        }
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowIconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeiconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowActivated(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeactivated(WindowEvent e) {
+                        }
+                    });
+                    picker.setVisible(true);
+                }
+            });
         }
         productTypes.addActionListener(new ActionListener() {
             @Override
@@ -234,13 +297,13 @@ public class Products extends JPanel {
                 toDisplay = app.getStock();
                 break;
             case 1:
-                toDisplay = app.getAvailableProducts();
+                toDisplay = app.getAvailableProducts(getTime());
                 break;
             case 2:
-                toDisplay = app.getRentedProducts();
+                toDisplay = app.getRentedProducts(getTime());
                 break;
             case 3:
-                toDisplay = app.geUnavailableProducts();
+                toDisplay = app.geUnavailableProducts(getTime());
                 break;
         }
         toDisplay = Functions.where(toDisplay, (p) -> {
