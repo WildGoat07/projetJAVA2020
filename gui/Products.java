@@ -267,7 +267,7 @@ public class Products extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 5;
+        gbc.weightx = 30;
         JButton nameField = new JButton(app.isCurrentFrench()?"Nom":"Name");
         if (currentComparator == nameComparator)
             nameField.setText(nameField.getText()+" ↑");
@@ -305,7 +305,7 @@ public class Products extends JPanel {
         });
         productData.add(priceField, gbc);
         gbc.gridx++;
-        gbc.weightx = 3;
+        gbc.weightx = 18;
         JButton categField = new JButton(app.isCurrentFrench()?"Catégorie":"Category");
         if (currentComparator == categComparator)
             categField.setText(categField.getText()+" ↑");
@@ -363,7 +363,7 @@ public class Products extends JPanel {
         gbc.gridy++;
         for (Product product : toDisplay) {
             gbc.gridx = 0;
-            gbc.weightx = 5;
+            gbc.weightx = 30;
             final JLabel productName = new JLabel(product.getTitle());
             productName.setBorder(LineBorder.createGrayLineBorder());
             productData.add(productName, gbc);
@@ -373,7 +373,7 @@ public class Products extends JPanel {
             productPrice.setBorder(LineBorder.createGrayLineBorder());
             productData.add(productPrice, gbc);
             gbc.gridx++;
-            gbc.weightx = 3;
+            gbc.weightx = 18;
             final JLabel productCateg = new JLabel(Functions.getProductType(product, app.isCurrentFrench()));
             productCateg.setBorder(LineBorder.createGrayLineBorder());
             productData.add(productCateg, gbc);
@@ -399,19 +399,19 @@ public class Products extends JPanel {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     rentedProduct.setOpaque(true);
-                    rentedProduct.setBackground(new Color(200, 221, 242));
+                    rentedProduct.setBackground(new Color(200, 200, 200));
                     rentedProduct.repaint();
                     productInStock.setOpaque(true);
-                    productInStock.setBackground(new Color(200, 221, 242));
+                    productInStock.setBackground(new Color(200, 200, 200));
                     productInStock.repaint();
                     productCateg.setOpaque(true);
-                    productCateg.setBackground(new Color(200, 221, 242));
+                    productCateg.setBackground(new Color(200, 200, 200));
                     productCateg.repaint();
                     productPrice.setOpaque(true);
-                    productPrice.setBackground(new Color(200, 221, 242));
+                    productPrice.setBackground(new Color(200, 200, 200));
                     productPrice.repaint();
                     productName.setOpaque(true);
-                    productName.setBackground(new Color(200, 221, 242));
+                    productName.setBackground(new Color(200, 200, 200));
                     productName.repaint();
                 }
 
