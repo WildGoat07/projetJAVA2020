@@ -5,11 +5,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 import data.*;
 
 import java.awt.*;
 import java.io.*;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 
 /**
  * Utility functions
@@ -94,5 +97,62 @@ public class Functions {
         if (product instanceof SchoolBook)
             return french ? "Livre scolaire":"School book";
         return null;
+    }
+    /**
+     * Organise vertically the given components
+     * @param compos components to organise
+     * @return a vertical presentation of the components
+     */
+    public static JComponent alignVertical(Iterable<Component> compos) {
+        JPanel result = new JPanel();
+        result.setLayout(new BoxLayout(result, BoxLayout.Y_AXIS));
+        for (Component jComponent : compos)
+            result.add(jComponent);
+        return result;
+    }
+    /**
+     * Organise vertically the given components
+     * @param compos components to organise
+     * @return a vertical presentation of the components
+     */
+    public static JComponent alignVertical(Component[] compos) {
+        JPanel result = new JPanel();
+        result.setLayout(new BoxLayout(result, BoxLayout.Y_AXIS));
+        for (Component jComponent : compos)
+            result.add(jComponent);
+        return result;
+    }
+    /**
+     * Organise horizontally the given components
+     * @param compos components to organise
+     * @return an horizontal presentation of the components
+     */
+    public static JComponent alignHorizontal(Component[] compos) {
+        JPanel result = new JPanel();
+        result.setLayout(new BoxLayout(result, BoxLayout.X_AXIS));
+        for (Component jComponent : compos)
+            result.add(jComponent);
+        return result;
+    }
+    /**
+     * Organise horizontally the given components
+     * @param compos components to organise
+     * @return an horizontal presentation of the components
+     */
+    public static JComponent alignHorizontal(Iterable<Component> compos) {
+        JPanel result = new JPanel();
+        result.setLayout(new BoxLayout(result, BoxLayout.X_AXIS));
+        for (Component jComponent : compos)
+            result.add(jComponent);
+        return result;
+    }
+    /**
+     * Removes any diacritic in the string to normalize it for a comparaison
+     * @param input text to parse
+     * @return the normalized text
+     */
+    public static String removeDiacritics(String input) {
+        //https://stackoverflow.com/a/3322174/13270517
+        return Normalizer.normalize(input, Form.NFD).replaceAll("\\p{M}", "");
     }
 }

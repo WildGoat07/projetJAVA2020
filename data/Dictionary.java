@@ -69,4 +69,8 @@ public class Dictionary implements Document {
     public InputStream getImage() {
         return new ByteArrayInputStream(imageData);
     }
+    @Override
+    public String toString() {
+        return getTitle();
+    }
 }

@@ -32,11 +32,11 @@ public class CD implements Numeric {
      * Constructor.
      * 
      * @param price   the price of one day of rental
-     * @param title   the title of the CD
      * @param release the day of the release
+     * @param title   the title of the CD
      * @param image the image of the CD
      */
-    public CD(Price price, String title, LocalDate release, InputStream image) throws IOException {
+    public CD(Price price, LocalDate release, String title, InputStream image) throws IOException {
         pricePerDay = price;
         this.title = title;
         releaseDate = release;
@@ -73,5 +73,9 @@ public class CD implements Numeric {
     @Override
     public InputStream getImage() {
         return new ByteArrayInputStream(imageData);
+    }
+    @Override
+    public String toString() {
+        return getTitle();
     }
 }

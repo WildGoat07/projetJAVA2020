@@ -8,10 +8,8 @@ import java.awt.*;
 import javax.swing.*;
 import data.*;
 
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.border.*;
+import javax.swing.event.*;
 
 import utilities.*;
 
@@ -351,6 +349,47 @@ public class Products extends JPanel {
                 }
             });
             Filters.add(maxRentedSlider);
+            JButton newProduct = new JButton(app.isCurrentFrench()?"Ajouter un produit":"Add a product");
+            newProduct.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    NewProduct dialog = new NewProduct(app);
+                    dialog.setVisible(true);
+                    dialog.addWindowListener(new WindowListener() {
+                        @Override
+                        public void windowOpened(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowClosing(WindowEvent e) {
+                            Product prod = dialog.getResult();
+                            if (prod != null) {
+                                try {
+                                    app.addProduct(prod, dialog.getQuantity());
+                                    update();
+                                    revalidate();
+                                }
+                                catch(Exception exc) {}
+                            }
+                        }
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowIconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeiconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowActivated(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeactivated(WindowEvent e) {
+                        }
+                    });
+                }
+            });
+            Filters.add(newProduct);
         }
         productTypes.addActionListener(new ActionListener() {
             @Override

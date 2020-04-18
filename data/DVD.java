@@ -71,4 +71,8 @@ public class DVD implements Numeric {
     public InputStream getImage() {
         return new ByteArrayInputStream(imageData);
     }
+    @Override
+    public String toString() {
+        return getTitle();
+    }
 }
