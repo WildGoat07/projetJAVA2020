@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.Locale;
 
+import javax.swing.*;
+
 import data.*;
 import gui.*;
 import utilities.*;
@@ -23,5 +25,6 @@ public class Main {
         currApp.addProduct(new Novel(new Price(3.8), "Manuel", "un super roman", null), 2);
         currApp.addProduct(new DVD(new Price(9), "Henri", "compilation naze", null), 2);*/
         new MainWindow(currApp).setVisible(true);
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     }
 }
