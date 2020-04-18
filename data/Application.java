@@ -55,11 +55,12 @@ public class Application {
         return Collections.unmodifiableList(result);
     }
     /**
-     * Gets the quantity of a single product in stock (not rented)
+     * Gets the quantity of a single product in stock (not rented) at a specific time
      * @param p product to find
+     * @param time the specific time
      * @return the number of products in stock
      */
-    public int getProductCountInStock(Product p) {
+    public int getProductCountInStock(Product p, LocalDate time) {
         int registered = 0;
         {
             ProductInStock inStock = productExistsInStock(p);
@@ -69,10 +70,19 @@ public class Application {
         if (registered == 0)
             return 0;
         for (Order order : orders)
-            for (Product product : order.getProducts())
-                if (product.equals(p))
-                    registered--;
+            if (order.getBeginningRental().isBefore(time) && order.getEndingRental().isAfter(time))
+                for (Product product : order.getProducts())
+                    if (product.equals(p))
+                        registered--;
         return registered;
+    }
+    /**
+     * Gets the quantity of a single product in stock (not rented) at the current time
+     * @param p product to find
+     * @return the number of products in stock
+     */
+    public int getProductCountInStock(Product p) {
+        return getProductCountInStock(p, LocalDate.now());
     }
     /**
      * Gets the quantity of a single product (in stock and rented)
@@ -87,12 +97,21 @@ public class Application {
             return 0;
     }
     /**
-     * Gets the quantity of a single rented product (not in stock)
+     * Gets the quantity of a single rented product (not in stock) at a specific time
+     * @param p product to find
+     * @param time specific time
+     * @return the number of rented products
+     */
+    public int getRentedProductCount(Product p, LocalDate time) {
+        return getRegisteredProductCount(p) - getProductCountInStock(p, time);
+    }
+    /**
+     * Gets the quantity of a single rented product (not in stock) at the current time
      * @param p product to find
      * @return the number of rented products
      */
     public int getRentedProductCount(Product p) {
-        return getRegisteredProductCount(p) - getProductCountInStock(p);
+        return getRentedProductCount(p, LocalDate.now());
     }
     /**
      * Gets a read only list of orders
@@ -198,16 +217,19 @@ public class Application {
             }
         }
     }
-    /**
-     * Returns a reference to the stock value of a product
-     * @param p product to find
-     * @return the stock value, or null if no product has been found
-     */
-    public ProductInStock productExistsInStock(Product p) {
+    private ProductInStock productExistsInStock(Product p) {
         for (ProductInStock inStock : stock)
             if (inStock.product.equals(p))
                 return inStock;
         return null;
+    }
+    /**
+     * Returns true if the product is registered
+     * @param p product to find
+     * @return true if found, false otherwise
+     */
+    public boolean productExists(Product p) {
+        return productExistsInStock(p) != null;
     }
     public void saveToStream(OutputStream stream) throws IOException {
         ObjectOutputStream writer = new ObjectOutputStream(stream);

@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.event.*;
 import java.io.*;
+import java.time.LocalDate;
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
@@ -73,10 +74,16 @@ public class Products extends JPanel {
     private Comparator<Product> reverseCategComparator = categComparator.reversed();
     private Comparator<Product> reverseInStockComparator = inStockComparator.reversed();
     private Comparator<Product> reverseRentedComparator = rentedComparator.reversed();
+    private boolean useCurrentTime;
+    private LocalDate customDate;
+
+    private LocalDate getTime() {
+        return useCurrentTime?LocalDate.now():customDate;
+    }
 
     public Products(Application app) throws Exception {
         this.app = app;
-        setLayout(new BorderLayout(5, 5));
+        setLayout(new BorderLayout());
         currentComparator = nameComparator;
         {
             JPanel bar = new JPanel();
@@ -372,11 +379,11 @@ public class Products extends JPanel {
             productData.add(productCateg, gbc);
             gbc.gridx++;
             gbc.weightx = 1;
-            final JLabel productInStock = new JLabel(Integer.valueOf(app.getProductCountInStock(product)).toString());
+            final JLabel productInStock = new JLabel(Integer.valueOf(app.getProductCountInStock(product, getTime())).toString());
             productInStock.setBorder(LineBorder.createGrayLineBorder());
             productData.add(productInStock, gbc);
             gbc.gridx++;
-            final JLabel rentedProduct = new JLabel(Integer.valueOf(app.getRentedProductCount(product)).toString());
+            final JLabel rentedProduct = new JLabel(Integer.valueOf(app.getRentedProductCount(product, getTime())).toString());
             rentedProduct.setBorder(LineBorder.createGrayLineBorder());
             productData.add(rentedProduct, gbc);
             MouseListener mouseListener = new MouseListener() {
