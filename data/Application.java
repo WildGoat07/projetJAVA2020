@@ -70,7 +70,7 @@ public class Application {
         if (registered == 0)
             return 0;
         for (Order order : orders)
-            if (order.getBeginningRental().isBefore(time) && order.getEndingRental().isAfter(time))
+            if (order.getBeginningRental().isBefore(time) && (order.getEndingRental().isAfter(time) || order.getEndingRental().isEqual(time)))
                 for (Product product : order.getProducts())
                     if (product.equals(p))
                         registered--;
@@ -268,7 +268,7 @@ public class Application {
         for (ProductInStock inStock : stock) {
             int rented = 0;
             for (Order order : orders)
-                if (time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
+                if (order.getProducts().contains(inStock.product) && time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
                     rented++;
             if (rented < inStock.quantity)
                 result.add(inStock.product);
@@ -292,7 +292,7 @@ public class Application {
         for (ProductInStock inStock : stock) {
             int rented = 0;
             for (Order order : orders)
-                if (time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
+                if (order.getProducts().contains(inStock.product) && time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
                     rented++;
             if (rented > 0)
                 result.add(inStock.product);
@@ -316,7 +316,7 @@ public class Application {
         for (ProductInStock inStock : stock) {
             int rented = 0;
             for (Order order : orders)
-                if (time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
+                if (order.getProducts().contains(inStock.product) && time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
                     rented++;
             if (rented == inStock.quantity)
                 result.add(inStock.product);
