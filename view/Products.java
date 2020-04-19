@@ -43,7 +43,7 @@ public class Products extends JPanel {
     private Comparator<Product> nameComparator = new Comparator<Product>() {
         @Override
         public int compare(Product o1, Product o2) {
-            return o1.getTitle().compareTo(o2.getTitle());
+            return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
         }
     };
     private Comparator<Product> priceComparator = new Comparator<Product>() {
@@ -59,7 +59,7 @@ public class Products extends JPanel {
     private Comparator<Product> categComparator = new Comparator<Product>() {
         @Override
         public int compare(Product o1, Product o2) {
-            int res = Functions.getProductType(o1, app.isCurrentFrench()).compareTo(Functions.getProductType(o2, app.isCurrentFrench()));
+            int res = Functions.simplify(Functions.getProductType(o1, app.isCurrentFrench())).compareTo(Functions.simplify(Functions.getProductType(o2, app.isCurrentFrench())));
             if (res == 0)
                 return nameComparator.compare(o1, o2);
             else

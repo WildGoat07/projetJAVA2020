@@ -147,6 +147,14 @@ public class Functions {
         return result;
     }
     /**
+     * Simplifies a string to make it easily comparable
+     * @param input text to parse
+     * @return the simplified text
+     */
+    public static String simplify(String input) {
+        return removeDiacritics(input).toLowerCase().replaceAll("[\\s|-|'|_]", "");
+    }
+    /**
      * Removes any diacritic in the string to normalize it for a comparaison
      * @param input text to parse
      * @return the normalized text

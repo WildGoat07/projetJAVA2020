@@ -35,8 +35,17 @@ public class NewProduct extends JDialog {
         setTitle(app.isCurrentFrench() ? "Ajouter un produit" : "Add a product");
 
         JComboBox<Object> productList = new JComboBox<Object>();
-        for (Product prod : app.getStock())
-            productList.addItem(prod);
+        {
+            java.util.List<Product> prods = app.getStock();
+            prods.sort(new Comparator<Product>() {
+                @Override
+                public int compare(Product o1, Product o2) {
+                    return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
+                }
+            });
+            for (Product prod : prods)
+                productList.addItem(prod);
+        }
         productList.addItem(app.isCurrentFrench() ? "Créer un nouveau produit" : "Create a new product");
         mainPanel.add(productList);
         JPanel quantityPanel = new JPanel();
@@ -148,7 +157,7 @@ public class NewProduct extends JDialog {
         availableLanguages.sort(new Comparator<Locale>() {
             @Override
             public int compare(Locale o1, Locale o2) {
-                return Functions.removeDiacritics(o1.getDisplayLanguage()).compareTo(Functions.removeDiacritics(o2.getDisplayLanguage()));
+                return Functions.simplify(o1.getDisplayLanguage()).compareTo(Functions.simplify(o2.getDisplayLanguage()));
             }
         });
         for (Locale lang : availableLanguages) {
