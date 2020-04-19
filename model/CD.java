@@ -40,6 +40,7 @@ public class CD implements Numeric {
         pricePerDay = price;
         this.title = title;
         releaseDate = release;
+        id = UUID.randomUUID();
         if (image == null)
             imageData = null;
         else
@@ -77,5 +78,16 @@ public class CD implements Numeric {
     @Override
     public String toString() {
         return getTitle();
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Product)
+            return id.equals(((Product)obj).getID());
+        else
+            return super.equals(obj);
+    }
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

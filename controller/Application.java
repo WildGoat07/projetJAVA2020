@@ -164,7 +164,7 @@ public class Application {
      */
     public boolean personExists(Person p) {
         return people.contains(p);
-}
+    }
     /**
      * Adds an order to the list of orders
      * @param o order to add

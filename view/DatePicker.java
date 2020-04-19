@@ -49,11 +49,11 @@ public class DatePicker extends JDialog {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (usedDate.getMonth().getValue() == 1) {
-                        usedDate = LocalDate.of(usedDate.getYear()-1, 12, usedDate.getDayOfMonth());
+                        usedDate = LocalDate.of(usedDate.getYear()-1, 12, 1);
                         year.setValue(usedDate.getYear());
                     }
                     else
-                        usedDate = LocalDate.of(usedDate.getYear(), usedDate.getMonth().getValue()-1, usedDate.getDayOfMonth());
+                        usedDate = LocalDate.of(usedDate.getYear(), usedDate.getMonth().getValue()-1, 1);
                     update();
                     revalidate();
                 }
@@ -64,11 +64,11 @@ public class DatePicker extends JDialog {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (usedDate.getMonth().getValue() == 12) {
-                        usedDate = LocalDate.of(usedDate.getYear()+1, 1, usedDate.getDayOfMonth());
+                        usedDate = LocalDate.of(usedDate.getYear()+1, 1, 1);
                         year.setValue(usedDate.getYear());
                     }
                     else
-                        usedDate = LocalDate.of(usedDate.getYear(), usedDate.getMonth().getValue()+1, usedDate.getDayOfMonth());
+                        usedDate = LocalDate.of(usedDate.getYear(), usedDate.getMonth().getValue()+1, 1);
                     update();
                     revalidate();
                 }
@@ -84,7 +84,7 @@ public class DatePicker extends JDialog {
             year.addChangeListener(new ChangeListener(){
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    usedDate = LocalDate.of((int)year.getValue(), usedDate.getMonth(), usedDate.getDayOfMonth());
+                    usedDate = LocalDate.of((int)year.getValue(), usedDate.getMonth(), 1);
                     update();
                     revalidate();
                 }

@@ -20,11 +20,6 @@ public class Novel extends Book {
      * @param image of the novel
      */
     public Novel(Price price, String author, String title, InputStream image) throws IOException {
-        super(author, title, image);
-        pricePerDay = price;
-    }
-    @Override
-    public Price getPrice(long days) {
-        return Price.multiply(pricePerDay, days);
+        super(price, author, title, image);
     }
 }

@@ -3,12 +3,17 @@ package model;
 import java.util.*;
 
 import java.io.*;
+import utilities.*;
 
 /**
  * Defines a book with an author
  */
 public abstract class Book implements Document {
     private UUID id;
+    /**
+     * The price of the comic for one day of rental
+     */
+    protected Price pricePerDay;
     /**
      * title of the book
      */
@@ -27,8 +32,9 @@ public abstract class Book implements Document {
      * @param title title of the book
      * @param image image of the book
      */
-    protected Book(String author, String title, InputStream image) throws IOException {
+    protected Book(Price price, String author, String title, InputStream image) throws IOException {
         id = UUID.randomUUID();
+        pricePerDay = price;
         this.author = author;
         this.title = title;
         if (image == null)
@@ -40,8 +46,6 @@ public abstract class Book implements Document {
     public UUID getID() {
         return id;
     }
-    @Override
-    public abstract utilities.Price getPrice(long days);
     @Override
     public String getTitle() {
         return title;
@@ -61,5 +65,20 @@ public abstract class Book implements Document {
     @Override
     public String toString() {
         return getTitle();
+    }
+    @Override
+    public Price getPrice(long days) {
+        return Price.multiply(pricePerDay, days);
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Product)
+            return id.equals(((Product)obj).getID());
+        else
+            return super.equals(obj);
+    }
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

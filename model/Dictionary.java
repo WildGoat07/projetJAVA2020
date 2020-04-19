@@ -73,4 +73,15 @@ public class Dictionary implements Document {
     public String toString() {
         return getTitle();
     }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Product)
+            return id.equals(((Product)obj).getID());
+        else
+            return super.equals(obj);
+    }
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

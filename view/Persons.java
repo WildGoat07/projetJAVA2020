@@ -14,7 +14,7 @@ import javax.swing.event.*;
 
 import utilities.*;
 
-public class Persons extends JPanel {
+public class Persons extends JPanel implements CanUpdate {
     private Application app;
     private JComboBox<String> customTypes;
     private JPanel customersList;
@@ -125,7 +125,8 @@ public class Persons extends JPanel {
 
         update();
     }
-    private void update() {
+    @Override
+    public void update() {
         java.util.List<Person> toDisplay = app.getPeople();
         switch (customTypes.getSelectedIndex()) {
             case 1:
@@ -138,7 +139,9 @@ public class Persons extends JPanel {
         Collections.sort(toDisplay, currentComparator);
         customersList.removeAll();
         JPanel customerData = new JPanel();
-        customersList.add(new JScrollPane(customerData, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+        JScrollPane scrollyBoi = new JScrollPane(customerData, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollyBoi.getVerticalScrollBar().setUnitIncrement(16);
+        customersList.add(scrollyBoi);
         GridBagConstraints gbc = new GridBagConstraints();
         customerData.setLayout(new GridBagLayout());
         gbc.fill = GridBagConstraints.HORIZONTAL;

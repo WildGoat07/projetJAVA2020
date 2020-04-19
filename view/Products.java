@@ -14,7 +14,7 @@ import javax.swing.event.*;
 
 import utilities.*;
 
-public class Products extends JPanel {
+public class Products extends JPanel implements CanUpdate {
     private Application app;
     private JCheckBox comics;
     private JCheckBox novels;
@@ -111,9 +111,9 @@ public class Products extends JPanel {
         }
         
         {
-            JPanel Filters = new JPanel();
-            add(Filters, BorderLayout.WEST);
-            Filters.setLayout(new BoxLayout(Filters, BoxLayout.Y_AXIS));
+            JPanel filters = new JPanel();
+            add(filters, BorderLayout.WEST);
+            filters.setLayout(new BoxLayout(filters, BoxLayout.Y_AXIS));
             final JCheckBox docs = new JCheckBox("Documents");
             final JCheckBox books = new JCheckBox(app.isCurrentFrench()?"Livres":"Books");
             final JCheckBox numerics = new JCheckBox(app.isCurrentFrench()?"Numérique":"Numeric");
@@ -157,9 +157,9 @@ public class Products extends JPanel {
             docs.setSelected(true);
             numerics.setSelected(true);
             books.setSelected(true);
-            Filters.add(docs);
+            filters.add(docs);
             books.setBorder(new EmptyBorder(0, 20, 0, 0));
-            Filters.add(books);
+            filters.add(books);
             comics = new JCheckBox(app.isCurrentFrench()?"BD":"Comics");
             comics.addActionListener(new ActionListener() {
                 @Override
@@ -169,7 +169,7 @@ public class Products extends JPanel {
             });
             comics.setSelected(true);
             comics.setBorder(new EmptyBorder(0, 40, 0, 0));
-            Filters.add(comics);
+            filters.add(comics);
             novels = new JCheckBox(app.isCurrentFrench()?"Romans":"Novels");
             novels.addActionListener(new ActionListener() {
                 @Override
@@ -179,7 +179,7 @@ public class Products extends JPanel {
             });
             novels.setSelected(true);
             novels.setBorder(new EmptyBorder(0, 40, 0, 0));
-            Filters.add(novels);
+            filters.add(novels);
             schoolBooks = new JCheckBox(app.isCurrentFrench()?"Livres scolaires":"School books");
             schoolBooks.addActionListener(new ActionListener() {
                 @Override
@@ -189,7 +189,7 @@ public class Products extends JPanel {
             });
             schoolBooks.setSelected(true);
             schoolBooks.setBorder(new EmptyBorder(0, 40, 0, 0));
-            Filters.add(schoolBooks);
+            filters.add(schoolBooks);
             dicts = new JCheckBox(app.isCurrentFrench()?"Dictionnaires":"Dictionnaries");
             dicts.addActionListener(new ActionListener() {
                 @Override
@@ -199,8 +199,8 @@ public class Products extends JPanel {
             });
             dicts.setSelected(true);
             dicts.setBorder(new EmptyBorder(0, 20, 0, 0));
-            Filters.add(dicts);
-            Filters.add(numerics);
+            filters.add(dicts);
+            filters.add(numerics);
             cds = new JCheckBox("CDs");
             cds.addActionListener(new ActionListener() {
                 @Override
@@ -210,7 +210,7 @@ public class Products extends JPanel {
             });
             cds.setSelected(true);
             cds.setBorder(new EmptyBorder(0, 20, 0, 0));
-            Filters.add(cds);
+            filters.add(cds);
             dvds = new JCheckBox("DVDs");
             dvds.addActionListener(new ActionListener() {
                 @Override
@@ -220,18 +220,18 @@ public class Products extends JPanel {
             });
             dvds.setSelected(true);
             dvds.setBorder(new EmptyBorder(0, 20, 0, 0));
-            Filters.add(dvds);
+            filters.add(dvds);
 
-            Filters.add(Box.createRigidArea(new Dimension(1, 20)));
+            filters.add(Box.createRigidArea(new Dimension(1, 20)));
             JCheckBox currentDate = new JCheckBox(app.isCurrentFrench()?"Date actuelle":"Current date");
             currentDate.setSelected(true);
-            Filters.add(currentDate);
+            filters.add(currentDate);
             JButton changeDate = new JButton(app.isCurrentFrench()?"Changer la date":"Change the date", new ImageIcon("images/cal.png"));
             changeDate.setEnabled(false);
-            Filters.add(changeDate);
+            filters.add(changeDate);
             JLabel displayDate = new JLabel(customDate.toString());
             displayDate.setEnabled(false);
-            Filters.add(displayDate);
+            filters.add(displayDate);
             currentDate.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -280,9 +280,9 @@ public class Products extends JPanel {
                     picker.setVisible(true);
                 }
             });
-            Filters.add(Box.createRigidArea(new Dimension(1, 20)));
+            filters.add(Box.createRigidArea(new Dimension(1, 20)));
             minPrice = new JLabel();
-            Filters.add(minPrice);
+            filters.add(minPrice);
             minPriceSlider = new JSlider(0, 100, 0);
             minPriceSlider.addChangeListener(new ChangeListener(){
                 @Override
@@ -291,9 +291,9 @@ public class Products extends JPanel {
                     revalidate();
                 }
             });
-            Filters.add(minPriceSlider);
+            filters.add(minPriceSlider);
             maxPrice = new JLabel();
-            Filters.add(maxPrice);
+            filters.add(maxPrice);
             maxPriceSlider = new JSlider(0, 100, 100);
             maxPriceSlider.addChangeListener(new ChangeListener(){
                 @Override
@@ -302,9 +302,9 @@ public class Products extends JPanel {
                     revalidate();
                 }
             });
-            Filters.add(maxPriceSlider);
+            filters.add(maxPriceSlider);
             minStock = new JLabel();
-            Filters.add(minStock);
+            filters.add(minStock);
             minStockSlider = new JSlider(0, 100, 0);
             minStockSlider.addChangeListener(new ChangeListener(){
                 @Override
@@ -313,9 +313,9 @@ public class Products extends JPanel {
                     revalidate();
                 }
             });
-            Filters.add(minStockSlider);
+            filters.add(minStockSlider);
             maxStock = new JLabel();
-            Filters.add(maxStock);
+            filters.add(maxStock);
             maxStockSlider = new JSlider(0, 100, 100);
             maxStockSlider.addChangeListener(new ChangeListener(){
                 @Override
@@ -324,9 +324,9 @@ public class Products extends JPanel {
                     revalidate();
                 }
             });
-            Filters.add(maxStockSlider);
+            filters.add(maxStockSlider);
             minRented = new JLabel();
-            Filters.add(minRented);
+            filters.add(minRented);
             minRentedSlider = new JSlider(0, 100, 0);
             minRentedSlider.addChangeListener(new ChangeListener(){
                 @Override
@@ -335,9 +335,9 @@ public class Products extends JPanel {
                     revalidate();
                 }
             });
-            Filters.add(minRentedSlider);
+            filters.add(minRentedSlider);
             maxRented = new JLabel();
-            Filters.add(maxRented);
+            filters.add(maxRented);
             maxRentedSlider = new JSlider(0, 100, 100);
             maxRentedSlider.addChangeListener(new ChangeListener(){
                 @Override
@@ -346,7 +346,7 @@ public class Products extends JPanel {
                     revalidate();
                 }
             });
-            Filters.add(maxRentedSlider);
+            filters.add(maxRentedSlider);
             JButton newProduct = new JButton(app.isCurrentFrench()?"Ajouter un produit":"Add a product");
             newProduct.addActionListener(new ActionListener() {
                 @Override
@@ -387,7 +387,7 @@ public class Products extends JPanel {
                     });
                 }
             });
-            Filters.add(newProduct);
+            filters.add(newProduct);
         }
         productTypes.addActionListener(new ActionListener() {
             @Override
@@ -405,7 +405,8 @@ public class Products extends JPanel {
 
         update();
     }
-    private void update() {
+    @Override
+    public void update() {
         java.util.List<Product> toDisplay = null;
         switch (productTypes.getSelectedIndex()) {
             case 0:
@@ -469,7 +470,9 @@ public class Products extends JPanel {
         Collections.sort(toDisplay, currentComparator);
         productsList.removeAll();
         JPanel productData = new JPanel();
-        productsList.add(new JScrollPane(productData, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+        JScrollPane scrollyBoi = new JScrollPane(productData, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollyBoi.getVerticalScrollBar().setUnitIncrement(16);
+        productsList.add(scrollyBoi);
         GridBagConstraints gbc = new GridBagConstraints();
         productData.setLayout(new GridBagLayout());
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -494,7 +497,7 @@ public class Products extends JPanel {
         });
         productData.add(nameField, gbc);
         gbc.gridx++;
-        gbc.weightx = 1;
+        gbc.weightx = 0;
         JButton priceField = new JButton(app.isCurrentFrench()?"Prix":"Price");
         if (currentComparator == priceComparator)
             priceField.setText(priceField.getText()+" ↑");
@@ -532,7 +535,7 @@ public class Products extends JPanel {
         });    
         productData.add(categField, gbc);
         gbc.gridx++;
-        gbc.weightx = 1;
+        gbc.weightx = 0;
         JButton inStockField = new JButton(app.isCurrentFrench()?"En stock":"In stock");
         if (currentComparator == inStockComparator)
             inStockField.setText(inStockField.getText()+" ↑");
@@ -576,7 +579,7 @@ public class Products extends JPanel {
             productName.setBorder(LineBorder.createGrayLineBorder());
             productData.add(productName, gbc);
             gbc.gridx++;
-            gbc.weightx = 1;
+            gbc.weightx = 0;
             final JLabel productPrice = new JLabel(product.getPrice(1).toString());
             productPrice.setBorder(LineBorder.createGrayLineBorder());
             productData.add(productPrice, gbc);
@@ -586,7 +589,7 @@ public class Products extends JPanel {
             productCateg.setBorder(LineBorder.createGrayLineBorder());
             productData.add(productCateg, gbc);
             gbc.gridx++;
-            gbc.weightx = 1;
+            gbc.weightx = 0;
             final JLabel productInStock = new JLabel(Integer.valueOf(app.getProductCountInStock(product, getTime())).toString());
             productInStock.setBorder(LineBorder.createGrayLineBorder());
             productData.add(productInStock, gbc);

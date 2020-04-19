@@ -7,6 +7,8 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import model.*;
 import controller.*;
@@ -25,6 +27,14 @@ public class MainWindow extends JFrame {
         add(tab);
         tab.addTab(app.isCurrentFrench() ? "Produits" : "Products", new Products(app));
         tab.addTab(app.isCurrentFrench() ? "Clients" : "Customers", new Persons(app));
+        tab.addTab(app.isCurrentFrench() ? "Commandes" : "Orders", new Orders(app));
+        tab.addChangeListener(new ChangeListener(){
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                ((CanUpdate)tab.getSelectedComponent()).update();
+                tab.getSelectedComponent().revalidate();
+            }
+        });
         addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
