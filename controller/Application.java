@@ -138,17 +138,35 @@ public class Application {
             people.add(p);
     }
     /**
+     * Returns true of the person can be removed safely, false otherwise
+     * @param p person to try to remove
+     * @return true if safe, false if not safe
+     */
+    public boolean canRemovePerson(Person p) {
+        for (Order order : orders)
+            if (order.getCustomer().equals(p))
+                return false;
+        return true;
+    }
+    /**
      * Sends a specific person in the world into the realms of death where they
      * will burn until they can no longer breath with their burnt lungs
      * @param p person to remove
      * @throws Exception this person is still required somewhere in the orders
      */
     public void removePerson(Person p) throws Exception {
-        for (Order order : orders)
-            if (order.getCustomer().equals(p))
-                throw new Exception("This person has already bought something !");
+        if (!canRemovePerson(p))
+            throw new Exception("This person has already bought something !");
         people.remove(p);
     }
+    /**
+     * Returns true if the given person exists
+     * @param p person to test
+     * @return true if it exists, false otherwise
+     */
+    public boolean personExists(Person p) {
+        return people.contains(p);
+}
     /**
      * Adds an order to the list of orders
      * @param o order to add
@@ -156,7 +174,7 @@ public class Application {
      */
     public void addOrder(Order o) throws Exception {
         if (!orders.contains(o)) {
-            if (!people.contains(o.getCustomer()))
+            if (!personExists(o.getCustomer()))
                 throw new Exception("The person is missing for this order");
             for (Product product : o.getProducts()) {
                 if (productExistsInStock(product) == null)
@@ -178,14 +196,21 @@ public class Application {
      * Adds a new product in the stock
      * @param p product to add
      * @param count the quantity of this product
-     * @throws Exception if the director of a DVD is not registered
      */
-    public void addProduct(Product p, int count) throws Exception {
+    public void addProduct(Product p, int count) {
         ProductInStock inStock = productExistsInStock(p);
         if (inStock != null)
             inStock.quantity += count;
         else
             stock.add(new ProductInStock(p, count));
+    }
+    /**
+     * Returns true if a product can be removed safely, false otherwise
+     * @param p product to try to remove
+     * @return true if safe, false if unsafe
+     */
+    public boolean canRemoveProduct(Product p) {
+        return getRentedProductCount(p) == 0;
     }
     /**
      * Removes a certain quantity of a product from the stock
@@ -210,7 +235,7 @@ public class Application {
         while (it.hasNext()) {
             currProduct = it.next();
             if (currProduct.product.equals(p)) {
-                if (getRentedProductCount(p) == 0) {
+                if (canRemoveProduct(p)) {
                     it.remove();
                     return;
                 }
