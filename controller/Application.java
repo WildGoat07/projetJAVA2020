@@ -1,4 +1,6 @@
-package data;
+package controller;
+
+import model.*;
 
 import java.io.*;
 import java.time.LocalDate;

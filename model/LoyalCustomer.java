@@ -1,4 +1,4 @@
-package data;
+package model;
 
 /**
  * A loyal customer has reductions

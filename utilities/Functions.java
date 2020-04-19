@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import data.*;
+import model.*;
 
 import java.awt.*;
 import java.io.*;
@@ -88,7 +88,7 @@ public class Functions {
             return french ? "BD":"Comic";
         if (product instanceof CD)
             return "CD";
-        if (product instanceof data.Dictionary)
+        if (product instanceof model.Dictionary)
             return french ? "Dictionnaire":"Dictionary";
         if (product instanceof DVD)
             return "DVD";

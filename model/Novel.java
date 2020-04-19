@@ -1,4 +1,4 @@
-package data;
+package model;
 
 import utilities.Price;
 import java.io.*;

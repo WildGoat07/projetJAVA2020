@@ -1,4 +1,4 @@
-package gui;
+package view;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -6,11 +6,12 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
-import data.*;
+import model.*;
+import controller.*;
 
 public class MainWindow extends JFrame {
     private JTabbedPane tab;
-    public MainWindow(data.Application app) throws Exception {
+    public MainWindow(Application app) throws Exception {
         super();
         setSize(1200, 700);
         setTitle("Videoworld");

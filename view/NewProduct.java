@@ -1,4 +1,4 @@
-package gui;
+package view;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,7 +11,8 @@ import java.io.*;
 import javax.swing.filechooser.*;
 import javax.swing.filechooser.FileFilter;
 
-import data.*;
+import model.*;
+import controller.*;
 import utilities.Functions;
 import utilities.Price;
 import utilities.ToStringOverrider;
@@ -280,11 +281,11 @@ public class NewProduct extends JDialog {
                             case 3:
                             if (productImg != null) {
                                 InputStream img = new FileInputStream(productImg);
-                                result = new data.Dictionary(new Price(((Number)productPrice.getValue()).floatValue()), ((ToStringOverrider<Locale>)productLang.getSelectedItem()).getObject(), productName.getText(), img);
+                                result = new model.Dictionary(new Price(((Number)productPrice.getValue()).floatValue()), ((ToStringOverrider<Locale>)productLang.getSelectedItem()).getObject(), productName.getText(), img);
                                 img.close();
                             }
                             else {
-                                result = new data.Dictionary(new Price(((Number)productPrice.getValue()).floatValue()), ((ToStringOverrider<Locale>)productLang.getSelectedItem()).getObject(), productName.getText(), null);
+                                result = new model.Dictionary(new Price(((Number)productPrice.getValue()).floatValue()), ((ToStringOverrider<Locale>)productLang.getSelectedItem()).getObject(), productName.getText(), null);
                             }
                             break;
                             case 4:

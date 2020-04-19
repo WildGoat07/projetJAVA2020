@@ -1,4 +1,4 @@
-package gui;
+package view;
 
 import java.awt.event.*;
 import java.io.*;
@@ -6,7 +6,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
-import data.*;
+import model.*;
+import controller.*;
 
 import javax.swing.border.*;
 import javax.swing.event.*;
@@ -462,7 +463,7 @@ public class Products extends JPanel {
                 return true;
             if (schoolBooks.isSelected() && p instanceof SchoolBook)
                 return true;
-            if (dicts.isSelected() && p instanceof data.Dictionary)
+            if (dicts.isSelected() && p instanceof model.Dictionary)
                 return true;
             if (dvds.isSelected() && p instanceof DVD)
                 return true;

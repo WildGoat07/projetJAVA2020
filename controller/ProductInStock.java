@@ -1,4 +1,6 @@
-package data;
+package controller;
+
+import model.Product;
 
 import java.io.Serializable;
 

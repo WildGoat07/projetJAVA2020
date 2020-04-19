@@ -1,4 +1,4 @@
-package gui;
+package view;
 
 import java.util.*;
 import java.io.*;
