@@ -20,25 +20,28 @@ public class ViewProduct extends JDialog {
         add(mainPanel);
         setLayout(new FlowLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        setSize(350, 250);
-        setLocationRelativeTo(null);
+        setSize(450, 250);
+        setLocationRelativeTo(MainWindow.instance);
         mainPanel.add(Box.createRigidArea(new Dimension(1, 20)));
         setTitle(p.getTitle());
         JLabel img = new JLabel();
         try {
             InputStream stream = p.getImage();
-            if (p != null) {
+            if (stream != null) {
                 img.setIcon(new ImageIcon(Functions.resizeImage(200, 200, ImageIO.read(stream))));
                 stream.reset();
                 setIconImage(Functions.resizeImage(16, 16, ImageIO.read(stream)));
                 stream.close();
-                setSize(400, 450);
+                setSize(450, 450);
             }
+            else
+                setIconImage(ImageIO.read(new File("images/icon.png")));
         }
         catch (Exception e) {}
         mainPanel.add(img);
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Catégorie : ":"Category : ")+Functions.getProductType(p, app.isCurrentFrench())));
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Nom : ":"Name : ")+p.getTitle()));
+        mainPanel.add(new JLabel("ID : "+p.getID().toString()));
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Prix pour un jour : ":"Price for one day : ")+p.getPrice(1).toString()));
         Component specificCompo = null;
         if (p instanceof Book) {
@@ -58,9 +61,8 @@ public class ViewProduct extends JDialog {
             specificCompo = new JLabel((app.isCurrentFrench()?"Réalisateur : ":"Director : ")+prod.getDirector());
         }
         mainPanel.add(specificCompo);
-        mainPanel.add(new JLabel((app.isCurrentFrench()?"En stock (aujourd'hui) : ":"In stock (today) : ")+app.getProductCountInStock(p)));
-        mainPanel.add(new JLabel((app.isCurrentFrench()?"Loués (aujourd'hui) : ":"Rented (today) : ")+app.getRentedProductCount(p)));
-        mainPanel.add(new JLabel((app.isCurrentFrench()?"Enregistrés : ":"Registered : ")+app.getRegisteredProductCount(p)));
+        mainPanel.add(new JLabel((app.isCurrentFrench()?"En stock (aujourd'hui) : ":"In stock (today) : ")+app.getProductCountInStock(p)+"/"+app.getRegisteredProductCount(p)));
+        mainPanel.add(new JLabel((app.isCurrentFrench()?"Loués (aujourd'hui) : ":"Rented (today) : ")+app.getRentedProductCount(p)+"/"+app.getRegisteredProductCount(p)));
         JSpinner nbToRemove = new JSpinner(new SpinnerNumberModel(0, 0, app.getLowestStockProduct(p), 1));
         JButton removeNbProducts = new JButton(app.isCurrentFrench()?"Retirer":"Remove", new ImageIcon("images/trash.png"));
         mainPanel.add(Functions.alignHorizontal(new Component[] {

@@ -51,7 +51,7 @@ public class Products extends JPanel {
         public int compare(Product o1, Product o2) {
             int res = o1.getPrice(1).compareTo(o2.getPrice(1));
             if (res == 0)
-                return nameComparator.compare(o1, o2);
+                return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
             else
                 return res;
         }
@@ -61,7 +61,7 @@ public class Products extends JPanel {
         public int compare(Product o1, Product o2) {
             int res = Functions.simplify(Functions.getProductType(o1, app.isCurrentFrench())).compareTo(Functions.simplify(Functions.getProductType(o2, app.isCurrentFrench())));
             if (res == 0)
-                return nameComparator.compare(o1, o2);
+                return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
             else
                 return res;
         }
@@ -71,7 +71,7 @@ public class Products extends JPanel {
         public int compare(Product o1, Product o2) {
             int res = Integer.valueOf(app.getProductCountInStock(o1)).compareTo(app.getProductCountInStock(o2));
             if (res == 0)
-                return nameComparator.compare(o1, o2);
+                return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
             else
                 return res;
         }
@@ -81,7 +81,7 @@ public class Products extends JPanel {
         public int compare(Product o1, Product o2) {
             int res = Integer.valueOf(app.getRentedProductCount(o1)).compareTo(app.getRentedProductCount(o2));
             if (res == 0)
-                return nameComparator.compare(o1, o2);
+                return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
             else
                 return res;
         }
@@ -99,14 +99,11 @@ public class Products extends JPanel {
         this.app = app;
         setLayout(new BorderLayout());
         currentComparator = nameComparator;
+        useCurrentTime = true;
+        customDate = LocalDate.now();
         {
-            useCurrentTime = true;
-            customDate = LocalDate.now();
-            JPanel bar = new JPanel();
-            add(bar, BorderLayout.NORTH);
-            bar.setLayout(new BoxLayout(bar, BoxLayout.X_AXIS));
             productTypes = new JComboBox<String>();
-            bar.add(productTypes);
+            add(productTypes, BorderLayout.NORTH);
             productTypes.addItem(app.isCurrentFrench()?"Tous les produits":"All products");
             productTypes.addItem(app.isCurrentFrench()?"Produits en stock":"Products in stock");
             productTypes.addItem(app.isCurrentFrench()?"Produits loués":"Rented products");
@@ -404,15 +401,13 @@ public class Products extends JPanel {
             productsList = new JPanel();
             productsList.setLayout(new BorderLayout());
             add(productsList);
-            productsList.add(new JButton());
         }
 
         update();
     }
     private void update() {
         java.util.List<Product> toDisplay = null;
-        switch (productTypes.getSelectedIndex())
-        {
+        switch (productTypes.getSelectedIndex()) {
             case 0:
                 toDisplay = app.getStock();
                 break;

@@ -34,7 +34,7 @@ public class DatePicker extends JDialog {
         language = lang;
         usedDate = date;
         setSize(360, 210);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(MainWindow.instance);
         try {
             setIconImage(ImageIO.read(new File("images/cal.png")));
         }

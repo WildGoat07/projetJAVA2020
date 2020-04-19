@@ -26,7 +26,11 @@ public class NewProduct extends JDialog {
         Locale currLanguage = app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH;
         NewProduct itself = this;
         setLayout(new FlowLayout());
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(MainWindow.instance);
+        try {
+            setIconImage(ImageIO.read(new File("images/icon.png")));
+        }
+        catch (Exception e){}
         result = null;
         quantity = 0;
         JPanel mainPanel = new JPanel();
@@ -326,6 +330,7 @@ public class NewProduct extends JDialog {
                 itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
             }
         });
+        SwingUtilities.getRootPane(this).setDefaultButton(validate); 
         mainPanel.add(validate);
     }
     public int getQuantity() {
