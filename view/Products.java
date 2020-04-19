@@ -602,6 +602,33 @@ public class Products extends JPanel {
             MouseListener mouseListener = new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
+                    ViewProduct dialog = new ViewProduct(app, product);
+                    dialog.addWindowListener(new WindowListener() {
+                        @Override
+                        public void windowOpened(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowClosing(WindowEvent e) {
+                            update();
+                            revalidate();
+                        }
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowIconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeiconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowActivated(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeactivated(WindowEvent e) {
+                        }
+                    });
+                    dialog.setVisible(true);
                 }
                 @Override
                 public void mousePressed(MouseEvent e) {
