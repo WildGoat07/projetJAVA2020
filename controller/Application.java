@@ -1,6 +1,7 @@
 package controller;
 
 import model.*;
+import utilities.Functions;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -47,14 +48,11 @@ public class Application {
         frenchVersion = currentAppFrenchVersion;
     }
     /**
-     * Gets a read only list of every registered product
+     * Gets a list of every registered product
      * @return list of registered products
      */
     public List<Product> getStock() {
-        List<Product> result = new ArrayList<Product>();
-        for (ProductInStock productInStock : stock)
-            result.add(productInStock.product);
-        return Collections.unmodifiableList(result);
+        return Functions.convert(stock, (p)->p.product);
     }
     /**
      * Gets the quantity of a single product in stock (not rented) at a specific time
@@ -116,18 +114,18 @@ public class Application {
         return getRentedProductCount(p, LocalDate.now());
     }
     /**
-     * Gets a read only list of orders
+     * Gets a list of orders
      * @return list of orders
      */
     public List<Order> getOrders() {
-        return Collections.unmodifiableList(orders);
+        return new ArrayList<Order>(orders);
     }
     /**
-     * Gets a read only list of people in the world
+     * Gets a list of people in the world
      * @return a list of people
      */
     public List<Person> getPeople() {
-        return Collections.unmodifiableList(people);
+        return new ArrayList<Person>(people);
     }
     /**
      * Adds a person to the world
