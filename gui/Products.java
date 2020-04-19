@@ -650,7 +650,7 @@ public class Products extends JPanel {
         }
         gbc.gridwidth = 5;
         gbc.weighty = 1;
-        //dummy
+        //dummy filling component
         productData.add(new JLabel(), gbc);
     }
 }
