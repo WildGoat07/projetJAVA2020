@@ -177,11 +177,45 @@ public class Application {
             for (Product product : o.getProducts()) {
                 if (productExistsInStock(product) == null)
                     throw new Exception("One of the products of the order doesn't exists");
-                if (getProductCountInStock(product) == 0)
+                if (getProductCountInStock(product, o.getBeginningRental()) == 0)
                     throw new Exception("There is no more product in stock");
             }
             orders.add(o);
         }
+    }
+    private class ProductMovement implements Comparable<ProductMovement> {
+        public boolean productIn;
+        public LocalDate when;
+        public ProductMovement(boolean in, LocalDate date) {
+            productIn = in;
+            when = date;
+        }
+        @Override
+        public int compareTo(ProductMovement o) {
+            return when.compareTo(o.when);
+        }
+    }
+    /**
+     * Gets the lowest a product has been in stock, ever
+     * @param p product to parse
+     * @return the lowest value a product has ever been in stock
+     */
+    public int getLowestStockProduct(Product p) {
+        List<ProductMovement> movements = new ArrayList<ProductMovement>();
+        for (Order order : orders)
+            if (order.getProducts().contains(p)) {
+                movements.add(new ProductMovement(false, order.getBeginningRental()));
+                movements.add(new ProductMovement(true, order.getEndingRental()));
+            }
+        Collections.sort(movements);
+        int lowest = getRegisteredProductCount(p);
+        int currState = lowest;
+        for (ProductMovement productMovement : movements) {
+            currState += productMovement.productIn?1:-1;
+            if (lowest > currState)
+                lowest = currState;
+        }
+        return lowest;
     }
     /**
      * Removes an order
@@ -208,7 +242,16 @@ public class Application {
      * @return true if safe, false if unsafe
      */
     public boolean canRemoveProduct(Product p) {
-        return getRentedProductCount(p) == 0;
+        return getLowestStockProduct(p) == getRegisteredProductCount(p);
+    }
+    /**
+     * Returns true if a product can be removed safely, false otherwise
+     * @param p product to try to remove
+     * @param count quantity to remove
+     * @return true if safe, false if unsafe
+     */
+    public boolean canRemoveProduct(Product p, int count) {
+        return getLowestStockProduct(p) >= count;
     }
     /**
      * Removes a certain quantity of a product from the stock
@@ -217,8 +260,8 @@ public class Application {
      * @throws Exception there is no product in stock, or not enough
      */
     public void removeProduct(Product p, int count) throws Exception {
-        if (getProductCountInStock(p) >= count)
-            productExistsInStock(p).quantity += count;
+        if (canRemoveProduct(p, count))
+            productExistsInStock(p).quantity -= count;
         else
             throw new Exception("Not enough product in stock to remove");
     }
