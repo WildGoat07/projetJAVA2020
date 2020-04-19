@@ -26,6 +26,7 @@ public class NewProduct extends JDialog {
         Locale currLanguage = app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH;
         NewProduct itself = this;
         setLayout(new FlowLayout());
+        setLocationRelativeTo(null);
         result = null;
         quantity = 0;
         JPanel mainPanel = new JPanel();

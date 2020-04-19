@@ -14,6 +14,7 @@ public class MainWindow extends JFrame {
     public MainWindow(Application app) throws Exception {
         super();
         setSize(1200, 700);
+        setLocationRelativeTo(null);
         setTitle("Videoworld");
         tab = new JTabbedPane();
         add(tab);

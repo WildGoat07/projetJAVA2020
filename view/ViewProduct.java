@@ -21,6 +21,7 @@ public class ViewProduct extends JDialog {
         setLayout(new FlowLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         setSize(350, 250);
+        setLocationRelativeTo(null);
         mainPanel.add(Box.createRigidArea(new Dimension(1, 20)));
         setTitle(p.getTitle());
         JLabel img = new JLabel();
