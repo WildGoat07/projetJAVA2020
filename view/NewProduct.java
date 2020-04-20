@@ -65,10 +65,15 @@ public class NewProduct extends JDialog {
         newProd.setLayout(new BoxLayout(newProd, BoxLayout.Y_AXIS));
         JTextField productName = new JTextField(20);
         newProd.add(Functions.alignHorizontal(new Component[] {
-                new JLabel(app.isCurrentFrench() ? "Nom du produit :" : "Product's name"), productName }));
-        JSpinner productPrice = new JSpinner(new SpinnerNumberModel(1, 0, 9999, .1f));
+                new JLabel(app.isCurrentFrench() ? "Nom du produit :" : "Product's name"),
+                productName
+            }));
+        JSpinner productPrice = new JSpinner(new SpinnerNumberModel(1, .01f, 9999, .1f));
         newProd.add(Functions.alignHorizontal(new Component[] {
-                new JLabel(app.isCurrentFrench() ? "Prix du produit :" : "Product's price"), productPrice }));
+                new JLabel(app.isCurrentFrench() ? "Prix du produit :" : "Product's price"),
+                productPrice,
+                new JLabel(" €")
+            }));
         JButton searchImg = new JButton(app.isCurrentFrench() ? "Choisir une image" : "Select an image");
         JButton resetImg = new JButton(app.isCurrentFrench() ? "Retirer l'image" : "Remove the image");
         JLabel productThumbnail = new JLabel();

@@ -117,7 +117,7 @@ public final class Order implements Serializable {
      * @return read only list of the products
      */
     public List<Product> getProducts() {
-        return Collections.unmodifiableList(products);
+        return new ArrayList<Product>(products);
     }
     /**
      * Removes a product from the order

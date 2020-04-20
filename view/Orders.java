@@ -493,8 +493,8 @@ public class Orders extends JPanel implements CanUpdate {
         float choosenHighestPrice = (maxPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
         float choosenLowestCount = Math.round((minCountSlider.getValue()/100f)*(highestCount-lowestCount)+lowestCount);
         float choosenHighestCount = Math.round((maxCountSlider.getValue()/100f)*(highestCount-lowestCount)+lowestCount);
-        minPrice.setText((app.isCurrentFrench()?"Prix minimum : ":"Minimum price : ") + new Price(choosenLowestPrice).toString());
-        maxPrice.setText((app.isCurrentFrench()?"Prix maximum : ":"Maximum price : ") + new Price(choosenHighestPrice).toString());
+        minPrice.setText((app.isCurrentFrench()?"Montant minimum : ":"Minimum amount : ") + new Price(choosenLowestPrice).toString());
+        maxPrice.setText((app.isCurrentFrench()?"Montant maximum : ":"Maximum amount : ") + new Price(choosenHighestPrice).toString());
         minCount.setText((app.isCurrentFrench()?"Quantité minimum : ":"Minimum quantity : ") + Integer.valueOf((int)choosenLowestCount).toString());
         maxCount.setText((app.isCurrentFrench()?"Quantité maximum : ":"Maximum quantity : ") + Integer.valueOf((int)choosenHighestCount).toString());
         toDisplay = Functions.where(toDisplay, (o) -> {
@@ -700,7 +700,7 @@ public class Orders extends JPanel implements CanUpdate {
             MouseListener mouseListener = new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    /*ViewProduct dialog = new ViewProduct(app, order);
+                    ViewOrder dialog = new ViewOrder(app, order);
                     dialog.addWindowListener(new WindowListener() {
                         @Override
                         public void windowOpened(WindowEvent e) {
@@ -726,7 +726,7 @@ public class Orders extends JPanel implements CanUpdate {
                         public void windowDeactivated(WindowEvent e) {
                         }
                     });
-                    dialog.setVisible(true);*/
+                    dialog.setVisible(true);
                 }
                 @Override
                 public void mousePressed(MouseEvent e) {

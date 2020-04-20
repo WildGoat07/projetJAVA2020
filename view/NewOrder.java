@@ -26,7 +26,7 @@ public class NewOrder extends JDialog {
     public NewOrder(Application app) {
         NewOrder itself = this;
         result = null;
-        setSize(350, 180);
+        setSize(350, 200);
         setLocationRelativeTo(MainWindow.instance);
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
@@ -114,6 +114,12 @@ public class NewOrder extends JDialog {
         JSpinner daysCount = new JSpinner(new SpinnerNumberModel(1, 1, 999, 1));
         mainPanel.add(Functions.alignHorizontal(new Component[] {
                 new JLabel(app.isCurrentFrench() ? "Nombre de jours : " : "Number of days : "), daysCount }));
+        JSpinner reduction = new JSpinner(new SpinnerNumberModel(0, 0, 999, .1f));
+        mainPanel.add(Functions.alignHorizontal(new Component[] {
+            new JLabel(app.isCurrentFrench()?"Réduction : ":"Reduction : "),
+            reduction,
+            new JLabel(" €")
+        }));
         JButton next = new JButton(app.isCurrentFrench()?"Suivant":"Next");
         next.addActionListener(new ActionListener() {
             @Override
@@ -212,7 +218,7 @@ public class NewOrder extends JDialog {
                 finish.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        result = new Order((Person)person.getSelectedItem(), begDate, endDate);
+                        result = new Order((Person)person.getSelectedItem(), begDate, endDate, new Price(-(double)reduction.getValue()));
                         selected.forEach((p) -> result.addProduct(p));
                         itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
                     }
