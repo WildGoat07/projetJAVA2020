@@ -16,6 +16,7 @@ import controller.*;
 public class MainWindow extends JFrame {
     public static MainWindow instance;
     private JTabbedPane tab;
+    private int lastTabSelection;
     public MainWindow(Application app) throws Exception {
         super();
         instance = this;
@@ -24,15 +25,24 @@ public class MainWindow extends JFrame {
         setLocationRelativeTo(null);
         setTitle("Videoworld");
         tab = new JTabbedPane();
+        lastTabSelection = 0;
         add(tab);
         tab.addTab(app.isCurrentFrench() ? "Produits" : "Products", new Products(app));
         tab.addTab(app.isCurrentFrench() ? "Clients" : "Customers", new Persons(app));
         tab.addTab(app.isCurrentFrench() ? "Commandes" : "Orders", new Orders(app));
+        tab.addTab(app.isCurrentFrench()?"Paramètres":"Options", null);
         tab.addChangeListener(new ChangeListener(){
             @Override
             public void stateChanged(ChangeEvent e) {
-                ((CanUpdate)tab.getSelectedComponent()).update();
-                tab.getSelectedComponent().revalidate();
+                if (tab.getSelectedIndex() == 3) {
+                    tab.setSelectedIndex(lastTabSelection);
+                    new Options(app).setVisible(true);
+                }
+                else {
+                    lastTabSelection = tab.getSelectedIndex();
+                    ((CanUpdate)tab.getSelectedComponent()).update();
+                    tab.getSelectedComponent().revalidate();
+                }
             }
         });
         addWindowListener(new WindowListener() {

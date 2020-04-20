@@ -5,6 +5,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import java.awt.*;
+import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.Locale;
@@ -28,9 +29,19 @@ public class ViewProduct extends JDialog {
         try {
             InputStream stream = p.getImage();
             if (stream != null) {
-                img.setIcon(new ImageIcon(Functions.resizeImage(200, 200, ImageIO.read(stream))));
+                BufferedImage thumbnail = ImageIO.read(stream);
+                int finalX = 200, finalY = 200;
+                if (thumbnail.getWidth() > thumbnail.getHeight()) {
+                    float ratio = (float)thumbnail.getWidth()/thumbnail.getHeight();
+                    finalY = (int)(finalX / ratio);
+                }
+                else if (thumbnail.getHeight() > thumbnail.getWidth()) {
+                    float ratio = (float)thumbnail.getWidth()/thumbnail.getHeight();
+                    finalX = (int)(finalY * ratio);
+                }
+                img.setIcon(new ImageIcon(Functions.resizeImage(finalX, finalY, thumbnail)));
                 stream.reset();
-                setIconImage(Functions.resizeImage(16, 16, ImageIO.read(stream)));
+                setIconImage(Functions.resizeImage(16, 16, thumbnail));
                 stream.close();
                 setSize(450, 450);
             }

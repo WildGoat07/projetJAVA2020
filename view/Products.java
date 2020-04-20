@@ -422,52 +422,54 @@ public class Products extends JPanel implements CanUpdate {
                 toDisplay = app.geUnavailableProducts(getTime());
                 break;
         }
-        float lowestPrice = Collections.min(Functions.convert(app.getStock(), (p) -> p.getPrice(1).floatValue()));
-        float highestPrice = Collections.max(Functions.convert(app.getStock(), (p) -> p.getPrice(1).floatValue()));
-        float lowestStock = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
-        float highestStock = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
-        float lowestRented = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
-        float highestRented = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
-        float choosenLowestPrice = (minPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
-        float choosenHighestPrice = (maxPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
-        float choosenLowestStock = Math.round((minStockSlider.getValue()/100f)*(highestStock-lowestStock)+lowestStock);
-        float choosenHighestStock = Math.round((maxStockSlider.getValue()/100f)*(highestStock-lowestStock)+lowestStock);
-        float choosenLowestRented = Math.round((minRentedSlider.getValue()/100f)*(highestRented-lowestRented)+lowestRented);
-        float choosenHighestRented = Math.round((maxRentedSlider.getValue()/100f)*(highestRented-lowestRented)+lowestRented);
-        minPrice.setText((app.isCurrentFrench()?"Prix minimum : ":"Minimum price : ") + new Price(choosenLowestPrice).toString());
-        maxPrice.setText((app.isCurrentFrench()?"Prix maximum : ":"Maximum price : ") + new Price(choosenHighestPrice).toString());
-        minStock.setText((app.isCurrentFrench()?"Stock minimum : ":"Minimum stock : ") + Integer.valueOf((int)choosenLowestStock).toString());
-        maxStock.setText((app.isCurrentFrench()?"Stock maximum : ":"Maximum stock : ") + Integer.valueOf((int)choosenHighestStock).toString());
-        minRented.setText((app.isCurrentFrench()?"Loués minimum : ":"Minimum rented : ") + Integer.valueOf((int)choosenLowestRented).toString());
-        maxRented.setText((app.isCurrentFrench()?"Loués maximum : ":"Maximum rented : ") + Integer.valueOf((int)choosenHighestRented).toString());
-        toDisplay = Functions.where(toDisplay, (p) -> {
-            if (p.getPrice(1).floatValue() < choosenLowestPrice)
+        if (app.getStock().size() > 0) {
+            float lowestPrice = Collections.min(Functions.convert(app.getStock(), (p) -> p.getPrice(1).floatValue()));
+            float highestPrice = Collections.max(Functions.convert(app.getStock(), (p) -> p.getPrice(1).floatValue()));
+            float lowestStock = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
+            float highestStock = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
+            float lowestRented = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
+            float highestRented = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
+            float choosenLowestPrice = (minPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
+            float choosenHighestPrice = (maxPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
+            float choosenLowestStock = Math.round((minStockSlider.getValue()/100f)*(highestStock-lowestStock)+lowestStock);
+            float choosenHighestStock = Math.round((maxStockSlider.getValue()/100f)*(highestStock-lowestStock)+lowestStock);
+            float choosenLowestRented = Math.round((minRentedSlider.getValue()/100f)*(highestRented-lowestRented)+lowestRented);
+            float choosenHighestRented = Math.round((maxRentedSlider.getValue()/100f)*(highestRented-lowestRented)+lowestRented);
+            minPrice.setText((app.isCurrentFrench()?"Prix minimum : ":"Minimum price : ") + new Price(choosenLowestPrice).toString());
+            maxPrice.setText((app.isCurrentFrench()?"Prix maximum : ":"Maximum price : ") + new Price(choosenHighestPrice).toString());
+            minStock.setText((app.isCurrentFrench()?"Stock minimum : ":"Minimum stock : ") + Integer.valueOf((int)choosenLowestStock).toString());
+            maxStock.setText((app.isCurrentFrench()?"Stock maximum : ":"Maximum stock : ") + Integer.valueOf((int)choosenHighestStock).toString());
+            minRented.setText((app.isCurrentFrench()?"Loués minimum : ":"Minimum rented : ") + Integer.valueOf((int)choosenLowestRented).toString());
+            maxRented.setText((app.isCurrentFrench()?"Loués maximum : ":"Maximum rented : ") + Integer.valueOf((int)choosenHighestRented).toString());
+            toDisplay = Functions.where(toDisplay, (p) -> {
+                if (p.getPrice(1).floatValue() < choosenLowestPrice)
+                    return false;
+                if ((float)app.getProductCountInStock(p) < choosenLowestStock)
+                    return false;
+                if ((float)app.getRentedProductCount(p) < choosenLowestRented)
+                    return false;
+                if (p.getPrice(1).floatValue() > choosenHighestPrice)
+                    return false;
+                if ((float)app.getProductCountInStock(p) > choosenHighestStock)
+                    return false;
+                if ((float)app.getRentedProductCount(p) > choosenHighestRented)
+                    return false;
+                if (comics.isSelected() && p instanceof Comic)
+                    return true;
+                if (novels.isSelected() && p instanceof Novel)
+                    return true;
+                if (schoolBooks.isSelected() && p instanceof SchoolBook)
+                    return true;
+                if (dicts.isSelected() && p instanceof model.Dictionary)
+                    return true;
+                if (dvds.isSelected() && p instanceof DVD)
+                    return true;
+                if (cds.isSelected() && p instanceof CD)
+                    return true;
                 return false;
-            if ((float)app.getProductCountInStock(p) < choosenLowestStock)
-                return false;
-            if ((float)app.getRentedProductCount(p) < choosenLowestRented)
-                return false;
-            if (p.getPrice(1).floatValue() > choosenHighestPrice)
-                return false;
-            if ((float)app.getProductCountInStock(p) > choosenHighestStock)
-                return false;
-            if ((float)app.getRentedProductCount(p) > choosenHighestRented)
-                return false;
-            if (comics.isSelected() && p instanceof Comic)
-                return true;
-            if (novels.isSelected() && p instanceof Novel)
-                return true;
-            if (schoolBooks.isSelected() && p instanceof SchoolBook)
-                return true;
-            if (dicts.isSelected() && p instanceof model.Dictionary)
-                return true;
-            if (dvds.isSelected() && p instanceof DVD)
-                return true;
-            if (cds.isSelected() && p instanceof CD)
-                return true;
-            return false;
-        });
-        Collections.sort(toDisplay, currentComparator);
+            });
+            Collections.sort(toDisplay, currentComparator);
+        }
         productsList.removeAll();
         JPanel productData = new JPanel();
         JScrollPane scrollyBoi = new JScrollPane(productData, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

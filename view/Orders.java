@@ -182,9 +182,15 @@ public class Orders extends JPanel implements CanUpdate {
             filters.setLayout(new BoxLayout(filters, BoxLayout.Y_AXIS));
             autoChangeMaxDate = true;
             autoChangeMinDate = true;
-            minDate = Collections.min(Functions.convert(app.getOrders(), (o) -> o.getBeginningRental()));
-            maxDate = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getEndingRental()));
-            displayMinDate = new JLabel((app.isCurrentFrench()?"Date minimum : ":"Minimum date : ")+minDate.toString());
+            if (app.getOrders().size() > 0) {
+                minDate = Collections.min(Functions.convert(app.getOrders(), (o) -> o.getBeginningRental()));
+                maxDate = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getEndingRental()));
+            }
+            else {
+                minDate = LocalDate.now();
+                maxDate = minDate;
+            }
+        displayMinDate = new JLabel((app.isCurrentFrench()?"Date minimum : ":"Minimum date : ")+minDate.toString());
             displayMaxDate = new JLabel((app.isCurrentFrench()?"Date maximum : ":"Maximum date : ")+maxDate.toString());
             JButton changeMinDate = new JButton(app.isCurrentFrench()?"Changer":"Change", new ImageIcon("images/cal.png"));
             JButton changeMaxDate = new JButton(app.isCurrentFrench()?"Changer":"Change", new ImageIcon("images/cal.png"));
@@ -456,9 +462,9 @@ public class Orders extends JPanel implements CanUpdate {
     }
     @Override
     public void update() {
-        if (autoChangeMinDate)
+        if (autoChangeMinDate && app.getOrders().size() > 0)
             minDate = Collections.min(Functions.convert(app.getOrders(), (o) -> o.getBeginningRental()));
-        if (autoChangeMaxDate)
+        if (autoChangeMaxDate && app.getOrders().size() > 0)
             maxDate = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getEndingRental()));
         displayMinDate.setText((app.isCurrentFrench()?"Date minimum : ":"Minimum date : ")+minDate.toString());
         displayMaxDate.setText((app.isCurrentFrench()?"Date maximum : ":"Maximum date : ")+maxDate.toString());
@@ -485,29 +491,31 @@ public class Orders extends JPanel implements CanUpdate {
                     (o.getBeginningRental().isBefore(maxDate) ||
                     o.getBeginningRental().isEqual(maxDate));
         });
-        float lowestPrice = Collections.min(Functions.convert(app.getOrders(), (o) -> o.getCost().floatValue()));
-        float highestPrice = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getCost().floatValue()));
-        float lowestCount = Collections.min(Functions.convert(app.getOrders(), (o) -> (float)o.getProducts().size()));
-        float highestCount = Collections.max(Functions.convert(app.getOrders(), (o) -> (float)o.getProducts().size()));
-        float choosenLowestPrice = (minPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
-        float choosenHighestPrice = (maxPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
-        float choosenLowestCount = Math.round((minCountSlider.getValue()/100f)*(highestCount-lowestCount)+lowestCount);
-        float choosenHighestCount = Math.round((maxCountSlider.getValue()/100f)*(highestCount-lowestCount)+lowestCount);
-        minPrice.setText((app.isCurrentFrench()?"Montant minimum : ":"Minimum amount : ") + new Price(choosenLowestPrice).toString());
-        maxPrice.setText((app.isCurrentFrench()?"Montant maximum : ":"Maximum amount : ") + new Price(choosenHighestPrice).toString());
-        minCount.setText((app.isCurrentFrench()?"Quantité minimum : ":"Minimum quantity : ") + Integer.valueOf((int)choosenLowestCount).toString());
-        maxCount.setText((app.isCurrentFrench()?"Quantité maximum : ":"Maximum quantity : ") + Integer.valueOf((int)choosenHighestCount).toString());
-        toDisplay = Functions.where(toDisplay, (o) -> {
-            if (o.getCost().floatValue() < choosenLowestPrice)
-                return false;
-            if (o.getCost().floatValue() > choosenHighestPrice)
-                return false;
-            if ((float)o.getProducts().size() < choosenLowestCount)
-                return false;
-            if ((float)o.getProducts().size() > choosenHighestCount)
-                return false;
-            return true;
-        });
+        if (app.getOrders().size() > 0) {
+            float lowestPrice = Collections.min(Functions.convert(app.getOrders(), (o) -> o.getCost().floatValue()));
+            float highestPrice = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getCost().floatValue()));
+            float lowestCount = Collections.min(Functions.convert(app.getOrders(), (o) -> (float)o.getProducts().size()));
+            float highestCount = Collections.max(Functions.convert(app.getOrders(), (o) -> (float)o.getProducts().size()));
+            float choosenLowestPrice = (minPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
+            float choosenHighestPrice = (maxPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
+            float choosenLowestCount = Math.round((minCountSlider.getValue()/100f)*(highestCount-lowestCount)+lowestCount);
+            float choosenHighestCount = Math.round((maxCountSlider.getValue()/100f)*(highestCount-lowestCount)+lowestCount);
+            minPrice.setText((app.isCurrentFrench()?"Montant minimum : ":"Minimum amount : ") + new Price(choosenLowestPrice).toString());
+            maxPrice.setText((app.isCurrentFrench()?"Montant maximum : ":"Maximum amount : ") + new Price(choosenHighestPrice).toString());
+            minCount.setText((app.isCurrentFrench()?"Quantité minimum : ":"Minimum quantity : ") + Integer.valueOf((int)choosenLowestCount).toString());
+            maxCount.setText((app.isCurrentFrench()?"Quantité maximum : ":"Maximum quantity : ") + Integer.valueOf((int)choosenHighestCount).toString());
+            toDisplay = Functions.where(toDisplay, (o) -> {
+                if (o.getCost().floatValue() < choosenLowestPrice)
+                    return false;
+                if (o.getCost().floatValue() > choosenHighestPrice)
+                    return false;
+                if ((float)o.getProducts().size() < choosenLowestCount)
+                    return false;
+                if ((float)o.getProducts().size() > choosenHighestCount)
+                    return false;
+                return true;
+            });
+        }
         {
             customerPanel.removeAll();
             productPanel.removeAll();

@@ -134,7 +134,10 @@ public class NewProduct extends JDialog {
             searchImg,
             resetImg
         }));
-
+        if (app.getStock().size() == 0) {
+            newProd.setVisible(true);
+            setSize(400, 300);
+        }
         productList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
