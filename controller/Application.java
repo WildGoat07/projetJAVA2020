@@ -218,6 +218,35 @@ public class Application {
         return lowest;
     }
     /**
+     * Gets the lowest a product has been in stock, ever
+     * @param p product to parse
+     * @param beg the low bound
+     * @param end the upper bound
+     * @return the lowest value a product has ever been in stock
+     */
+    public int getLowestStockProduct(Product p, LocalDate beg, LocalDate end) {
+        List<ProductMovement> movements = new ArrayList<ProductMovement>();
+        for (Order order : orders)
+            if (order.getProducts().contains(p)) {
+                movements.add(new ProductMovement(false, order.getBeginningRental()));
+                movements.add(new ProductMovement(true, order.getEndingRental()));
+            }
+        Collections.sort(movements);
+        int lowest = getRegisteredProductCount(p);
+        int currState = lowest;
+        for (ProductMovement productMovement : movements) {
+            currState += productMovement.productIn?1:-1;
+            if (lowest > currState &&
+                productMovement.when.isBefore(end) &&
+                (
+                    productMovement.when.isEqual(beg) ||
+                    productMovement.when.isAfter(beg)
+                ))
+                lowest = currState;
+        }
+        return lowest;
+    }
+    /**
      * Removes an order
      * @param o order to remove
      */
