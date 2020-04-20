@@ -415,7 +415,7 @@ public class Application {
         for (ProductInStock inStock : stock) {
             int rented = 0;
             for (Order order : orders)
-                if (order.getProducts().contains(inStock.product) && time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
+                if (order.getProducts().contains(inStock.product) && (time.isAfter(order.getBeginningRental()) || time.isEqual(order.getBeginningRental())) && time.isBefore(order.getEndingRental()))
                     rented++;
             if (rented == inStock.quantity)
                 result.add(inStock.product);
