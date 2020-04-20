@@ -407,6 +407,45 @@ public class Orders extends JPanel implements CanUpdate {
                 filters.add(maxPriceSlider);
             }
             JButton newOrder = new JButton(app.isCurrentFrench()?"Nouvelle commande":"New order");
+            newOrder.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    NewOrder dialog = new NewOrder(app);
+                    dialog.addWindowListener(new WindowListener() {
+                        @Override
+                        public void windowOpened(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowClosing(WindowEvent e) {
+                            Order order = dialog.getResult();
+                            if (order != null) {
+                                try {
+                                    app.addOrder(order);
+                                    update();
+                                    revalidate();
+                                }
+                                catch (Exception xc){}
+                            }
+                        }
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowIconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeiconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowActivated(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeactivated(WindowEvent e) {
+                        }
+                    });
+                    dialog.setVisible(true);
+                }
+            });
             filters.add(newOrder);
         }
         ordersList = new JPanel();
@@ -534,6 +573,7 @@ public class Orders extends JPanel implements CanUpdate {
         ordersList.removeAll();
         JPanel orderData = new JPanel();
         JScrollPane scrollyBoi = new JScrollPane(orderData, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollyBoi.getVerticalScrollBar().setUnitIncrement(16);
         ordersList.add(scrollyBoi);
         GridBagConstraints gbc = new GridBagConstraints();
         orderData.setLayout(new GridBagLayout());

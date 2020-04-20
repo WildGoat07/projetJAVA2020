@@ -37,6 +37,10 @@ public class Person implements Serializable {
         return surname;
     }
     @Override
+    public String toString() {
+        return name + " " + surname;
+    }
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Person)
             return id.equals(((Person)obj).id);

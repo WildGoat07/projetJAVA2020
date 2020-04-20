@@ -35,6 +35,27 @@ public class Functions {
         return result;
     }
     /**
+     * Returns a new list containing all the items of the first list except for the one in the other
+     * @param <T> type of the items in the lists
+     * @param list initial data
+     * @param toRemove data to remove
+     * @return the new shortened list
+     */
+    public static <T> java.util.List<T> except(Iterable<T> list, Iterable<T> toRemove) {
+        final java.util.List<T> result = new ArrayList<T>();
+        list.forEach((p) -> {
+            boolean contained = false;
+            for (T t : toRemove)
+                if (t.equals(p)) {
+                    contained = true;
+                    break;
+                }
+            if (!contained)
+                result.add(p);
+        });
+        return result;
+    }
+    /**
      * Uses a function to convert every item in the list into another type
      * @param <T> initial type
      * @param <U> final type

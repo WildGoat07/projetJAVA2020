@@ -70,10 +70,9 @@ public class Application {
         if (registered == 0)
             return 0;
         for (Order order : orders)
-            if (order.getBeginningRental().isBefore(time) && (order.getEndingRental().isAfter(time) || order.getEndingRental().isEqual(time)))
-                for (Product product : order.getProducts())
-                    if (product.equals(p))
-                        registered--;
+            if ((order.getBeginningRental().isBefore(time) || order.getBeginningRental().isEqual(time)) && order.getEndingRental().isAfter(time))
+                if (order.getProducts().contains(p))
+                    registered--;
         return registered;
     }
     /**
@@ -177,7 +176,7 @@ public class Application {
             for (Product product : o.getProducts()) {
                 if (productExistsInStock(product) == null)
                     throw new Exception("One of the products of the order doesn't exists");
-                if (getProductCountInStock(product, o.getBeginningRental()) == 0)
+                if (getLowestStockProduct(product, o.getBeginningRental(), o.getEndingRental()) == 0)
                     throw new Exception("There is no more product in stock");
             }
             orders.add(o);
@@ -234,15 +233,18 @@ public class Application {
         Collections.sort(movements);
         int lowest = getRegisteredProductCount(p);
         int currState = lowest;
+        boolean entered = false;
+        boolean inside = false;
         for (ProductMovement productMovement : movements) {
-            currState += productMovement.productIn?1:-1;
-            if (lowest > currState &&
-                productMovement.when.isBefore(end) &&
-                (
-                    productMovement.when.isEqual(beg) ||
-                    productMovement.when.isAfter(beg)
-                ))
+            if (productMovement.when.isAfter(beg) && !entered) {
+                entered = true;
+                inside = true;
+            }
+            if (inside && lowest > currState)
                 lowest = currState;
+            if (productMovement.when.isAfter(end) && inside)
+                inside = false;
+            currState += productMovement.productIn?1:-1;
         }
         return lowest;
     }
@@ -389,7 +391,7 @@ public class Application {
         for (ProductInStock inStock : stock) {
             int rented = 0;
             for (Order order : orders)
-                if (order.getProducts().contains(inStock.product) && time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
+                if (order.getProducts().contains(inStock.product) && (time.isAfter(order.getBeginningRental()) || time.isEqual(order.getBeginningRental())) && time.isBefore(order.getEndingRental()))
                     rented++;
             if (rented > 0)
                 result.add(inStock.product);
