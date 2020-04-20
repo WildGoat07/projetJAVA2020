@@ -156,7 +156,7 @@ public class NewOrder extends JDialog {
                             addTo.setToolTipText(app.isCurrentFrench()?"Produit en rupture pour cette commande":"Product out of stock for this order");
                         }
                         productsSelection.add(Functions.alignHorizontal(new Component[] {
-                            new JLabel(product.getTitle()),
+                            new JLabel(product.getTitle().length()>20?product.getTitle().subSequence(0, 20)+"...":product.getTitle()),
                             addTo
                         }));
                         addTo.addActionListener(new ActionListener() {
@@ -171,7 +171,7 @@ public class NewOrder extends JDialog {
                     for (Product product : selected) {
                         JButton removeFrom = new JButton(app.isCurrentFrench()?"Retirer":"Remove");
                         selectedProducts.add(Functions.alignHorizontal(new Component[] {
-                            new JLabel(product.getTitle()),
+                            new JLabel(product.getTitle().length()>20?product.getTitle().subSequence(0, 20)+"...":product.getTitle()),
                             removeFrom
                         }));
                         removeFrom.addActionListener(new ActionListener() {
