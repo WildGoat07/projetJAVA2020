@@ -1,10 +1,12 @@
 import java.io.*;
+import java.time.LocalDate;
 import java.util.Locale;
 
 import javax.swing.*;
 
-import data.*;
-import gui.*;
+import model.*;
+import view.*;
+import controller.*;
 import utilities.*;
 
 public class Main {
@@ -19,12 +21,7 @@ public class Main {
         InputStream stream = new FileInputStream(saveFile);
         Application currApp = Application.loadFromStream(stream);
         stream.close();
-        /*Application currApp = new Application();
-        currApp.addProduct(new Comic(new Price(5), "Georges", "une bd", null), 2);
-        currApp.addProduct(new Dictionary(new Price(2.5), Locale.ENGLISH, "un dico", null), 2);
-        currApp.addProduct(new Novel(new Price(3.8), "Manuel", "un super roman", null), 2);
-        currApp.addProduct(new DVD(new Price(9), "Henri", "compilation naze", null), 2);*/
+        Locale.setDefault(currApp.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH);
         new MainWindow(currApp).setVisible(true);
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     }
 }
