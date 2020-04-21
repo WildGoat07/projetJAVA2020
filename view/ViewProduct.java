@@ -8,7 +8,9 @@ import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import model.*;
 import utilities.Functions;
@@ -18,10 +20,15 @@ public class ViewProduct extends JDialog {
 
     public ViewProduct(Application app, Product p) {
         JPanel mainPanel = new JPanel();
-        add(mainPanel);
-        setLayout(new FlowLayout());
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        add(mainPanel, gbc);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        setSize(450, 250);
+        setSize(1000, 250);
         setLocationRelativeTo(MainWindow.instance);
         mainPanel.add(Box.createRigidArea(new Dimension(1, 20)));
         setTitle(p.getTitle());
@@ -43,7 +50,7 @@ public class ViewProduct extends JDialog {
                 stream.reset();
                 setIconImage(Functions.resizeImage(16, 16, thumbnail));
                 stream.close();
-                setSize(450, 450);
+                setSize(1000, 450);
             }
             else
                 setIconImage(ImageIO.read(new File("images/icon.png")));
@@ -59,8 +66,8 @@ public class ViewProduct extends JDialog {
             Book prod = (Book)p;
             specificCompo = new JLabel((app.isCurrentFrench()?"Auteur : ":"Author : ")+prod.getAuthor());
         }
-        else if (p instanceof Dictionary) {
-            Dictionary prod = (Dictionary)p;
+        else if (p instanceof model.Dictionary) {
+            model.Dictionary prod = (model.Dictionary)p;
             specificCompo = new JLabel((app.isCurrentFrench()?"Langue : ":"Language : ")+prod.getLanguage().getDisplayLanguage(app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH));
         }
         else if (p instanceof CD) {
@@ -115,5 +122,40 @@ public class ViewProduct extends JDialog {
                 catch (Exception exc) {}
             }
         });
+
+        gbc.weightx = 1;
+        gbc.gridx = 1;
+        ArrayList<ProductIO> data = new ArrayList<ProductIO>();
+        for (Order order : app.getOrders())
+            if (order.getProducts().contains(p)) {
+                data.add(new ProductIO(order.getBeginningRental(), false));
+                data.add(new ProductIO(order.getEndingRental(), true));
+            }
+        data.sort(new Comparator<ProductIO>() {
+            @Override
+            public int compare(ProductIO o1, ProductIO o2) {
+                return o1.time.compareTo(o2.time);
+            }
+        });
+        Map<LocalDate, Integer> stock = new HashMap<LocalDate, Integer>();
+        int currStock = app.getRegisteredProductCount(p);
+        for (ProductIO productIO : data) {
+            currStock += productIO.isInput?1:-1;
+            stock.put(productIO.time, currStock);
+        }
+        LocalDate min = Collections.min(stock.keySet());
+        LocalDate max = Collections.max(stock.keySet());
+        long days = min.until(max, ChronoUnit.DAYS);
+        stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+        stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+        add(new Graph(stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f), LocalDate.now()), gbc);
+    }
+    private class ProductIO {
+        public LocalDate time;
+        public boolean isInput;
+        public ProductIO(LocalDate t, boolean i) {
+            time = t;
+            isInput = i;
+        }
     }
 }

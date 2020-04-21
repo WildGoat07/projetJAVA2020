@@ -23,6 +23,7 @@ public class Graph extends JComponent {
     private int mouseX;
     private int mouseY;
     private boolean mouseOnComponent;
+    private LocalDate specialDate;
 
     private LocalDate getX(float perc) {
         long days = minX.until(maxX, ChronoUnit.DAYS);
@@ -84,7 +85,11 @@ public class Graph extends JComponent {
     }
 
     public Graph(Map<LocalDate, Integer> values) {
+        this(values, null);
+    }
+    public Graph(Map<LocalDate, Integer> values, LocalDate special) {
         this();
+        specialDate = special;
         map = new TreeMap<LocalDate, Integer>(values);
         minY = map.entrySet().iterator().next().getValue();
         minX = map.entrySet().iterator().next().getKey();
@@ -102,7 +107,11 @@ public class Graph extends JComponent {
         }
     }
     public Graph(Map<LocalDate, Integer> values, int miny, int maxy) {
+        this(values, miny, maxy, null);
+    }
+    public Graph(Map<LocalDate, Integer> values, int miny, int maxy, LocalDate special) {
         this();
+        specialDate = special;
         map = new TreeMap<LocalDate, Integer>(values);
         minY = miny;
         maxY = maxy;
@@ -116,7 +125,11 @@ public class Graph extends JComponent {
         }
     }
     public Graph(Map<LocalDate, Integer> values, int miny) {
+        this(values, miny, null);
+    }
+    public Graph(Map<LocalDate, Integer> values, int miny, LocalDate special) {
         this();
+        specialDate = special;
         map = new TreeMap<LocalDate, Integer>(values);
         minY = miny;
         maxY = map.entrySet().iterator().next().getValue();
@@ -180,6 +193,15 @@ public class Graph extends JComponent {
             int val = map.entrySet().iterator().next().getValue();
             lastY = size.height - 30 - (int)((float)(val - minY) / (maxY - minY) * (size.height - 30));
         }
+        if (specialDate != null) {
+            g2.setPaint(Functions.getInverse(getForeground()));
+            float perc = minX.until(specialDate, ChronoUnit.DAYS)/(float)days;
+            if (perc >= 0 && perc <= 1) {
+                int x = 30 + (int)(perc*(size.width-30));
+                g2.drawLine(x, 0, x, size.height-30);
+                g2.drawLine(x+1, 0, x+1, size.height-30);
+            }
+        }
         g2.setPaint(getForeground());
         for (Map.Entry<LocalDate, Integer> entry : map.entrySet()) {
             float percX = (float)minX.until(entry.getKey(), ChronoUnit.DAYS) / days;
@@ -215,7 +237,7 @@ public class Graph extends JComponent {
             g2.drawLine(mouseX, 0, mouseX, size.height-30);
             g2.drawLine(30, mouseY, size.width, mouseY);
 
-            if (getY((mouseX-30)/(float)(size.width-30)) < (maxY-minY)/2) {
+            if (getY((mouseX-30)/(float)(size.width-30)) <= (maxY-minY)/2f) {
                 int rectPos = mouseX - 50;
                 int arrowPos = mouseX;
                 int posY = size.height - 30 - (int)((getY((mouseX-30)/(float)(size.width-30))-minY)/(float)(maxY - minY)*(size.height-30));
