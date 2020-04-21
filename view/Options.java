@@ -1,14 +1,23 @@
 package view;
 
 import controller.Application;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+import java.io.File;
+import java.time.LocalDate;
 
 public class Options extends JDialog {
     public Options(Application app) {
         setSize(300, 150);
         setLocationRelativeTo(MainWindow.instance);
+        try {
+            setIconImage(ImageIO.read(new File("images/icon.png")));
+        }
+        catch(Exception e){}
         setTitle(app.isCurrentFrench()?"Paramètres":"Options");
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));

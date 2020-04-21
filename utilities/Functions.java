@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 
 import model.*;
 
@@ -54,6 +55,27 @@ public class Functions {
                 result.add(p);
         });
         return result;
+    }
+    /**
+     * Returns the black and white version of a color
+     * @param c color to convert
+     * @return black and white version
+     */
+    public static Color getBlackAndWhite(Color c) {
+        int level = (int)(c.getRed()*.3f + c.getGreen()*.59f + c.getBlue() * .11f);
+        return new ColorUIResource(level, level, level);
+    }
+    /**
+     * Returns a color that is on the opposite on the hue circle
+     * @param c color to convert
+     * @return inverse of the color
+     */
+    public static Color getInverse(Color c) {
+        float[] hsb = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
+        float hue = hsb[0]+.5f;
+        if (hue >= 1)
+            hue -= 1;
+        return Color.getHSBColor(hue, hsb[1], hsb[2]);
     }
     /**
      * Uses a function to convert every item in the list into another type

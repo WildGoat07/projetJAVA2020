@@ -179,6 +179,7 @@ public final class Price extends Number implements Comparable<Price> {
      */
     public void multiply(float other) {
         float value = floatValue()*other;
+        value = Math.round(value*100)/100f;
         negative = value < 0;
         value = Math.abs(value);
         euros = (int)value;
