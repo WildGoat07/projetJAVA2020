@@ -430,6 +430,23 @@ public class Orders extends JPanel implements CanUpdate {
                                     app.addOrder(order);
                                     update();
                                     revalidate();
+                                    MainWindow.addChange(new Change() {
+                                        @Override
+                                        public void undo() {
+                                            app.removeOrder(order);
+                                            update();
+                                            revalidate();
+                                        }
+                                        @Override
+                                        public void redo() {
+                                            try {
+                                                app.addOrder(order);
+                                                update();
+                                                revalidate();
+                                            }
+                                            catch(Exception exc){}
+                                        }
+                                    });
                                 }
                                 catch (Exception xc){}
                             }

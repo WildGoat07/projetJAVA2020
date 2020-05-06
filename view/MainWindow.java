@@ -18,15 +18,21 @@ public class MainWindow extends JFrame {
     private File currentFile;
     private Application app;
     private JMenuBar menu;
-    private People people;
-    private Products products;
-    private Orders orders;
+    public People people;
+    public Products products;
+    public Orders orders;
+    private java.util.List<Change> changes;
+    private int changeSelection;
+    private JMenuItem redo;
+    private JMenuItem undo;
     public MainWindow() throws Exception {
         this(null);
     }
     public MainWindow(File open) throws Exception {
         super();
         instance = this;
+        changes = new ArrayList<Change>();
+        changeSelection = -1;
         setSize(1200, 700);
         setIconImage(ImageIO.read(new File("images/icon.png")));
         setLocationRelativeTo(null);
@@ -266,22 +272,24 @@ public class MainWindow extends JFrame {
             JMenu editMenu = new JMenu(app.isCurrentFrench()?"Edition":"Edit");
             menu.add(editMenu);
             {
-                JMenuItem undo = new JMenuItem(app.isCurrentFrench()?"Annuler":"Undo");
+                undo = new JMenuItem(app.isCurrentFrench()?"Annuler":"Undo");
                 editMenu.add(undo);
+                undo.setEnabled(false);
                 undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
                 undo.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ///
+                        undoChange();
                     }
                 });
-                JMenuItem redo = new JMenuItem(app.isCurrentFrench()?"Rétablir":"Redo");
+                redo = new JMenuItem(app.isCurrentFrench()?"Rétablir":"Redo");
                 editMenu.add(redo);
-                redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
+                redo.setEnabled(false);
+                redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
                 redo.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ///
+                        redoChange();
                     }
                 });
                 JMenuItem addProduct = new JMenuItem(app.isCurrentFrench()?"Ajouter produit":"Add product");
@@ -320,5 +328,27 @@ public class MainWindow extends JFrame {
             }
         }
         menu.repaint();
+    }
+    public static void addChange(Change c) {
+
+        while (instance.changes.size()-1 > instance.changeSelection)
+            instance.changes.remove(instance.changes.size()-1);
+        instance.changes.add(c);
+        instance.changeSelection++;
+        updateChange();
+    }
+    public static void updateChange() {
+        instance.undo.setEnabled(instance.changeSelection > -1);
+        instance.redo.setEnabled(instance.changeSelection < instance.changes.size()-1);
+    }
+    public static void undoChange() {
+        instance.changes.get(instance.changeSelection).undo();
+        instance.changeSelection--;
+        updateChange();
+    }
+    public static void redoChange() {
+        instance.changeSelection++;
+        instance.changes.get(instance.changeSelection).redo();
+        updateChange();
     }
 }

@@ -106,7 +106,25 @@ public class ViewProduct extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    app.removeProduct(p, (int)nbToRemove.getValue());
+                    int toRemove = (int)nbToRemove.getValue();
+                    app.removeProduct(p, toRemove);
+                    MainWindow.addChange(new Change(){
+                        @Override
+                        public void undo() {
+                            app.addProduct(p, toRemove);
+                            MainWindow.instance.products.update();
+                            MainWindow.instance.products.revalidate();
+                        }
+                        @Override
+                        public void redo() {
+                            try {
+                                app.removeProduct(p, toRemove);
+                                MainWindow.instance.products.update();
+                                MainWindow.instance.products.revalidate();
+                            }
+                            catch (Exception e) {}
+                        }
+                    });
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
                 }
                 catch (Exception exc) {}
@@ -116,7 +134,25 @@ public class ViewProduct extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    int nbInStock = app.getProductCountInStock(p);
                     app.removeProduct(p);
+                    MainWindow.addChange(new Change(){
+                        @Override
+                        public void undo() {
+                            app.addProduct(p, nbInStock);
+                            MainWindow.instance.products.update();
+                            MainWindow.instance.products.revalidate();
+                        }
+                        @Override
+                        public void redo() {
+                            try {
+                                app.removeProduct(p);
+                                MainWindow.instance.products.update();
+                                MainWindow.instance.products.revalidate();
+                            }
+                            catch (Exception e) {}
+                        }
+                    });
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
                 }
                 catch (Exception exc) {}
@@ -143,12 +179,22 @@ public class ViewProduct extends JDialog {
             currStock += productIO.isInput?1:-1;
             stock.put(productIO.time, currStock);
         }
-        LocalDate min = Collections.min(stock.keySet());
-        LocalDate max = Collections.max(stock.keySet());
-        long days = min.until(max, ChronoUnit.DAYS);
-        stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-        stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-        add(new Graph(stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f), LocalDate.now()), gbc);
+        if (stock.size() > 0) {
+            LocalDate min = Collections.min(stock.keySet());
+            LocalDate max = Collections.max(stock.keySet());
+            long days = min.until(max, ChronoUnit.DAYS);
+            stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+            stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+            add(new Graph(stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f), LocalDate.now()), gbc);
+        }
+        else {
+            LocalDate min = LocalDate.now().minusDays(1);
+            LocalDate max = LocalDate.now().plusDays(1);
+            long days = min.until(max, ChronoUnit.DAYS);
+            stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+            stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+            add(new Graph(stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f), LocalDate.now()), gbc);
+        }
     }
     private class ProductIO {
         public LocalDate time;

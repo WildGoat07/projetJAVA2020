@@ -211,6 +211,23 @@ public class ViewOrder extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 try {
                     app.removeOrder(o);
+                    MainWindow.addChange(new Change(){
+                        @Override
+                        public void undo() {
+                            try {
+                                app.addOrder(o);
+                                MainWindow.instance.orders.update();
+                                MainWindow.instance.orders.revalidate();
+                            }
+                            catch(Exception e){}
+                        }
+                        @Override
+                        public void redo() {
+                            app.removeOrder(o);
+                            MainWindow.instance.orders.update();
+                            MainWindow.instance.orders.revalidate();
+                    }
+                    });
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
                 }
                 catch (Exception exc) {}

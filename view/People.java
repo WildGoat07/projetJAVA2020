@@ -84,6 +84,24 @@ public class People extends JPanel implements CanUpdate {
                                 app.addPerson(res);
                                 update();
                                 revalidate();
+                                MainWindow.addChange(new Change() {
+                                    @Override
+                                    public void undo() {
+                                        try {
+                                            app.removePerson(res);
+                                            update();
+                                            revalidate();
+                                        }
+                                        catch (Exception e) {}
+                                    }
+
+                                    @Override
+                                    public void redo() {
+                                        app.addPerson(res);
+                                        update();
+                                        revalidate();
+                                    }
+                                });
                             }
                         }
                         @Override

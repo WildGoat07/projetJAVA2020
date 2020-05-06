@@ -363,9 +363,30 @@ public class Products extends JPanel implements CanUpdate {
                             Product prod = dialog.getResult();
                             if (prod != null) {
                                 try {
+                                    boolean prodExists = app.productExists(prod);
                                     app.addProduct(prod, dialog.getQuantity());
                                     update();
                                     revalidate();
+                                    MainWindow.addChange(new Change() {
+                                        @Override
+                                        public void undo() {
+                                            try {
+                                                if (prodExists)
+                                                    app.removeProduct(prod, dialog.getQuantity());
+                                                else
+                                                    app.removeProduct(prod);
+                                                update();
+                                                revalidate();
+                                            }
+                                            catch (Exception e){}
+                                        }
+                                        @Override
+                                        public void redo() {
+                                            app.addProduct(prod, dialog.getQuantity());
+                                            update();
+                                            revalidate();
+                                        }
+                                    });
                                 }
                                 catch(Exception exc) {}
                             }

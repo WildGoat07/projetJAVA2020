@@ -43,6 +43,23 @@ public class ViewPerson extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 try {
                     app.removePerson(p);
+                    MainWindow.addChange(new Change(){
+                        @Override
+                        public void undo() {
+                            app.addPerson(p);
+                            MainWindow.instance.people.update();
+                            MainWindow.instance.people.revalidate();
+                        }
+                        @Override
+                        public void redo() {
+                            try {
+                                app.removePerson(p);
+                                MainWindow.instance.people.update();
+                                MainWindow.instance.people.revalidate();
+                            }
+                            catch (Exception e) {}
+                        }
+                    });
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
                 }
                 catch(Exception exc) {}
