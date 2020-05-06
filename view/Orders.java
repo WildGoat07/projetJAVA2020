@@ -37,6 +37,7 @@ public class Orders extends JPanel implements CanUpdate {
     private JSlider maxCountSlider;
     private JSlider minPriceSlider;
     private JSlider maxPriceSlider;
+    public JButton newOrder;
 
     private Comparator<Order> currentComparator;
     private static String getSignature(Person p) {
@@ -412,7 +413,7 @@ public class Orders extends JPanel implements CanUpdate {
                 });
                 filters.add(maxPriceSlider);
             }
-            JButton newOrder = new JButton(app.isCurrentFrench()?"Nouvelle commande":"New order");
+            newOrder = new JButton(app.isCurrentFrench()?"Nouvelle commande":"New order");
             newOrder.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

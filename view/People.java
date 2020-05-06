@@ -10,12 +10,12 @@ import model.*;
 import controller.*;
 
 import javax.swing.border.*;
-import javax.swing.event.*;
 
 import utilities.*;
 
-public class Persons extends JPanel implements CanUpdate {
+public class People extends JPanel implements CanUpdate {
     private Application app;
+    public JButton newPerson;
     private JComboBox<String> customTypes;
     private JPanel customersList;
 
@@ -54,7 +54,7 @@ public class Persons extends JPanel implements CanUpdate {
     private Comparator<Person> reverseSurnameComparator = surnameComparator.reversed();
     private Comparator<Person> reverseLoyalComparator = loyalComparator.reversed();
     
-    public Persons(Application app) throws Exception {
+    public People(Application app) throws Exception {
         this.app = app;
         setLayout(new BorderLayout());
         currentComparator = nameComparator;
@@ -68,8 +68,8 @@ public class Persons extends JPanel implements CanUpdate {
         {
             JPanel dummy = new JPanel();
             dummy.setLayout(new FlowLayout());
-            JButton newCustomer = new JButton(app.isCurrentFrench()?"Nouveau client":"New customer");
-            newCustomer.addActionListener(new ActionListener() {
+            newPerson = new JButton(app.isCurrentFrench()?"Nouveau client":"New customer");
+            newPerson.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     NewPerson dialog = new NewPerson(app);
@@ -106,7 +106,7 @@ public class Persons extends JPanel implements CanUpdate {
                 }
             });
             add(dummy, BorderLayout.WEST);
-            dummy.add(newCustomer);
+            dummy.add(newPerson);
         }
         customTypes.addActionListener(new ActionListener() {
 

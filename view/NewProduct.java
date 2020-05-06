@@ -82,8 +82,8 @@ public class NewProduct extends JDialog {
         searchImg.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser openFile = new JFileChooser(
-                        app.isCurrentFrench() ? "Ajouter une image" : "Add an image");
+                JFileChooser openFile = new JFileChooser(app.isCurrentFrench() ? "Ajouter une image" : "Add an image");
+                openFile.getActionMap().get("viewTypeDetails").actionPerformed(null);
                 openFile.addChoosableFileFilter(new FileFilter() {
                     @Override
                     public boolean accept(File f) {

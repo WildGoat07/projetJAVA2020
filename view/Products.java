@@ -38,6 +38,7 @@ public class Products extends JPanel implements CanUpdate {
     private JSlider maxStockSlider;
     private JSlider minRentedSlider;
     private JSlider maxRentedSlider;
+    public JButton newProduct;
 
     private Comparator<Product> currentComparator;
     private Comparator<Product> nameComparator = new Comparator<Product>() {
@@ -347,7 +348,7 @@ public class Products extends JPanel implements CanUpdate {
                 }
             });
             filters.add(maxRentedSlider);
-            JButton newProduct = new JButton(app.isCurrentFrench()?"Ajouter un produit":"Add a product");
+            newProduct = new JButton(app.isCurrentFrench()?"Ajouter un produit":"Add a product");
             newProduct.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
