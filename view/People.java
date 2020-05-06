@@ -43,7 +43,7 @@ public class People extends JPanel implements CanUpdate {
     private Comparator<Person> loyalComparator = new Comparator<Person>(){
         @Override
         public int compare(Person o1, Person o2) {
-            int res = Functions.simplify(o1.getSurname()).compareTo(Functions.simplify(o2.getSurname()));
+            int res = Boolean.valueOf(o1 instanceof LoyalCustomer).compareTo(o2 instanceof LoyalCustomer) * -1;
             if (res == 0)
                 return nameComparator.compare(o1, o2);
             else
