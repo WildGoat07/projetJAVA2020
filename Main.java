@@ -1,4 +1,7 @@
 import java.io.File;
+
+import javax.swing.UIManager;
+
 import view.MainWindow;
 
 public class Main {
@@ -9,6 +12,7 @@ public class Main {
             if (!curr.exists())
                 curr = null;
         }
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         new MainWindow(curr).setVisible(true);
     }
 }

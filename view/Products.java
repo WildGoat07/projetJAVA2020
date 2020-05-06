@@ -349,6 +349,7 @@ public class Products extends JPanel implements CanUpdate {
             });
             filters.add(maxRentedSlider);
             newProduct = new JButton(app.isCurrentFrench()?"Ajouter un produit":"Add a product");
+            newProduct.setIcon(new ImageIcon("images/add-prod.png"));
             newProduct.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

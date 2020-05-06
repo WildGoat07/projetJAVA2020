@@ -414,6 +414,7 @@ public class Orders extends JPanel implements CanUpdate {
                 filters.add(maxPriceSlider);
             }
             newOrder = new JButton(app.isCurrentFrench()?"Nouvelle commande":"New order");
+            newOrder.setIcon(new ImageIcon("images/add-order.png"));
             newOrder.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

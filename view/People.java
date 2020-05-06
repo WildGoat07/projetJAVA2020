@@ -69,6 +69,7 @@ public class People extends JPanel implements CanUpdate {
             JPanel dummy = new JPanel();
             dummy.setLayout(new FlowLayout());
             newPerson = new JButton(app.isCurrentFrench()?"Nouveau client":"New customer");
+            newPerson.setIcon(new ImageIcon("images/add-customer.png"));
             newPerson.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
