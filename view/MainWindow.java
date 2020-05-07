@@ -27,12 +27,14 @@ public class MainWindow extends JFrame {
     private JMenuItem undo;
     private boolean fileChanged;
     private Change savedChange;
+    private java.util.List<Window> subWindows;
     public MainWindow() throws Exception {
         this(null);
     }
     public MainWindow(File open) throws Exception {
         super();
         instance = this;
+        subWindows = new ArrayList<Window>();
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         changes = new ArrayList<Change>();
         changeSelection = -1;
@@ -357,6 +359,9 @@ public class MainWindow extends JFrame {
         changes.clear();
         changeSelection = -1;
         savedChange = null;
+        for (Window window : subWindows)
+            window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+        subWindows.clear();
         menu.repaint();
     }
     public static void addChange(Change c) {
@@ -406,5 +411,11 @@ public class MainWindow extends JFrame {
             fileChanged = false;
             setTitle("Videoworld");
         }
+    }
+    public void removeSubWindow(Window window) {
+        subWindows.remove(window);
+    }
+    public void addNewSubWindow(Window window) {
+        subWindows.add(window);
     }
 }

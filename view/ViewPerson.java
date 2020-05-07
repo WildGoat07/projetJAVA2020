@@ -13,6 +13,31 @@ public class ViewPerson extends JDialog {
     public ViewPerson(Application app, Person p) {
         JPanel mainPanel = new JPanel();
         final Window itself = this;
+        MainWindow.instance.addNewSubWindow(this);
+        addWindowListener(new WindowListener(){
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+            @Override
+            public void windowClosing(WindowEvent e) {
+                MainWindow.instance.remove(itself);
+            }
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
         add(mainPanel);
         setLayout(new FlowLayout());
         try {

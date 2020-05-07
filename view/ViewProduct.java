@@ -19,6 +19,32 @@ import controller.Application;
 public class ViewProduct extends JDialog {
 
     public ViewProduct(Application app, Product p) {
+        final Window itself = this;
+        MainWindow.instance.addNewSubWindow(this);
+        addWindowListener(new WindowListener(){
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+            @Override
+            public void windowClosing(WindowEvent e) {
+                MainWindow.instance.remove(itself);
+            }
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
         JPanel mainPanel = new JPanel();
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -101,7 +127,6 @@ public class ViewProduct extends JDialog {
             deleteProduct.setEnabled(false);
             deleteProduct.setToolTipText(app.isCurrentFrench()?"Ce produit est mentioné dans une commande":"This product is mentioned in an order");
         }
-        final Window itself = this;
         removeNbProducts.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

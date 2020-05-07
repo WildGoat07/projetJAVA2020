@@ -25,6 +25,31 @@ public class NewOrder extends JDialog {
 
     public NewOrder(Application app) {
         NewOrder itself = this;
+        MainWindow.instance.addNewSubWindow(this);
+        addWindowListener(new WindowListener(){
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+            @Override
+            public void windowClosing(WindowEvent e) {
+                MainWindow.instance.remove(itself);
+            }
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
         result = null;
         setSize(350, 200);
         setLocationRelativeTo(MainWindow.instance);

@@ -25,12 +25,39 @@ public class DatePicker extends JDialog {
     private JPanel days;
     private LocalDate usedDate;
     private LocalDate result;
+    private Window itself;
     /**
      * Constructor
      * @param date starting date to use
      * @param lang language to use
      */
     public DatePicker(LocalDate date, Locale lang) {
+        itself = this;
+        MainWindow.instance.addNewSubWindow(this);
+        addWindowListener(new WindowListener(){
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+            @Override
+            public void windowClosing(WindowEvent e) {
+                MainWindow.instance.remove(itself);
+            }
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
         language = lang;
         usedDate = date;
         setSize(360, 210);
