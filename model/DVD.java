@@ -10,6 +10,7 @@ import utilities.Price;
  */
 public class DVD implements Numeric {
 
+    private static final long serialVersionUID = 2574503530874367506L;
     /**
      * price of one day of rental
      */

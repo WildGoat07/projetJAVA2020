@@ -9,6 +9,7 @@ import utilities.*;
  * Defines a book with an author
  */
 public abstract class Book implements Document {
+    private static final long serialVersionUID = -7216633920174513141L;
     private UUID id;
     /**
      * The price of the comic for one day of rental

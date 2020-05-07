@@ -7,6 +7,7 @@ import java.text.NumberFormat;
  * Defines a price
  */
 public final class Price extends Number implements Comparable<Price> {
+    private static final long serialVersionUID = 1952500590553866071L;
     private int euros;
     private int cents;
     private boolean negative;

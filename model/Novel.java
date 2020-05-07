@@ -8,6 +8,7 @@ import java.io.*;
  */
 public class Novel extends Book {
 
+    private static final long serialVersionUID = -7765720244590525821L;
     /**
      * The price of the novel for one day of rental
      */

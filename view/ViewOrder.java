@@ -3,12 +3,10 @@ package view;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.event.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -17,6 +15,7 @@ import utilities.*;
 import controller.Application;
 
 public class ViewOrder extends JDialog {
+    private static final long serialVersionUID = 1L;
     private Runnable update;
     private Comparator<Product> currentComparator;
     public ViewOrder(Application app, Order o) {

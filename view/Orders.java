@@ -1,6 +1,5 @@
 package view;
 import java.awt.event.*;
-import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
 import java.awt.*;
@@ -14,6 +13,8 @@ import javax.swing.event.*;
 import utilities.*;
 
 public class Orders extends JPanel implements CanUpdate {
+    private static final long serialVersionUID = 1L;
+
     private Application app;
 
     private JPanel ordersList;

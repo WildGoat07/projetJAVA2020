@@ -10,6 +10,8 @@ import controller.Application;
 import model.*;
 
 public class ViewPerson extends JDialog {
+    private static final long serialVersionUID = 1L;
+
     public ViewPerson(Application app, Person p) {
         JPanel mainPanel = new JPanel();
         final Window itself = this;

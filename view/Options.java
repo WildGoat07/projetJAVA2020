@@ -6,11 +6,11 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import java.io.File;
-import java.time.LocalDate;
 
 public class Options extends JDialog {
+    private static final long serialVersionUID = 1L;
+
     public Options(Application app) {
         setSize(300, 150);
         setLocationRelativeTo(MainWindow.instance);

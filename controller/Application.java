@@ -338,6 +338,14 @@ public class Application {
         writer.writeBoolean(frenchVersion);
         writer.flush();
     }
+    /**
+     * Loads an instance of an application from a stream where it was previously saved
+     * @param stream the stream to read from
+     * @return the loaded application
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unchecked")
     public static Application loadFromStream(InputStream stream) throws IOException, ClassNotFoundException {
         Application result = new Application();
         ObjectInputStream reader = new ObjectInputStream(stream);

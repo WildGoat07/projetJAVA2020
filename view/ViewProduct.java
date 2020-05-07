@@ -18,6 +18,8 @@ import controller.Application;
 
 public class ViewProduct extends JDialog {
 
+    private static final long serialVersionUID = 1L;
+
     public ViewProduct(Application app, Product p) {
         final Window itself = this;
         MainWindow.instance.addNewSubWindow(this);

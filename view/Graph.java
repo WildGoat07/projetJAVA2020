@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import javax.swing.plaf.ColorUIResource;
 
-import java.awt.image.*;
 import utilities.Functions;
 
 import java.awt.*;
@@ -15,6 +14,10 @@ import java.util.*;
 
 public class Graph extends JComponent {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private LocalDate minX;
     private LocalDate maxX;
     private int minY;

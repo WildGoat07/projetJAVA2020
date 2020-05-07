@@ -10,6 +10,7 @@ import utilities.Price;
  * Defines an order made by a customer
  */
 public final class Order implements Serializable {
+    private static final long serialVersionUID = 6157970630117489981L;
     transient private Person customer;
     private LocalDate beginDate;
     private LocalDate endDate;

@@ -13,6 +13,7 @@ import javax.swing.event.ChangeListener;
 import controller.*;
 
 public class MainWindow extends JFrame {
+    private static final long serialVersionUID = 1L;
     public static MainWindow instance;
     private JTabbedPane tab;
     private File currentFile;
@@ -362,6 +363,7 @@ public class MainWindow extends JFrame {
         for (Window window : subWindows)
             window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
         subWindows.clear();
+        triggerChange();
         menu.repaint();
     }
     public static void addChange(Change c) {

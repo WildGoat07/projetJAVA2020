@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.io.*;
 
-import javax.swing.filechooser.*;
 import javax.swing.filechooser.FileFilter;
 
 import model.*;
@@ -18,10 +17,12 @@ import utilities.Price;
 import utilities.ToStringOverrider;
 
 public class NewProduct extends JDialog {
+    private static final long serialVersionUID = -7013987017519737591L;
     private File productImg;
     private LocalDate productRelease;
     private Product result;
     private int quantity;
+    @SuppressWarnings("unchecked")
     public NewProduct(Application app) {
         Locale currLanguage = app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH;
         NewProduct itself = this;
@@ -152,7 +153,7 @@ public class NewProduct extends JDialog {
                 productThumbnail.setIcon(null);
                 productThumbnail.revalidate();
                 resetImg.setEnabled(false);
-    }
+            }
         });
         newProd.add(Functions.alignHorizontal(new Component[]{
             productThumbnail,

@@ -7,6 +7,7 @@ import java.util.UUID;
  * Defines a random person
  */
 public class Person implements Serializable {
+    private static final long serialVersionUID = -6740881342355238333L;
     private UUID id;
     protected String name;
     protected String surname;

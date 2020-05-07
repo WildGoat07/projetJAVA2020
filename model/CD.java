@@ -10,6 +10,7 @@ import utilities.*;
  */
 public class CD implements Numeric {
 
+    private static final long serialVersionUID = 5054418467274292449L;
     /**
      * the price of one day of rental
      */

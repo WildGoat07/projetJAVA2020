@@ -11,6 +11,7 @@ import java.awt.event.*;
 import java.io.File;
 
 public class NewPerson extends JDialog {
+    private static final long serialVersionUID = 1L;
     private Person result;
     public NewPerson(Application app) {
         NewPerson itself = this;

@@ -19,6 +19,7 @@ import java.time.format.*;
  * A date picker is a dialog that let the user select a date
  */
 public class DatePicker extends JDialog {
+    private static final long serialVersionUID = 1L;
     private Locale language;
     private JSpinner year;
     private JLabel month;

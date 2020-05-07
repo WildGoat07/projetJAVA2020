@@ -1,8 +1,6 @@
 package view;
 
 import java.awt.event.*;
-import java.io.*;
-import java.time.LocalDate;
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
@@ -14,6 +12,7 @@ import javax.swing.border.*;
 import utilities.*;
 
 public class People extends JPanel implements CanUpdate {
+    private static final long serialVersionUID = 1L;
     private Application app;
     public JButton newPerson;
     private JComboBox<String> customTypes;

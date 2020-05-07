@@ -9,8 +9,6 @@ import java.util.function.Supplier;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -18,6 +16,7 @@ import java.io.File;
 import java.time.LocalDate;
 
 public class NewOrder extends JDialog {
+    private static final long serialVersionUID = 1L;
     private Order result;
     private LocalDate begDate;
     private LocalDate endDate;

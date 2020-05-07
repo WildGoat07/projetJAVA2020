@@ -9,6 +9,7 @@ import utilities.*;
  * Defines an actual dictionary
  */
 public class Dictionary implements Document {
+    private static final long serialVersionUID = 1646734607289348321L;
     /**
      * the language of the dictionnary
      */

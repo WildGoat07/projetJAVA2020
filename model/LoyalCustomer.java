@@ -5,6 +5,8 @@ package model;
  */
 public class LoyalCustomer extends Person {
 
+    private static final long serialVersionUID = 7618202633648838159L;
+
     /**
      * Constructor
      * 
