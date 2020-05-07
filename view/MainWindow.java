@@ -25,12 +25,15 @@ public class MainWindow extends JFrame {
     private int changeSelection;
     private JMenuItem redo;
     private JMenuItem undo;
+    private boolean fileChanged;
+    private Change savedChange;
     public MainWindow() throws Exception {
         this(null);
     }
     public MainWindow(File open) throws Exception {
         super();
         instance = this;
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         changes = new ArrayList<Change>();
         changeSelection = -1;
         setSize(1200, 700);
@@ -56,7 +59,11 @@ public class MainWindow extends JFrame {
             }
             @Override
             public void windowClosing(WindowEvent e) {
-                System.exit(0);
+                try {
+                    if (checkFileChanged())
+                        System.exit(0);
+                }
+                catch(Exception exc){}
             }
             @Override
             public void windowClosed(WindowEvent e) {
@@ -75,17 +82,21 @@ public class MainWindow extends JFrame {
             }
         });
     }
-    public void Save() throws IOException {
+    public boolean Save() throws IOException {
         if (currentFile != null) {
             OutputStream stream = new FileOutputStream(currentFile);
             app.saveToStream(stream);
             stream.close();
+            setTitle("Videoworld*");
+            fileChanged = false;
+            savedChange = changeSelection>-1?changes.get(changeSelection):null;
+            triggerChange();
+            return true;
         }
-        else {
-            SaveAs();
-        }
+        else
+            return SaveAs();
     }
-    public void SaveAs() throws IOException {
+    public boolean SaveAs() throws IOException {
         JFileChooser saveFile = new JFileChooser(app.isCurrentFrench() ? "Sauvegarder sous" : "Save as");
         if (currentFile == null)
             saveFile.setCurrentDirectory(new File(System.getProperty("user.dir")));
@@ -127,44 +138,47 @@ public class MainWindow extends JFrame {
                 }
                 if (requiresExt)
                     currentFile = new File(currentFile.getAbsolutePath()+".ser");
-                Save();
+                return Save();
             }
         }
         catch(Exception exc){}
+        return false;
     }
     public void Open() throws Exception {
-        JFileChooser openFile = new JFileChooser(app.isCurrentFrench() ? "Ouvrir un fichier" : "Open file");
-        if (currentFile == null)
-            openFile.setCurrentDirectory(new File(System.getProperty("user.dir")));
-        else
-            openFile.setCurrentDirectory(currentFile);
-        openFile.getActionMap().get("viewTypeDetails").actionPerformed(null);
-        openFile.setAcceptAllFileFilterUsed(false);
-        openFile.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                if (f.isDirectory())
-                    return true;
-                int i = f.getName().lastIndexOf('.');
-                if (i >= 0) {
-                    String ext = f.getName().substring(i+1);
-                    if(ext.equals("ser"))
+        if (checkFileChanged()) {
+            JFileChooser openFile = new JFileChooser(app.isCurrentFrench() ? "Ouvrir un fichier" : "Open file");
+            if (currentFile == null)
+                openFile.setCurrentDirectory(new File(System.getProperty("user.dir")));
+            else
+                openFile.setCurrentDirectory(currentFile);
+            openFile.getActionMap().get("viewTypeDetails").actionPerformed(null);
+            openFile.setAcceptAllFileFilterUsed(false);
+            openFile.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
+                @Override
+                public boolean accept(File f) {
+                    if (f.isDirectory())
                         return true;
+                    int i = f.getName().lastIndexOf('.');
+                    if (i >= 0) {
+                        String ext = f.getName().substring(i+1);
+                        if(ext.equals("ser"))
+                            return true;
+                        else
+                            return false;
+                    }
                     else
                         return false;
                 }
-                else
-                    return false;
+                @Override
+                public String getDescription() {
+                    return app.isCurrentFrench()?"Données sérialisées":"Serialized data";
+                }
+            });
+            int res = openFile.showOpenDialog(instance);
+            if (res == JFileChooser.APPROVE_OPTION) {
+                File f = openFile.getSelectedFile();
+                OpenFile(f);
             }
-            @Override
-            public String getDescription() {
-                return app.isCurrentFrench()?"Données sérialisées":"Serialized data";
-            }
-        });
-        int res = openFile.showOpenDialog(instance);
-        if (res == JFileChooser.APPROVE_OPTION) {
-            File f = openFile.getSelectedFile();
-            OpenFile(f);
         }
     }
     public void OpenFile(File toOpen) throws Exception {
@@ -338,6 +352,11 @@ public class MainWindow extends JFrame {
                 });
             }
         }
+        setTitle("Videoworld");
+        fileChanged = false;
+        changes.clear();
+        changeSelection = -1;
+        savedChange = null;
         menu.repaint();
     }
     public static void addChange(Change c) {
@@ -347,6 +366,7 @@ public class MainWindow extends JFrame {
         instance.changes.add(c);
         instance.changeSelection++;
         updateChange();
+        instance.triggerChange();
     }
     public static void updateChange() {
         instance.undo.setEnabled(instance.changeSelection > -1);
@@ -356,10 +376,35 @@ public class MainWindow extends JFrame {
         instance.changes.get(instance.changeSelection).undo();
         instance.changeSelection--;
         updateChange();
+        instance.triggerChange();
     }
     public static void redoChange() {
         instance.changeSelection++;
         instance.changes.get(instance.changeSelection).redo();
         updateChange();
+        instance.triggerChange();
+    }
+    public boolean checkFileChanged() throws Exception {
+        if (fileChanged) {
+            int res = JOptionPane.showConfirmDialog(this,
+            app.isCurrentFrench()?"Le fichier actuel a été modifié, voulez-vous le sauvegarder ?":"The current file has been modified, do you want to save it ?",
+            app.isCurrentFrench()?"Modifications en attente":"Pending modifications",
+            JOptionPane.YES_NO_CANCEL_OPTION);
+            if (res == JOptionPane.YES_OPTION)
+                return Save();
+            return res != JOptionPane.CANCEL_OPTION;
+        }
+        else
+            return true;
+    }
+    public void triggerChange() {
+        if (savedChange != (changeSelection>-1?changes.get(changeSelection):null)) {
+            fileChanged = true;
+            setTitle("Videoworld*");
+        }
+        else {
+            fileChanged = false;
+            setTitle("Videoworld");
+        }
     }
 }

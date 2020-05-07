@@ -32,6 +32,7 @@ public class Options extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 app.setFrench(lang.isSelected());
+                MainWindow.instance.triggerChange();
             }
         });
     }
