@@ -66,7 +66,7 @@ public class DatePicker extends JDialog {
         try {
             setIconImage(ImageIO.read(new File("images/cal.png")));
         }
-        catch(Exception e){}
+        catch(IOException e){}
         setLayout(new BorderLayout());
         {
             JPanel bar = new JPanel();

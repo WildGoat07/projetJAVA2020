@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 
 import controller.Application;
 import model.*;
@@ -45,7 +46,7 @@ public class ViewPerson extends JDialog {
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
         }
-        catch (Exception e){}
+        catch (IOException e){}
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         setSize(350, 200);
         setLocationRelativeTo(MainWindow.instance);
@@ -68,7 +69,6 @@ public class ViewPerson extends JDialog {
         delete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     app.removePerson(p);
                     MainWindow.addChange(new Change(){
                         @Override
@@ -79,17 +79,12 @@ public class ViewPerson extends JDialog {
                         }
                         @Override
                         public void redo() {
-                            try {
                                 app.removePerson(p);
                                 MainWindow.instance.people.update();
                                 MainWindow.instance.people.revalidate();
-                            }
-                            catch (Exception e) {}
                         }
                     });
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
-                }
-                catch(Exception exc) {}
             }
         });
         if (!app.canRemovePerson(p)) {

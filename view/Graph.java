@@ -14,9 +14,6 @@ import java.util.*;
 
 public class Graph extends JComponent {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
     private LocalDate minX;
     private LocalDate maxX;

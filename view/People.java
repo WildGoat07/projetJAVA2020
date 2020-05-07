@@ -53,7 +53,7 @@ public class People extends JPanel implements CanUpdate {
     private Comparator<Person> reverseSurnameComparator = surnameComparator.reversed();
     private Comparator<Person> reverseLoyalComparator = loyalComparator.reversed();
     
-    public People(Application app) throws Exception {
+    public People(Application app) {
         this.app = app;
         setLayout(new BorderLayout());
         currentComparator = nameComparator;

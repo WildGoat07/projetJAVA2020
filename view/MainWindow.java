@@ -29,10 +29,10 @@ public class MainWindow extends JFrame {
     private boolean fileChanged;
     private Change savedChange;
     private java.util.List<Window> subWindows;
-    public MainWindow() throws Exception {
+    public MainWindow() throws ClassNotFoundException, IOException {
         this(null);
     }
-    public MainWindow(File open) throws Exception {
+    public MainWindow(File open) throws IOException, ClassNotFoundException {
         super();
         instance = this;
         subWindows = new ArrayList<Window>();
@@ -66,7 +66,7 @@ public class MainWindow extends JFrame {
                     if (checkFileChanged())
                         System.exit(0);
                 }
-                catch(Exception exc){}
+                catch(IOException exc){}
             }
             @Override
             public void windowClosed(WindowEvent e) {
@@ -144,10 +144,10 @@ public class MainWindow extends JFrame {
                 return Save();
             }
         }
-        catch(Exception exc){}
+        catch(IOException exc){}
         return false;
     }
-    public void Open() throws Exception {
+    public void Open() throws HeadlessException, ClassNotFoundException, IOException {
         if (checkFileChanged()) {
             JFileChooser openFile = new JFileChooser(app.isCurrentFrench() ? "Ouvrir un fichier" : "Open file");
             if (currentFile == null)
@@ -184,7 +184,7 @@ public class MainWindow extends JFrame {
             }
         }
     }
-    public void OpenFile(File toOpen) throws Exception {
+    public void OpenFile(File toOpen) throws ClassNotFoundException, IOException {
         if (toOpen != null) {
             if (toOpen.exists()) {
                 InputStream stream = new FileInputStream(toOpen);
@@ -235,7 +235,8 @@ public class MainWindow extends JFrame {
                         try {
                             OpenFile(null);
                         }
-                        catch (Exception exc){}
+                        catch (IOException exc){}
+                        catch (ClassNotFoundException exc) {}
                     }
                 });
                 JMenuItem openFile = new JMenuItem(app.isCurrentFrench()?"Ouvrir un fichier":"Open file");
@@ -249,7 +250,8 @@ public class MainWindow extends JFrame {
                         try {
                             Open();
                         }
-                        catch (Exception exc){}
+                        catch (IOException exc){}
+                        catch (ClassNotFoundException exc) {}
                     }
                 });
                 JMenuItem saveFile = new JMenuItem(app.isCurrentFrench()?"Sauvegarder":"Save");
@@ -263,7 +265,7 @@ public class MainWindow extends JFrame {
                         try {
                             Save();
                         }
-                        catch (Exception exc){}
+                        catch (IOException exc){}
                     }
                 });
                 JMenuItem saveAsFile = new JMenuItem(app.isCurrentFrench()?"Sauvegarder sous...":"Save as...");
@@ -276,7 +278,7 @@ public class MainWindow extends JFrame {
                         try {
                             SaveAs();
                         }
-                        catch (Exception exc){}
+                        catch (IOException exc){}
                     }
                 });
                 JMenuItem exit = new JMenuItem(app.isCurrentFrench()?"Quitter":"Exit");
@@ -391,7 +393,7 @@ public class MainWindow extends JFrame {
         updateChange();
         instance.triggerChange();
     }
-    public boolean checkFileChanged() throws Exception {
+    public boolean checkFileChanged() throws IOException {
         if (fileChanged) {
             int res = JOptionPane.showConfirmDialog(this,
             app.isCurrentFrench()?"Le fichier actuel a été modifié, voulez-vous le sauvegarder ?":"The current file has been modified, do you want to save it ?",

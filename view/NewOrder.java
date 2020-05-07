@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 
 public class NewOrder extends JDialog {
@@ -54,8 +55,8 @@ public class NewOrder extends JDialog {
         setLocationRelativeTo(MainWindow.instance);
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
-        } catch (Exception e) {
         }
+        catch (IOException e) {}
         setLayout(new FlowLayout());
         JPanel placeholder = new JPanel();
         JPanel mainPanel = new JPanel();

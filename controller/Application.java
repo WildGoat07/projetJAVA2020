@@ -4,6 +4,7 @@ import model.*;
 import utilities.Functions;
 
 import java.io.*;
+import java.security.InvalidParameterException;
 import java.time.LocalDate;
 import java.util.*;
 /**
@@ -149,11 +150,11 @@ public class Application {
      * Sends a specific person in the world into the realms of death where they
      * will burn until they can no longer breath with their burnt lungs
      * @param p person to remove
-     * @throws Exception this person is still required somewhere in the orders
+     * @throws InvalidParameterException this person is still required somewhere in the orders
      */
-    public void removePerson(Person p) throws Exception {
+    public void removePerson(Person p) throws InvalidParameterException {
         if (!canRemovePerson(p))
-            throw new Exception("This person has already bought something !");
+            throw new InvalidParameterException("This person has already bought something !");
         people.remove(p);
     }
     /**
@@ -167,17 +168,17 @@ public class Application {
     /**
      * Adds an order to the list of orders
      * @param o order to add
-     * @throws Exception the customer is not registered or a product is either out of stock, or doesn't exist 
+     * @throws InvalidParameterException the customer is not registered or a product is either out of stock, or doesn't exist 
      */
-    public void addOrder(Order o) throws Exception {
+    public void addOrder(Order o) throws InvalidParameterException {
         if (!orders.contains(o)) {
             if (!personExists(o.getCustomer()))
-                throw new Exception("The person is missing for this order");
+                throw new InvalidParameterException("The person is missing for this order");
             for (Product product : o.getProducts()) {
                 if (productExistsInStock(product) == null)
-                    throw new Exception("One of the products of the order doesn't exists");
+                    throw new InvalidParameterException("One of the products of the order doesn't exists");
                 if (getLowestStockProduct(product, o.getBeginningRental(), o.getEndingRental()) == 0)
-                    throw new Exception("There is no more product in stock");
+                    throw new InvalidParameterException("There is no more product in stock");
             }
             orders.add(o);
         }
@@ -288,20 +289,20 @@ public class Application {
      * Removes a certain quantity of a product from the stock
      * @param p product to remove
      * @param count quantity to remove
-     * @throws Exception there is no product in stock, or not enough
+     * @throws InvalidParameterException there is no product in stock, or not enough
      */
-    public void removeProduct(Product p, int count) throws Exception {
+    public void removeProduct(Product p, int count) throws InvalidParameterException {
         if (canRemoveProduct(p, count))
             productExistsInStock(p).quantity -= count;
         else
-            throw new Exception("Not enough product in stock to remove");
+            throw new InvalidParameterException("Not enough product in stock to remove");
     }
     /**
      * Entirely removes a product from the registered products
      * @param p product to remove
-     * @throws Exception the product is required in an order
+     * @throws InvalidParameterException the product is required in an order
      */
-    public void removeProduct(Product p) throws Exception {
+    public void removeProduct(Product p) throws InvalidParameterException {
         ProductInStock currProduct;
         ListIterator<ProductInStock> it = stock.listIterator();
         while (it.hasNext()) {
@@ -312,7 +313,7 @@ public class Application {
                     return;
                 }
                 else
-                    throw new Exception("This product is mentioned in an order");
+                    throw new InvalidParameterException("This product is mentioned in an order");
             }
         }
     }

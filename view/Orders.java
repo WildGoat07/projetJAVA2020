@@ -102,7 +102,7 @@ public class Orders extends JPanel implements CanUpdate {
 
 
 
-    public Orders(Application app) throws Exception {
+    public Orders(Application app) {
         this.app = app;
         setLayout(new BorderLayout());
         currentComparator = beginComparator;
@@ -441,12 +441,9 @@ public class Orders extends JPanel implements CanUpdate {
                                         }
                                         @Override
                                         public void redo() {
-                                            try {
                                                 app.addOrder(order);
                                                 update();
                                                 revalidate();
-                                            }
-                                            catch(Exception exc){}
                                         }
                                     });
                                 }

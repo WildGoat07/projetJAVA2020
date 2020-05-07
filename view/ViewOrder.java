@@ -55,7 +55,7 @@ public class ViewOrder extends JDialog {
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
         }
-        catch (Exception e) {}
+        catch (IOException e) {}
         JButton customer = new JButton(o.getCustomer().toString());
         customer.addActionListener(new ActionListener() {
             @Override
@@ -233,17 +233,13 @@ public class ViewOrder extends JDialog {
         delete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     app.removeOrder(o);
                     MainWindow.addChange(new Change(){
                         @Override
                         public void undo() {
-                            try {
                                 app.addOrder(o);
                                 MainWindow.instance.orders.update();
                                 MainWindow.instance.orders.revalidate();
-                            }
-                            catch(Exception e){}
                         }
                         @Override
                         public void redo() {
@@ -253,8 +249,6 @@ public class ViewOrder extends JDialog {
                     }
                     });
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
-                }
-                catch (Exception exc) {}
             }
         });
     }

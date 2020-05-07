@@ -96,7 +96,7 @@ public class Products extends JPanel implements CanUpdate {
         return useCurrentTime?LocalDate.now():customDate;
     }
 
-    public Products(Application app) throws Exception {
+    public Products(Application app) {
         this.app = app;
         setLayout(new BorderLayout());
         currentComparator = nameComparator;
@@ -363,7 +363,6 @@ public class Products extends JPanel implements CanUpdate {
                         public void windowClosing(WindowEvent e) {
                             Product prod = dialog.getResult();
                             if (prod != null) {
-                                try {
                                     boolean prodExists = app.productExists(prod);
                                     app.addProduct(prod, dialog.getQuantity());
                                     update();
@@ -388,8 +387,6 @@ public class Products extends JPanel implements CanUpdate {
                                             revalidate();
                                         }
                                     });
-                                }
-                                catch(Exception exc) {}
                             }
                         }
                         @Override

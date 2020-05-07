@@ -56,7 +56,7 @@ public class NewProduct extends JDialog {
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
         }
-        catch (Exception e){}
+        catch (IOException e){}
         result = null;
         quantity = 0;
         JPanel mainPanel = new JPanel();
@@ -143,7 +143,7 @@ public class NewProduct extends JDialog {
                         resetImg.setEnabled(true);
                     }
                 }
-                catch(Exception exc){}
+                catch(IOException exc){}
             }
         });
         resetImg.addActionListener(new ActionListener() {
@@ -357,7 +357,7 @@ public class NewProduct extends JDialog {
                             }
                             break;
                         }
-                    }catch (Exception exc) {}
+                    }catch (IOException exc) {}
                 }
                 else
                     result = (Product)productList.getSelectedItem();

@@ -83,7 +83,7 @@ public class ViewProduct extends JDialog {
             else
                 setIconImage(ImageIO.read(new File("images/icon.png")));
         }
-        catch (Exception e) {}
+        catch (IOException e) {}
         mainPanel.add(img);
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Catégorie : ":"Category : ")+Functions.getProductType(p, app.isCurrentFrench())));
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Nom : ":"Name : ")+p.getTitle()));
@@ -132,7 +132,6 @@ public class ViewProduct extends JDialog {
         removeNbProducts.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     int toRemove = (int)nbToRemove.getValue();
                     app.removeProduct(p, toRemove);
                     MainWindow.addChange(new Change(){
@@ -144,23 +143,17 @@ public class ViewProduct extends JDialog {
                         }
                         @Override
                         public void redo() {
-                            try {
                                 app.removeProduct(p, toRemove);
                                 MainWindow.instance.products.update();
                                 MainWindow.instance.products.revalidate();
-                            }
-                            catch (Exception e) {}
                         }
                     });
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
-                }
-                catch (Exception exc) {}
             }
         });
         deleteProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     int nbInStock = app.getProductCountInStock(p);
                     app.removeProduct(p);
                     MainWindow.addChange(new Change(){
@@ -172,17 +165,12 @@ public class ViewProduct extends JDialog {
                         }
                         @Override
                         public void redo() {
-                            try {
                                 app.removeProduct(p);
                                 MainWindow.instance.products.update();
                                 MainWindow.instance.products.revalidate();
-                            }
-                            catch (Exception e) {}
                         }
                     });
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
-                }
-                catch (Exception exc) {}
             }
         });
 

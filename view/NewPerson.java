@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 
 public class NewPerson extends JDialog {
     private static final long serialVersionUID = 1L;
@@ -45,7 +46,7 @@ public class NewPerson extends JDialog {
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
         }
-        catch (Exception e){}
+        catch (IOException e){}
         setLayout(new FlowLayout());
         JPanel mainPanel = new JPanel();
         add(mainPanel);

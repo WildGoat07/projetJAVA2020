@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 
 public class Options extends JDialog {
     private static final long serialVersionUID = 1L;
@@ -17,7 +18,7 @@ public class Options extends JDialog {
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
         }
-        catch(Exception e){}
+        catch(IOException e){}
         setTitle(app.isCurrentFrench()?"Paramètres":"Options");
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
