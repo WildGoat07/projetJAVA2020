@@ -13,8 +13,9 @@ import java.util.*;
 
 public class Graph<T extends Comparable<T>> extends JComponent {
 
-    public interface ToInt<U> {
-        int convert(U value);
+    public interface Converter<U> {
+        float convertToFloat(U value);
+        int convertToInt(U value);
         U convert(int value);
     }
 
@@ -32,7 +33,7 @@ public class Graph<T extends Comparable<T>> extends JComponent {
     private static Color white = new Color(200, 200, 200);
     private static Color backPanels = new Color(80, 80, 80);
     private int leftSpace;
-    private ToInt<T> operation;
+    private Converter<T> operation;
 
     private LocalDate getX(float perc) {
         long days = minX.until(maxX, ChronoUnit.DAYS);
@@ -67,7 +68,7 @@ public class Graph<T extends Comparable<T>> extends JComponent {
         return res;
     }
 
-    private Graph(ToInt<T> op) {
+    private Graph(Converter<T> op) {
         operation = op;
         leftSpace = 30;
         specialDate = null;
@@ -115,7 +116,7 @@ public class Graph<T extends Comparable<T>> extends JComponent {
         mouseOnComponent = false;
     }
 
-    public Graph(ToInt<T> op, Map<LocalDate, T> values) {
+    public Graph(Converter<T> op, Map<LocalDate, T> values) {
         this(op);
         map = new TreeMap<LocalDate, T>(values);
         minY = map.entrySet().iterator().next().getValue();
@@ -133,7 +134,7 @@ public class Graph<T extends Comparable<T>> extends JComponent {
                 maxY = entry.getValue();
         }
     }
-    public Graph(ToInt<T> op, Map<LocalDate, T> values, T miny, T maxy) {
+    public Graph(Converter<T> op, Map<LocalDate, T> values, T miny, T maxy) {
         this(op);
         map = new TreeMap<LocalDate, T>(values);
         minY = miny;
@@ -147,7 +148,7 @@ public class Graph<T extends Comparable<T>> extends JComponent {
                 maxX = entry.getKey();
         }
     }
-    public Graph(ToInt<T> op, Map<LocalDate, T> values, T miny) {
+    public Graph(Converter<T> op, Map<LocalDate, T> values, T miny) {
         this(op);
         map = new TreeMap<LocalDate, T>(values);
         minY = miny;
@@ -173,8 +174,8 @@ public class Graph<T extends Comparable<T>> extends JComponent {
         g2.setPaint(black);
         g2.fillRect(0, 0, size.width, size.height);
         long days = minX.until(maxX, ChronoUnit.DAYS);
-        int maxYi = operation.convert(maxY);
-        int minYi = operation.convert(minY);
+        int maxYi = (int)Math.ceil(operation.convertToFloat(maxY));
+        int minYi = (int)Math.floor(operation.convertToFloat(minY));
         Period stepX;
         {
             long step = size.width / 50;
@@ -213,8 +214,8 @@ public class Graph<T extends Comparable<T>> extends JComponent {
         int lastX = leftSpace;
         int lastY;
         {
-            int val = operation.convert(map.entrySet().iterator().next().getValue());
-            lastY = size.height - 30 - (int)((float)(val - minYi) / (maxYi - minYi) * (size.height - 30));
+            float val = operation.convertToFloat(map.entrySet().iterator().next().getValue());
+            lastY = size.height - 30 - (int)((val - minYi) / (maxYi - minYi) * (size.height - 30));
         }
         if (specialDate != null) {
             g2.setPaint(Functions.getInverse(getForeground()));
@@ -224,10 +225,13 @@ public class Graph<T extends Comparable<T>> extends JComponent {
                 g2.drawLine(x, 0, x, size.height-30);
             }
         }
+        g2.setPaint(white);
+        g2.drawLine(leftSpace, size.height - 30, leftSpace, 0);
+        g2.drawLine(leftSpace, size.height - 30, size.width, size.height - 30);
         g2.setPaint(getForeground());
         for (Map.Entry<LocalDate, T> entry : map.entrySet()) {
             float percX = (float)minX.until(entry.getKey(), ChronoUnit.DAYS) / days;
-            float percY = (float)(operation.convert(entry.getValue()) - minYi) / (maxYi - minYi);
+            float percY = (operation.convertToFloat(entry.getValue()) - minYi) / (maxYi - minYi);
             int x = leftSpace + (int)((size.width-leftSpace) * percX);
             int y = size.height - 30 - (int)((size.height-30) * percY);
             g2.drawLine(lastX, lastY, x, lastY);
@@ -236,8 +240,6 @@ public class Graph<T extends Comparable<T>> extends JComponent {
             lastY = y;
         }
         g2.setPaint(white);
-        g2.drawLine(leftSpace, size.height - 30, leftSpace, 0);
-        g2.drawLine(leftSpace, size.height - 30, size.width, size.height - 30);
         java.util.List<Float> xSteps = new ArrayList<Float>();
         java.util.List<Float> ySteps = new ArrayList<Float>();
         for (LocalDate curr = minX;curr.compareTo(maxX) < 0;curr = curr.plus(stepX)) {
@@ -256,10 +258,10 @@ public class Graph<T extends Comparable<T>> extends JComponent {
             g2.drawLine(mouseX, 0, mouseX, size.height-30);
             g2.drawLine(leftSpace, mouseY, size.width, mouseY);
 
-            if (operation.convert(getY((mouseX-leftSpace)/(float)(size.width-leftSpace))) <= (maxYi-minYi)/2f) {
+            if (operation.convertToFloat(getY((mouseX-leftSpace)/(float)(size.width-leftSpace))) <= (maxYi-minYi)/2f) {
                 int rectPos = mouseX - leftSpace - 20;
                 int arrowPos = mouseX;
-                int posY = size.height - 30 - (int)((operation.convert(getY((mouseX-leftSpace)/(float)(size.width-leftSpace)))-minYi)/(float)(maxYi - minYi)*(size.height-30));
+                int posY = size.height - 30 - (int)((operation.convertToFloat(getY((mouseX-leftSpace)/(float)(size.width-leftSpace)))-minYi)/(maxYi - minYi)*(size.height-30));
                 if (rectPos < leftSpace)
                     rectPos = leftSpace;
                 if (rectPos > size.width-100)
@@ -287,7 +289,7 @@ public class Graph<T extends Comparable<T>> extends JComponent {
             else {
                 int rectPos = mouseX - leftSpace;
                 int arrowPos = mouseX;
-                int posY = size.height - 30 - (int)((operation.convert(getY((mouseX-leftSpace)/(float)(size.width-leftSpace)))-minYi)/(float)(maxYi - minYi)*(size.height-30));
+                int posY = size.height - 30 - (int)((operation.convertToFloat(getY((mouseX-leftSpace)/(float)(size.width-leftSpace)))-minYi)/(maxYi - minYi)*(size.height-30));
                 if (rectPos < leftSpace)
                     rectPos = leftSpace;
                 if (rectPos > size.width-100)
