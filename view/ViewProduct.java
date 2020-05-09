@@ -202,7 +202,21 @@ public class ViewProduct extends JDialog {
             long days = min.until(max, ChronoUnit.DAYS);
             stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
             stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-            add(new Graph(stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f), LocalDate.now()), gbc);
+            Graph<Integer> graph = new Graph<Integer>(new Graph.ToInt<Integer>() {
+
+                @Override
+                public int convert(Integer value) {
+                    return value;
+                }
+
+                @Override
+                public Integer convert(int value) {
+                    return value;
+                }
+            },stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f));
+            graph.setSpecialDate(LocalDate.now());
+            graph.setLeftSpace(40);
+            add(graph, gbc);
         }
         else {
             LocalDate min = LocalDate.now().minusDays(1);
@@ -210,7 +224,21 @@ public class ViewProduct extends JDialog {
             long days = min.until(max, ChronoUnit.DAYS);
             stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
             stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-            add(new Graph(stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f), LocalDate.now()), gbc);
+            Graph<Integer> graph = new Graph<Integer>(new Graph.ToInt<Integer>() {
+
+                @Override
+                public int convert(Integer value) {
+                    return value;
+                }
+
+                @Override
+                public Integer convert(int value) {
+                    return value;
+                }
+            },stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f));
+            graph.setSpecialDate(LocalDate.now());
+            graph.setLeftSpace(40);
+            add(graph, gbc);
         }
     }
     private class ProductIO {
