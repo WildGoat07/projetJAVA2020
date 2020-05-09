@@ -24,6 +24,8 @@ public class NewProduct extends JDialog {
     private int quantity;
     @SuppressWarnings("unchecked")
     public NewProduct(Application app) {
+        super(MainWindow.instance);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         Locale currLanguage = app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH;
         NewProduct itself = this;
         MainWindow.instance.addNewSubWindow(this);
@@ -211,7 +213,7 @@ public class NewProduct extends JDialog {
         newReleaseDate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DatePicker picker = new DatePicker(currLanguage);
+                DatePicker picker = new DatePicker(currLanguage, itself);
                 picker.addWindowListener(new WindowListener() {
                     @Override
                     public void windowOpened(WindowEvent e) {

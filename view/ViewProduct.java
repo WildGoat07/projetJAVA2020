@@ -20,7 +20,9 @@ public class ViewProduct extends JDialog {
 
     private static final long serialVersionUID = 1L;
 
-    public ViewProduct(Application app, Product p) {
+    public ViewProduct(Application app, Product p, Window caller) {
+        super(caller);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         final Window itself = this;
         MainWindow.instance.addNewSubWindow(this);
         addWindowListener(new WindowListener(){

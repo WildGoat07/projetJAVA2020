@@ -32,7 +32,9 @@ public class DatePicker extends JDialog {
      * @param date starting date to use
      * @param lang language to use
      */
-    public DatePicker(LocalDate date, Locale lang) {
+    public DatePicker(LocalDate date, Locale lang, Window caller) {
+        super(MainWindow.instance);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         itself = this;
         MainWindow.instance.addNewSubWindow(this);
         addWindowListener(new WindowListener(){
@@ -127,22 +129,22 @@ public class DatePicker extends JDialog {
     /**
      * Constructor.
      */
-    public DatePicker() {
-        this(LocalDate.now(), Locale.getDefault());
+    public DatePicker(Window caller) {
+        this(LocalDate.now(), Locale.getDefault(), caller);
     }
     /**
      * Constructor.
      * @param lang the language
      */
-    public DatePicker(Locale lang) {
-        this(LocalDate.now(), lang);
+    public DatePicker(Locale lang, Window caller) {
+        this(LocalDate.now(), lang, caller);
     }
     /**
      * Constructor.
      * @param date the starting date
      */
-    public DatePicker(LocalDate date) {
-        this(date, Locale.getDefault());
+    public DatePicker(LocalDate date, Window caller) {
+        this(date, Locale.getDefault(), caller);
     }
     /**
      * The resulting date.

@@ -243,7 +243,7 @@ public class People extends JPanel implements CanUpdate {
             MouseListener mouseListener = new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    ViewPerson dialog = new ViewPerson(app, person);
+                    ViewPerson dialog = new ViewPerson(app, person, MainWindow.instance);
                     dialog.addWindowListener(new WindowListener() {
                         @Override
                         public void windowOpened(WindowEvent e) {

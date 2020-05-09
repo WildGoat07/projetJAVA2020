@@ -128,7 +128,7 @@ public class Orders extends JPanel implements CanUpdate {
             changeDate.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    DatePicker picker = new DatePicker(currentDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH);
+                    DatePicker picker = new DatePicker(currentDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH, MainWindow.instance);
                     picker.setTitle(app.isCurrentFrench()?"Choisir une nouvelle date":"Select a new date");
                     picker.addWindowListener(new WindowListener() {
                         @Override
@@ -201,7 +201,7 @@ public class Orders extends JPanel implements CanUpdate {
             changeMinDate.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    DatePicker picker = new DatePicker(minDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH);
+                    DatePicker picker = new DatePicker(minDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH, MainWindow.instance);
                     picker.setTitle(app.isCurrentFrench()?"Choisir une nouvelle date":"Select a new date");
                     picker.addWindowListener(new WindowListener() {
                         @Override
@@ -239,7 +239,7 @@ public class Orders extends JPanel implements CanUpdate {
             changeMaxDate.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    DatePicker picker = new DatePicker(maxDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH);
+                    DatePicker picker = new DatePicker(maxDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH, MainWindow.instance);
                     picker.setTitle(app.isCurrentFrench()?"Choisir une nouvelle date":"Select a new date");
                     picker.addWindowListener(new WindowListener() {
                         @Override

@@ -246,7 +246,7 @@ public class Products extends JPanel implements CanUpdate {
             changeDate.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    DatePicker picker = new DatePicker(customDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH);
+                    DatePicker picker = new DatePicker(customDate, app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH, MainWindow.instance);
                     picker.setTitle(app.isCurrentFrench()?"Choisir une nouvelle date":"Select a new date");
                     picker.addWindowListener(new WindowListener() {
                         @Override
@@ -622,7 +622,7 @@ public class Products extends JPanel implements CanUpdate {
             MouseListener mouseListener = new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    ViewProduct dialog = new ViewProduct(app, product);
+                    ViewProduct dialog = new ViewProduct(app, product, MainWindow.instance);
                     dialog.addWindowListener(new WindowListener() {
                         @Override
                         public void windowOpened(WindowEvent e) {

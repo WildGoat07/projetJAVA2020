@@ -24,6 +24,8 @@ public class NewOrder extends JDialog {
     private Runnable fillPanels;
 
     public NewOrder(Application app) {
+        super(MainWindow.instance);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         NewOrder itself = this;
         MainWindow.instance.addNewSubWindow(this);
         addWindowListener(new WindowListener(){
@@ -88,7 +90,7 @@ public class NewOrder extends JDialog {
         changeBegDate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DatePicker picker = new DatePicker(app.isCurrentFrench() ? Locale.FRENCH : Locale.ENGLISH);
+                DatePicker picker = new DatePicker(app.isCurrentFrench() ? Locale.FRENCH : Locale.ENGLISH, itself);
                 picker.addWindowListener(new WindowListener() {
                     @Override
                     public void windowOpened(WindowEvent e) {

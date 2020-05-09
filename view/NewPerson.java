@@ -15,6 +15,8 @@ public class NewPerson extends JDialog {
     private static final long serialVersionUID = 1L;
     private Person result;
     public NewPerson(Application app) {
+        super(MainWindow.instance);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         NewPerson itself = this;
         MainWindow.instance.addNewSubWindow(this);
         addWindowListener(new WindowListener(){

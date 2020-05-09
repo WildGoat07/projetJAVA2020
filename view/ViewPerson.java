@@ -13,7 +13,9 @@ import model.*;
 public class ViewPerson extends JDialog {
     private static final long serialVersionUID = 1L;
 
-    public ViewPerson(Application app, Person p) {
+    public ViewPerson(Application app, Person p, Window caller) {
+        super(caller);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         JPanel mainPanel = new JPanel();
         final Window itself = this;
         MainWindow.instance.addNewSubWindow(this);

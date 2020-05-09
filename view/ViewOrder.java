@@ -19,6 +19,8 @@ public class ViewOrder extends JDialog {
     private Runnable update;
     private Comparator<Product> currentComparator;
     public ViewOrder(Application app, Order o) {
+        super(MainWindow.instance);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         Window itself = this;
         MainWindow.instance.addNewSubWindow(this);
         addWindowListener(new WindowListener(){
@@ -60,7 +62,7 @@ public class ViewOrder extends JDialog {
         customer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new ViewPerson(app, o.getCustomer()).setVisible(true);
+                new ViewPerson(app, o.getCustomer(), itself).setVisible(true);
             }
         });
         mainPanel.add(Functions.alignHorizontal(new Component[] {
@@ -156,7 +158,7 @@ public class ViewOrder extends JDialog {
                     MouseListener mouseListener = new MouseListener() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            new ViewProduct(app, prod).setVisible(true);
+                            new ViewProduct(app, prod, itself).setVisible(true);
                         }
                         @Override
                         public void mousePressed(MouseEvent e) {
