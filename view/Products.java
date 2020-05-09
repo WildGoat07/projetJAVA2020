@@ -354,7 +354,6 @@ public class Products extends JPanel implements CanUpdate {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     NewProduct dialog = new NewProduct(app);
-                    dialog.setVisible(true);
                     dialog.addWindowListener(new WindowListener() {
                         @Override
                         public void windowOpened(WindowEvent e) {
@@ -405,6 +404,7 @@ public class Products extends JPanel implements CanUpdate {
                         public void windowDeactivated(WindowEvent e) {
                         }
                     });
+                    dialog.setVisible(true);
                 }
             });
             filters.add(newProduct);
@@ -598,26 +598,26 @@ public class Products extends JPanel implements CanUpdate {
             gbc.gridx = 0;
             gbc.weightx = 30;
             final JLabel productName = new JLabel(product.getTitle());
-            productName.setBorder(LineBorder.createGrayLineBorder());
+            productName.setBorder(new LineBorder(MainWindow.borders, 1));
             productData.add(productName, gbc);
             gbc.gridx++;
             gbc.weightx = 0;
             final JLabel productPrice = new JLabel(product.getPrice(1).toString());
-            productPrice.setBorder(LineBorder.createGrayLineBorder());
+            productPrice.setBorder(new LineBorder(MainWindow.borders, 1));
             productData.add(productPrice, gbc);
             gbc.gridx++;
             gbc.weightx = 18;
             final JLabel productCateg = new JLabel(Functions.getProductType(product, app.isCurrentFrench()));
-            productCateg.setBorder(LineBorder.createGrayLineBorder());
+            productCateg.setBorder(new LineBorder(MainWindow.borders, 1));
             productData.add(productCateg, gbc);
             gbc.gridx++;
             gbc.weightx = 0;
             final JLabel productInStock = new JLabel(Integer.valueOf(app.getProductCountInStock(product, getTime())).toString());
-            productInStock.setBorder(LineBorder.createGrayLineBorder());
+            productInStock.setBorder(new LineBorder(MainWindow.borders, 1));
             productData.add(productInStock, gbc);
             gbc.gridx++;
             final JLabel rentedProduct = new JLabel(Integer.valueOf(app.getRentedProductCount(product, getTime())).toString());
-            rentedProduct.setBorder(LineBorder.createGrayLineBorder());
+            rentedProduct.setBorder(new LineBorder(MainWindow.borders, 1));
             productData.add(rentedProduct, gbc);
             MouseListener mouseListener = new MouseListener() {
                 @Override
@@ -659,19 +659,19 @@ public class Products extends JPanel implements CanUpdate {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     rentedProduct.setOpaque(true);
-                    rentedProduct.setBackground(new Color(200, 200, 200));
+                    rentedProduct.setBackground(MainWindow.itemHovered);
                     rentedProduct.repaint();
                     productInStock.setOpaque(true);
-                    productInStock.setBackground(new Color(200, 200, 200));
+                    productInStock.setBackground(MainWindow.itemHovered);
                     productInStock.repaint();
                     productCateg.setOpaque(true);
-                    productCateg.setBackground(new Color(200, 200, 200));
+                    productCateg.setBackground(MainWindow.itemHovered);
                     productCateg.repaint();
                     productPrice.setOpaque(true);
-                    productPrice.setBackground(new Color(200, 200, 200));
+                    productPrice.setBackground(MainWindow.itemHovered);
                     productPrice.repaint();
                     productName.setOpaque(true);
-                    productName.setBackground(new Color(200, 200, 200));
+                    productName.setBackground(MainWindow.itemHovered);
                     productName.repaint();
                 }
 

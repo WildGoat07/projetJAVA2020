@@ -225,11 +225,11 @@ public class People extends JPanel implements CanUpdate {
             gbc.gridx = 0;
             gbc.weightx = 1;
             final JLabel customerName = new JLabel(person.getName());
-            customerName.setBorder(LineBorder.createGrayLineBorder());
+            customerName.setBorder(new LineBorder(MainWindow.borders, 1));
             customerData.add(customerName, gbc);
             gbc.gridx++;
             final JLabel customerSurname = new JLabel(person.getSurname());
-            customerSurname.setBorder(LineBorder.createGrayLineBorder());
+            customerSurname.setBorder(new LineBorder(MainWindow.borders, 1));
             customerData.add(customerSurname, gbc);
             gbc.gridx++;
             gbc.weightx = 0;
@@ -238,7 +238,7 @@ public class People extends JPanel implements CanUpdate {
             ): (
                 app.isCurrentFrench()?"Non":"No"
             ));
-            loyalCustomer.setBorder(LineBorder.createGrayLineBorder());
+            loyalCustomer.setBorder(new LineBorder(MainWindow.borders, 1));
             customerData.add(loyalCustomer, gbc);
             MouseListener mouseListener = new MouseListener() {
                 @Override
@@ -280,13 +280,13 @@ public class People extends JPanel implements CanUpdate {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     customerName.setOpaque(true);
-                    customerName.setBackground(new Color(200, 200, 200));
+                    customerName.setBackground(MainWindow.itemHovered);
                     customerName.repaint();
                     customerSurname.setOpaque(true);
-                    customerSurname.setBackground(new Color(200, 200, 200));
+                    customerSurname.setBackground(MainWindow.itemHovered);
                     customerSurname.repaint();
                     loyalCustomer.setOpaque(true);
-                    loyalCustomer.setBackground(new Color(200, 200, 200));
+                    loyalCustomer.setBackground(MainWindow.itemHovered);
                     loyalCustomer.repaint();
                 }
 

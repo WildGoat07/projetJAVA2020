@@ -702,25 +702,25 @@ public class Orders extends JPanel implements CanUpdate {
             gbc.gridx = 0;
             gbc.weightx = 5;
             JLabel orderName = new JLabel(order.getCustomer().getName()+" "+order.getCustomer().getSurname());
-            orderName.setBorder(LineBorder.createGrayLineBorder());
+            orderName.setBorder(new LineBorder(MainWindow.borders, 1));
             orderData.add(orderName, gbc);
             gbc.gridx++;
             gbc.weightx = 1;
             JLabel orderbeg = new JLabel(order.getBeginningRental().toString());
-            orderbeg.setBorder(LineBorder.createGrayLineBorder());
+            orderbeg.setBorder(new LineBorder(MainWindow.borders, 1));
             orderData.add(orderbeg, gbc);
             gbc.gridx++;
             JLabel orderend = new JLabel(order.getEndingRental().toString());
-            orderend.setBorder(LineBorder.createGrayLineBorder());
+            orderend.setBorder(new LineBorder(MainWindow.borders, 1));
             orderData.add(orderend, gbc);
             gbc.gridx++;
             gbc.weightx = 0;
             JLabel orderPrice = new JLabel(order.getCost().toString());
-            orderPrice.setBorder(LineBorder.createGrayLineBorder());
+            orderPrice.setBorder(new LineBorder(MainWindow.borders, 1));
             orderData.add(orderPrice, gbc);
             gbc.gridx++;
             JLabel orderCount = new JLabel(Integer.valueOf(order.getProducts().size()).toString());
-            orderCount.setBorder(LineBorder.createGrayLineBorder());
+            orderCount.setBorder(new LineBorder(MainWindow.borders, 1));
             orderData.add(orderCount, gbc);
             MouseListener mouseListener = new MouseListener() {
                 @Override
@@ -762,19 +762,19 @@ public class Orders extends JPanel implements CanUpdate {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     orderName.setOpaque(true);
-                    orderName.setBackground(new Color(200, 200, 200));
+                    orderName.setBackground(MainWindow.itemHovered);
                     orderName.repaint();
                     orderbeg.setOpaque(true);
-                    orderbeg.setBackground(new Color(200, 200, 200));
+                    orderbeg.setBackground(MainWindow.itemHovered);
                     orderbeg.repaint();
                     orderend.setOpaque(true);
-                    orderend.setBackground(new Color(200, 200, 200));
+                    orderend.setBackground(MainWindow.itemHovered);
                     orderend.repaint();
                     orderPrice.setOpaque(true);
-                    orderPrice.setBackground(new Color(200, 200, 200));
+                    orderPrice.setBackground(MainWindow.itemHovered);
                     orderPrice.repaint();
                     orderCount.setOpaque(true);
-                    orderCount.setBackground(new Color(200, 200, 200));
+                    orderCount.setBackground(MainWindow.itemHovered);
                     orderCount.repaint();
                 }
 
