@@ -53,6 +53,13 @@ public abstract class Product implements Serializable {
         initialPrice = newPrice;
     }
     /**
+     * Returns the initial price of the product
+     * @return the initial price
+     */
+    public Price getInitialPrice() {
+        return new Price(initialPrice);
+    }
+    /**
      * Change the price at a given time. Will change the history.
      * @param newPrice the new price to set
      * @param when when the change will take effect

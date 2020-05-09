@@ -14,6 +14,7 @@ import java.util.*;
 
 import model.*;
 import utilities.Functions;
+import utilities.Price;
 import controller.Application;
 
 public class ViewProduct extends JDialog {
@@ -58,7 +59,7 @@ public class ViewProduct extends JDialog {
         gbc.weightx = 0;
         add(mainPanel, gbc);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        setSize(1000, 250);
+        setSize(450, 250);
         setLocationRelativeTo(MainWindow.instance);
         mainPanel.add(Box.createRigidArea(new Dimension(1, 20)));
         setTitle(p.getTitle());
@@ -125,6 +126,226 @@ public class ViewProduct extends JDialog {
                 removeNbProducts.setEnabled((int)nbToRemove.getValue() > 0);
             }
         });
+        JButton viewPrice = new JButton(app.isCurrentFrench()?"Voir le graphe des prix":"Show the price graph");
+        JButton viewStock = new JButton(app.isCurrentFrench()?"Voir le graphe du stock":"Show the stock graph");
+        viewStock.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                JDialog dialog = new JDialog(itself, app.isCurrentFrench()?"Graphe du stock":"Stock graph");
+                dialog.setSize(900, 600);
+                dialog.setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
+                MainWindow.instance.addNewSubWindow(dialog);
+                dialog.setLocationRelativeTo(itself);
+                dialog.addWindowListener(new WindowListener(){
+                    @Override
+                    public void windowOpened(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        MainWindow.instance.removeSubWindow(dialog);
+                    }
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowIconified(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowDeiconified(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowActivated(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowDeactivated(WindowEvent e) {
+                    }
+                });
+                ArrayList<ProductIO> data = new ArrayList<ProductIO>();
+                for (Order order : app.getOrders())
+                    if (order.getProducts().contains(p)) {
+                        data.add(new ProductIO(order.getBeginningRental(), false));
+                        data.add(new ProductIO(order.getEndingRental(), true));
+                    }
+                data.sort(new Comparator<ProductIO>() {
+                    @Override
+                    public int compare(ProductIO o1, ProductIO o2) {
+                        return o1.time.compareTo(o2.time);
+                    }
+                });
+                Map<LocalDate, Integer> stock = new HashMap<LocalDate, Integer>();
+                int currStock = app.getRegisteredProductCount(p);
+                for (ProductIO productIO : data) {
+                    currStock += productIO.isInput?1:-1;
+                    stock.put(productIO.time, currStock);
+                }
+                if (stock.size() > 0) {
+                    LocalDate min = Collections.min(stock.keySet());
+                    LocalDate max = Collections.max(stock.keySet());
+                    long days = min.until(max, ChronoUnit.DAYS);
+                    Integer maxValue = (int)(app.getRegisteredProductCount(p)*1.1f);
+                    if (maxValue == (app.getRegisteredProductCount(p)))
+                        maxValue++;
+                    stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+                    stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+                    Graph<Integer> graph = new Graph<Integer>(new Graph.Converter<Integer>() {
+        
+                        @Override
+                        public int convertToInt(Integer value) {
+                            return value;
+                        }
+        
+                        @Override
+                        public Integer convert(int value) {
+                            return value;
+                        }
+        
+                        @Override
+                        public float convertToFloat(Integer value) {
+                            return value;
+                        }
+                    },stock, 0, maxValue);
+                    graph.setSpecialDate(LocalDate.now());
+                    graph.setLeftSpace(40);
+                    dialog.add(graph);
+                }
+                else {
+                    LocalDate min = LocalDate.now().minusDays(1);
+                    LocalDate max = LocalDate.now().plusDays(1);
+                    long days = min.until(max, ChronoUnit.DAYS);
+                    Integer maxValue = (int)(app.getRegisteredProductCount(p)*1.1f);
+                    if (maxValue == (app.getRegisteredProductCount(p)))
+                        maxValue++;
+                    stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+                    stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
+                    Graph<Integer> graph = new Graph<Integer>(new Graph.Converter<Integer>() {
+        
+                        @Override
+                        public int convertToInt(Integer value) {
+                            return value;
+                        }
+        
+                        @Override
+                        public Integer convert(int value) {
+                            return value;
+                        }
+        
+                        @Override
+                        public float convertToFloat(Integer value) {
+                            return value;
+                        }
+                    },stock, 0, maxValue);
+                    graph.setSpecialDate(LocalDate.now());
+                    graph.setLeftSpace(40);
+                    dialog.add(graph);
+                }
+                dialog.setVisible(true);
+            }
+        });
+        viewPrice.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                JDialog dialog = new JDialog(itself, app.isCurrentFrench()?"Graphe des prix":"Price graph");
+                dialog.setSize(900, 600);
+                dialog.setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
+                MainWindow.instance.addNewSubWindow(dialog);
+                dialog.setLocationRelativeTo(itself);
+                dialog.addWindowListener(new WindowListener(){
+                    @Override
+                    public void windowOpened(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        MainWindow.instance.removeSubWindow(dialog);
+                    }
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowIconified(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowDeiconified(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowActivated(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowDeactivated(WindowEvent e) {
+                    }
+                });
+                Map<LocalDate, Price> prices = p.getHistory();
+                if (prices.size() > 0) {
+                    LocalDate min = Collections.min(prices.keySet());
+                    LocalDate max = Collections.max(prices.keySet());
+                    long days = min.until(max, ChronoUnit.DAYS);
+                    Price maxValue = Collections.max(prices.values());
+                    {
+                        if (Price.multiply(maxValue, 1.1f).intValue() == maxValue.intValue())
+                            maxValue.add(new Price(1));
+                        else
+                            maxValue.multiply(1.1f);
+                    }
+                    prices.put(min.minusDays((long)(days*.15f)), p.getInitialPrice());
+                    prices.put(max.plusDays((long)(days*.15f)), p.getPrice(1, max.plusDays(1)));
+                    Graph<Price> graph = new Graph<Price>(new Graph.Converter<Price>() {
+        
+                        @Override
+                        public int convertToInt(Price value) {
+                            return value.intValue();
+                        }
+        
+                        @Override
+                        public Price convert(int value) {
+                            return new Price(value);
+                        }
+        
+                        @Override
+                        public float convertToFloat(Price value) {
+                            return value.floatValue();
+                        }
+                    },prices, new Price(), maxValue);
+                    graph.setSpecialDate(LocalDate.now());
+                    graph.setLeftSpace(60);
+                    dialog.add(graph);
+                }
+                else {
+                    LocalDate min = LocalDate.now().minusDays(1);
+                    LocalDate max = LocalDate.now().plusDays(1);
+                    long days = min.until(max, ChronoUnit.DAYS);
+                    Price maxValue = p.getInitialPrice();
+                    {
+                        if (Price.multiply(maxValue, 1.1f).intValue() == maxValue.intValue())
+                            maxValue.add(new Price(1));
+                        else
+                            maxValue.multiply(1.1f);
+                    }
+                    prices.put(min.minusDays((long)(days*.15f)), p.getInitialPrice());
+                    prices.put(max.plusDays((long)(days*.15f)), p.getInitialPrice());
+                    Graph<Price> graph = new Graph<Price>(new Graph.Converter<Price>() {
+        
+                        @Override
+                        public int convertToInt(Price value) {
+                            return value.intValue();
+                        }
+        
+                        @Override
+                        public Price convert(int value) {
+                            return new Price(value);
+                        }
+        
+                        @Override
+                        public float convertToFloat(Price value) {
+                            return value.floatValue();
+                        }
+                    },prices, new Price(), maxValue);
+                    graph.setSpecialDate(LocalDate.now());
+                    graph.setLeftSpace(60);
+                    dialog.add(graph);
+                }
+                dialog.setVisible(true);
+            }
+        });
+        mainPanel.add(Functions.alignHorizontal(new Component[]{viewPrice, viewStock}));
         JButton deleteProduct = new JButton(app.isCurrentFrench()?"Supprimer le produit":"Delete the product",  new ImageIcon("images/trash.png"));
         mainPanel.add(deleteProduct);
         if (!app.canRemoveProduct(p)) {
@@ -178,78 +399,6 @@ public class ViewProduct extends JDialog {
 
         gbc.weightx = 1;
         gbc.gridx = 1;
-        ArrayList<ProductIO> data = new ArrayList<ProductIO>();
-        for (Order order : app.getOrders())
-            if (order.getProducts().contains(p)) {
-                data.add(new ProductIO(order.getBeginningRental(), false));
-                data.add(new ProductIO(order.getEndingRental(), true));
-            }
-        data.sort(new Comparator<ProductIO>() {
-            @Override
-            public int compare(ProductIO o1, ProductIO o2) {
-                return o1.time.compareTo(o2.time);
-            }
-        });
-        Map<LocalDate, Integer> stock = new HashMap<LocalDate, Integer>();
-        int currStock = app.getRegisteredProductCount(p);
-        for (ProductIO productIO : data) {
-            currStock += productIO.isInput?1:-1;
-            stock.put(productIO.time, currStock);
-        }
-        if (stock.size() > 0) {
-            LocalDate min = Collections.min(stock.keySet());
-            LocalDate max = Collections.max(stock.keySet());
-            long days = min.until(max, ChronoUnit.DAYS);
-            stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-            stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-            Graph<Integer> graph = new Graph<Integer>(new Graph.Converter<Integer>() {
-
-                @Override
-                public int convertToInt(Integer value) {
-                    return value;
-                }
-
-                @Override
-                public Integer convert(int value) {
-                    return value;
-                }
-
-                @Override
-                public float convertToFloat(Integer value) {
-                    return value;
-                }
-            },stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f));
-            graph.setSpecialDate(LocalDate.now());
-            graph.setLeftSpace(40);
-            add(graph, gbc);
-        }
-        else {
-            LocalDate min = LocalDate.now().minusDays(1);
-            LocalDate max = LocalDate.now().plusDays(1);
-            long days = min.until(max, ChronoUnit.DAYS);
-            stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-            stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-            Graph<Integer> graph = new Graph<Integer>(new Graph.Converter<Integer>() {
-
-                @Override
-                public int convertToInt(Integer value) {
-                    return value;
-                }
-
-                @Override
-                public Integer convert(int value) {
-                    return value;
-                }
-
-                @Override
-                public float convertToFloat(Integer value) {
-                    return value;
-                }
-            },stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f));
-            graph.setSpecialDate(LocalDate.now());
-            graph.setLeftSpace(40);
-            add(graph, gbc);
-        }
     }
     private class ProductIO {
         public LocalDate time;
