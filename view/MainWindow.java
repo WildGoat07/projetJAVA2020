@@ -150,225 +150,224 @@ public class MainWindow extends JFrame {
         return false;
     }
     public void Open() throws HeadlessException, ClassNotFoundException, IOException {
-        if (checkFileChanged()) {
-            JFileChooser openFile = new JFileChooser(app.isCurrentFrench() ? "Ouvrir un fichier" : "Open file");
-            if (currentFile == null)
-                openFile.setCurrentDirectory(new File(System.getProperty("user.dir")));
-            else
-                openFile.setCurrentDirectory(currentFile);
-            openFile.getActionMap().get("viewTypeDetails").actionPerformed(null);
-            openFile.setAcceptAllFileFilterUsed(false);
-            openFile.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
-                @Override
-                public boolean accept(File f) {
-                    if (f.isDirectory())
+        JFileChooser openFile = new JFileChooser(app.isCurrentFrench() ? "Ouvrir un fichier" : "Open file");
+        if (currentFile == null)
+            openFile.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        else
+            openFile.setCurrentDirectory(currentFile);
+        openFile.getActionMap().get("viewTypeDetails").actionPerformed(null);
+        openFile.setAcceptAllFileFilterUsed(false);
+        openFile.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory())
+                    return true;
+                int i = f.getName().lastIndexOf('.');
+                if (i >= 0) {
+                    String ext = f.getName().substring(i+1);
+                    if(ext.equals("ser"))
                         return true;
-                    int i = f.getName().lastIndexOf('.');
-                    if (i >= 0) {
-                        String ext = f.getName().substring(i+1);
-                        if(ext.equals("ser"))
-                            return true;
-                        else
-                            return false;
-                    }
                     else
                         return false;
                 }
-                @Override
-                public String getDescription() {
-                    return app.isCurrentFrench()?"Données sérialisées":"Serialized data";
-                }
-            });
-            int res = openFile.showOpenDialog(instance);
-            if (res == JFileChooser.APPROVE_OPTION) {
-                File f = openFile.getSelectedFile();
-                OpenFile(f);
+                else
+                    return false;
             }
+            @Override
+            public String getDescription() {
+                return app.isCurrentFrench()?"Données sérialisées":"Serialized data";
+            }
+        });
+        int res = openFile.showOpenDialog(instance);
+        if (res == JFileChooser.APPROVE_OPTION) {
+            File f = openFile.getSelectedFile();
+            OpenFile(f);
         }
     }
     public void OpenFile(File toOpen) throws ClassNotFoundException, IOException {
-        if (toOpen != null) {
-            if (toOpen.exists()) {
-                InputStream stream = new FileInputStream(toOpen);
-                app = Application.loadFromStream(stream);
-                stream.close();
-                currentFile = toOpen;
+        if (checkFileChanged()) {
+            if (toOpen != null) {
+                if (toOpen.exists()) {
+                    InputStream stream = new FileInputStream(toOpen);
+                    app = Application.loadFromStream(stream);
+                    stream.close();
+                    currentFile = toOpen;
+                }
+                else {
+                    app = new Application();
+                    currentFile = null;
+                }
             }
             else {
                 app = new Application();
                 currentFile = null;
             }
-        }
-        else {
-            app = new Application();
-            currentFile = null;
-        }
-        Locale.setDefault(app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH);
-        setLocale(Locale.getDefault());
-        remove(tab);
-        tab = new JTabbedPane();
-        add(tab, BorderLayout.CENTER);
-        tab.addChangeListener(new ChangeListener(){
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                ((CanUpdate)tab.getSelectedComponent()).update();
-                tab.getSelectedComponent().revalidate();
-            }
-        });
-        people = new People(app);
-        products = new Products(app);
-        orders = new Orders(app);
-        tab.addTab(app.isCurrentFrench() ? "Produits" : "Products", new ImageIcon("images/prod.png"), products);
-        tab.addTab(app.isCurrentFrench() ? "Clients" : "Customers", new ImageIcon("images/customer.png"), people);
-        tab.addTab(app.isCurrentFrench() ? "Commandes" : "Orders", new ImageIcon("images/order.png"), orders);
-        menu.removeAll();
-        {
-            JMenu fileMenu = new JMenu(app.isCurrentFrench()?"Fichier":"File");
-            menu.add(fileMenu);
+            Locale.setDefault(app.isCurrentFrench()?Locale.FRENCH:Locale.ENGLISH);
+            setLocale(Locale.getDefault());
+            remove(tab);
+            tab = new JTabbedPane();
+            add(tab, BorderLayout.CENTER);
+            tab.addChangeListener(new ChangeListener(){
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    ((CanUpdate)tab.getSelectedComponent()).update();
+                    tab.getSelectedComponent().revalidate();
+                }
+            });
+            people = new People(app);
+            products = new Products(app);
+            orders = new Orders(app);
+            tab.addTab(app.isCurrentFrench() ? "Produits" : "Products", new ImageIcon("images/prod.png"), products);
+            tab.addTab(app.isCurrentFrench() ? "Clients" : "Customers", new ImageIcon("images/customer.png"), people);
+            tab.addTab(app.isCurrentFrench() ? "Commandes" : "Orders", new ImageIcon("images/order.png"), orders);
+            menu.removeAll();
             {
-                JMenuItem newFile = new JMenuItem(app.isCurrentFrench()?"Nouveau fichier":"New file");
-                newFile.setIcon(new ImageIcon("images/new.png"));
-                fileMenu.add(newFile);
-                newFile.setMnemonic(KeyEvent.VK_N);
-                newFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
-                newFile.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            OpenFile(null);
+                JMenu fileMenu = new JMenu(app.isCurrentFrench()?"Fichier":"File");
+                menu.add(fileMenu);
+                {
+                    JMenuItem newFile = new JMenuItem(app.isCurrentFrench()?"Nouveau fichier":"New file");
+                    newFile.setIcon(new ImageIcon("images/new.png"));
+                    fileMenu.add(newFile);
+                    newFile.setMnemonic(KeyEvent.VK_N);
+                    newFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
+                    newFile.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                OpenFile(null);
+                            }
+                            catch (IOException exc){}
+                            catch (ClassNotFoundException exc) {}
                         }
-                        catch (IOException exc){}
-                        catch (ClassNotFoundException exc) {}
-                    }
-                });
-                JMenuItem openFile = new JMenuItem(app.isCurrentFrench()?"Ouvrir un fichier":"Open file");
-                openFile.setIcon(new ImageIcon("images/open.png"));
-                fileMenu.add(openFile);
-                openFile.setMnemonic(KeyEvent.VK_O);
-                openFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
-                openFile.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            Open();
+                    });
+                    JMenuItem openFile = new JMenuItem(app.isCurrentFrench()?"Ouvrir un fichier":"Open file");
+                    openFile.setIcon(new ImageIcon("images/open.png"));
+                    fileMenu.add(openFile);
+                    openFile.setMnemonic(KeyEvent.VK_O);
+                    openFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
+                    openFile.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                Open();
+                            }
+                            catch (IOException exc){}
+                            catch (ClassNotFoundException exc) {}
                         }
-                        catch (IOException exc){}
-                        catch (ClassNotFoundException exc) {}
-                    }
-                });
-                JMenuItem saveFile = new JMenuItem(app.isCurrentFrench()?"Sauvegarder":"Save");
-                saveFile.setIcon(new ImageIcon("images/save.png"));
-                fileMenu.add(saveFile);
-                saveFile.setMnemonic(KeyEvent.VK_S);
-                saveFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
-                saveFile.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            Save();
+                    });
+                    JMenuItem saveFile = new JMenuItem(app.isCurrentFrench()?"Sauvegarder":"Save");
+                    saveFile.setIcon(new ImageIcon("images/save.png"));
+                    fileMenu.add(saveFile);
+                    saveFile.setMnemonic(KeyEvent.VK_S);
+                    saveFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+                    saveFile.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                Save();
+                            }
+                            catch (IOException exc){}
                         }
-                        catch (IOException exc){}
-                    }
-                });
-                JMenuItem saveAsFile = new JMenuItem(app.isCurrentFrench()?"Sauvegarder sous...":"Save as...");
-                saveAsFile.setIcon(new ImageIcon("images/save-as.png"));
-                fileMenu.add(saveAsFile);
-                saveAsFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
-                saveAsFile.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            SaveAs();
+                    });
+                    JMenuItem saveAsFile = new JMenuItem(app.isCurrentFrench()?"Sauvegarder sous...":"Save as...");
+                    saveAsFile.setIcon(new ImageIcon("images/save-as.png"));
+                    fileMenu.add(saveAsFile);
+                    saveAsFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+                    saveAsFile.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                SaveAs();
+                            }
+                            catch (IOException exc){}
                         }
-                        catch (IOException exc){}
-                    }
-                });
-                JMenuItem exit = new JMenuItem(app.isCurrentFrench()?"Quitter":"Exit");
-                exit.setIcon(new ImageIcon("images/exit.png"));
-                fileMenu.add(exit);
-                saveFile.setMnemonic(app.isCurrentFrench()?KeyEvent.VK_Q:KeyEvent.VK_X);
-                exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
-                exit.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        instance.dispatchEvent(new WindowEvent(instance, WindowEvent.WINDOW_CLOSING));
-                    }
-                });
+                    });
+                    JMenuItem exit = new JMenuItem(app.isCurrentFrench()?"Quitter":"Exit");
+                    exit.setIcon(new ImageIcon("images/exit.png"));
+                    fileMenu.add(exit);
+                    saveFile.setMnemonic(app.isCurrentFrench()?KeyEvent.VK_Q:KeyEvent.VK_X);
+                    exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+                    exit.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            instance.dispatchEvent(new WindowEvent(instance, WindowEvent.WINDOW_CLOSING));
+                        }
+                    });
+                }
+                JMenu editMenu = new JMenu(app.isCurrentFrench()?"Edition":"Edit");
+                menu.add(editMenu);
+                {
+                    undo = new JMenuItem(app.isCurrentFrench()?"Annuler":"Undo");
+                    undo.setIcon(new ImageIcon("images/undo.png"));
+                    editMenu.add(undo);
+                    undo.setEnabled(false);
+                    undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
+                    undo.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            undoChange();
+                        }
+                    });
+                    redo = new JMenuItem(app.isCurrentFrench()?"Rétablir":"Redo");
+                    redo.setIcon(new ImageIcon("images/redo.png"));
+                    editMenu.add(redo);
+                    redo.setEnabled(false);
+                    redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
+                    redo.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            redoChange();
+                        }
+                    });
+                    JMenuItem addProduct = new JMenuItem(app.isCurrentFrench()?"Ajouter produit":"Add product");
+                    addProduct.setIcon(new ImageIcon("images/add-prod.png"));
+                    editMenu.add(addProduct);
+                    addProduct.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            products.newProduct.doClick();
+                        }
+                    });
+                    JMenuItem addPerson = new JMenuItem(app.isCurrentFrench()?"Ajouter client":"Add customer");
+                    addPerson.setIcon(new ImageIcon("images/add-customer.png"));
+                    editMenu.add(addPerson);
+                    addPerson.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            people.newPerson.doClick();
+                        }
+                    });
+                    JMenuItem addOrder = new JMenuItem(app.isCurrentFrench()?"Ajouter commande":"Add order");
+                    addOrder.setIcon(new ImageIcon("images/add-order.png"));
+                    editMenu.add(addOrder);
+                    addOrder.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            orders.newOrder.doClick();
+                        }
+                    });
+                    JMenuItem options = new JMenuItem(app.isCurrentFrench()?"Préférences":"Preferences");
+                    options.setIcon(new ImageIcon("images/preferences.png"));
+                    editMenu.add(options);
+                    options.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK));
+                    options.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            new Options(app).setVisible(true);
+                        }
+                    });
+                }
             }
-            JMenu editMenu = new JMenu(app.isCurrentFrench()?"Edition":"Edit");
-            menu.add(editMenu);
-            {
-                undo = new JMenuItem(app.isCurrentFrench()?"Annuler":"Undo");
-                undo.setIcon(new ImageIcon("images/undo.png"));
-                editMenu.add(undo);
-                undo.setEnabled(false);
-                undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
-                undo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        undoChange();
-                    }
-                });
-                redo = new JMenuItem(app.isCurrentFrench()?"Rétablir":"Redo");
-                redo.setIcon(new ImageIcon("images/redo.png"));
-                editMenu.add(redo);
-                redo.setEnabled(false);
-                redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
-                redo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        redoChange();
-                    }
-                });
-                JMenuItem addProduct = new JMenuItem(app.isCurrentFrench()?"Ajouter produit":"Add product");
-                addProduct.setIcon(new ImageIcon("images/add-prod.png"));
-                editMenu.add(addProduct);
-                addProduct.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        products.newProduct.doClick();
-                    }
-                });
-                JMenuItem addPerson = new JMenuItem(app.isCurrentFrench()?"Ajouter client":"Add customer");
-                addPerson.setIcon(new ImageIcon("images/add-customer.png"));
-                editMenu.add(addPerson);
-                addPerson.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        people.newPerson.doClick();
-                    }
-                });
-                JMenuItem addOrder = new JMenuItem(app.isCurrentFrench()?"Ajouter commande":"Add order");
-                addOrder.setIcon(new ImageIcon("images/add-order.png"));
-                editMenu.add(addOrder);
-                addOrder.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        orders.newOrder.doClick();
-                    }
-                });
-                JMenuItem options = new JMenuItem(app.isCurrentFrench()?"Préférences":"Preferences");
-                options.setIcon(new ImageIcon("images/preferences.png"));
-                editMenu.add(options);
-                options.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK));
-                options.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        new Options(app).setVisible(true);
-                    }
-                });
-            }
+            for (Window window : subWindows)
+                window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+            subWindows.clear();
+            changes.clear();
+            changeSelection = -1;
+            savedChange = null;
+            triggerChange();
+            updateChange();
+            menu.repaint();
         }
-        setTitle("Videoworld");
-        fileChanged = false;
-        changes.clear();
-        changeSelection = -1;
-        savedChange = null;
-        for (Window window : subWindows)
-            window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
-        subWindows.clear();
-        triggerChange();
-        menu.repaint();
     }
     public static void addChange(Change c) {
 

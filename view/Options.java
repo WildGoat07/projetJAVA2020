@@ -14,6 +14,32 @@ public class Options extends JDialog {
 
     public Options(Application app) {
         setSize(300, 150);
+        Window itself = this;
+        MainWindow.instance.addNewSubWindow(this);
+        addWindowListener(new WindowListener(){
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+            @Override
+            public void windowClosing(WindowEvent e) {
+                MainWindow.instance.removeSubWindow(itself);
+            }
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
         setLocationRelativeTo(MainWindow.instance);
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));

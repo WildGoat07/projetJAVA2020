@@ -29,7 +29,7 @@ public class ViewProduct extends JDialog {
             }
             @Override
             public void windowClosing(WindowEvent e) {
-                MainWindow.instance.remove(itself);
+                MainWindow.instance.removeSubWindow(itself);
             }
             @Override
             public void windowClosed(WindowEvent e) {
