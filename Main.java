@@ -16,7 +16,7 @@ public class Main {
             if (!curr.exists())
                 curr = null;
         }
-        //https://stackoverflow.com/a/39482204/13270517
+        //https://stackoverflow.com/a/39482204/13270517 with some tweaks
         UIManager.put( "control", new Color(64,64,64) );
         UIManager.put( "info", new Color(64,64,64) );
         UIManager.put( "nimbusBase", new Color( 0, 0, 0) );
