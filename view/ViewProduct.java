@@ -197,15 +197,15 @@ public class ViewProduct extends JDialog {
             stock.put(productIO.time, currStock);
         }
         if (stock.size() > 0) {
-            /*LocalDate min = Collections.min(stock.keySet());
+            LocalDate min = Collections.min(stock.keySet());
             LocalDate max = Collections.max(stock.keySet());
             long days = min.until(max, ChronoUnit.DAYS);
             stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
             stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-            Graph<Integer> graph = new Graph<Integer>(new Graph.ToInt<Integer>() {
+            Graph<Integer> graph = new Graph<Integer>(new Graph.Converter<Integer>() {
 
                 @Override
-                public int convert(Integer value) {
+                public int convertToInt(Integer value) {
                     return value;
                 }
 
@@ -213,33 +213,12 @@ public class ViewProduct extends JDialog {
                 public Integer convert(int value) {
                     return value;
                 }
-            },stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f));
-            graph.setSpecialDate(LocalDate.now());
-            graph.setLeftSpace(40);
-            add(graph, gbc);*/
-            Map<LocalDate, Float> t = new HashMap<LocalDate, Float>();
-            t.put(LocalDate.of(2020, 1, 1), 3.12f);
-            t.put(LocalDate.of(2020, 1, 2), 2.5f);
-            t.put(LocalDate.of(2020, 1, 4), 0.3f);
-            t.put(LocalDate.of(2020, 1, 8), 1.2f);
-            t.put(LocalDate.of(2020, 1, 9), 4.3f);
-            Graph<Float> graph = new Graph<Float>(new Graph.Converter<Float>() {
 
                 @Override
-                public int convertToInt(Float value) {
-                    return (int)(float)value;
-                }
-
-                @Override
-                public Float convert(int value) {
-                    return Float.valueOf(value);
-                }
-
-                @Override
-                public float convertToFloat(Float value) {
+                public float convertToFloat(Integer value) {
                     return value;
                 }
-            },t, 0f, 5f);
+            },stock, 0, (int)(app.getRegisteredProductCount(p)*1.1f));
             graph.setSpecialDate(LocalDate.now());
             graph.setLeftSpace(40);
             add(graph, gbc);
