@@ -136,7 +136,7 @@ public final class Order implements Serializable {
         Price total = new Price();
         long days = beginDate.until(endDate, ChronoUnit.DAYS);
         for (Product product : products)
-            total.add(product.getPrice(days));
+            total.add(product.getPrice(days, beginDate));
         if (customer instanceof LoyalCustomer)
             total.multiply(.9f);
         total.add(reduction);

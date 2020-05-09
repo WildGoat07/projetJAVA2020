@@ -1,6 +1,7 @@
 package utilities;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -14,6 +15,7 @@ import java.awt.*;
 import java.io.*;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.time.LocalDate;
 
 /**
  * Utility functions
@@ -205,5 +207,24 @@ public class Functions {
     public static String removeDiacritics(String input) {
         //https://stackoverflow.com/a/3322174/13270517
         return Normalizer.normalize(input, Form.NFD).replaceAll("\\p{M}", "");
+    }
+    /**
+     * Returns the value from a chronological sorted map. It returns null if the date is before any entry or if there are no entry.
+     * @param <T> type of the value
+     * @param map the sorted map
+     * @param when the date to look for
+     * @return the value corresponding to the date
+     */
+    public static <T> T findValue(Map<LocalDate, T> map, LocalDate when) {
+        Set<Entry<LocalDate, T>> values = map.entrySet();
+        T curr = null;
+        for (Entry<LocalDate,T> entry : values) {
+            if (entry.getKey().isAfter(when)) {
+                return curr;
+            }
+            else
+                curr = entry.getValue();
+        }
+        return null;
     }
 }
