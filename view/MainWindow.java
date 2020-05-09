@@ -29,7 +29,7 @@ public class MainWindow extends JFrame {
     private boolean fileChanged;
     private Change savedChange;
     private java.util.List<Window> subWindows;
-    public static Color borders = new Color(180, 180, 180);
+    public static Color borders = new Color(200, 200, 200);
     public static Color itemHovered = new Color(80, 80, 80);
     public MainWindow() throws ClassNotFoundException, IOException {
         this(null);

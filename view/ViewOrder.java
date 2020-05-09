@@ -146,12 +146,12 @@ public class ViewOrder extends JDialog {
                     gbc.gridx = 0;
                     gbc.weightx = 1;
                     final JLabel productName = new JLabel(prod.getTitle());
-                    productName.setBorder(LineBorder.createGrayLineBorder());
+                    productName.setBorder(new LineBorder(MainWindow.borders, 1));
                     productList.add(productName, gbc);
                     gbc.gridx++;
                     gbc.weightx = 0;
                     final JLabel productPrice = new JLabel(prod.getPrice(duration).toString());
-                    productPrice.setBorder(LineBorder.createGrayLineBorder());
+                    productPrice.setBorder(new LineBorder(MainWindow.borders, 1));
                     productList.add(productPrice, gbc);
                     MouseListener mouseListener = new MouseListener() {
                         @Override
@@ -167,10 +167,10 @@ public class ViewOrder extends JDialog {
                         @Override
                         public void mouseEntered(MouseEvent e) {
                             productName.setOpaque(true);
-                            productName.setBackground(new Color(200, 200, 200));
+                            productName.setBackground(MainWindow.itemHovered);
                             productName.repaint();
                             productPrice.setOpaque(true);
-                            productPrice.setBackground(new Color(200, 200, 200));
+                            productPrice.setBackground(MainWindow.itemHovered);
                             productPrice.repaint();
                         }
         

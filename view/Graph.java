@@ -24,6 +24,9 @@ public class Graph extends JComponent {
     private int mouseY;
     private boolean mouseOnComponent;
     private LocalDate specialDate;
+    private static Color black = new Color(30, 30, 30);
+    private static Color white = new Color(200, 200, 200);
+    private static Color backPanels = new Color(80, 80, 80);
 
     private LocalDate getX(float perc) {
         long days = minX.until(maxX, ChronoUnit.DAYS);
@@ -43,7 +46,7 @@ public class Graph extends JComponent {
     }
 
     private Graph() {
-        setForeground(new ColorUIResource(50, 150, 250));
+        setForeground(new Color(50, 150, 200));
         addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -148,8 +151,10 @@ public class Graph extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D)g;
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Dimension size = getSize();
-        g2.setPaint(Color.WHITE);
+        g2.setPaint(black);
         g2.fillRect(0, 0, size.width, size.height);
         long days = minX.until(maxX, ChronoUnit.DAYS);
         Period stepX;
@@ -199,7 +204,6 @@ public class Graph extends JComponent {
             if (perc >= 0 && perc <= 1) {
                 int x = 30 + (int)(perc*(size.width-30));
                 g2.drawLine(x, 0, x, size.height-30);
-                g2.drawLine(x+1, 0, x+1, size.height-30);
             }
         }
         g2.setPaint(getForeground());
@@ -210,12 +214,10 @@ public class Graph extends JComponent {
             int y = size.height - 30 - (int)((size.height-30) * percY);
             g2.drawLine(lastX, lastY, x, lastY);
             g2.drawLine(x, lastY, x, y);
-            g2.drawLine(lastX, lastY+1, x+1, lastY+1);
-            g2.drawLine(x+1, lastY, x+1, y);
             lastX = x;
             lastY = y;
         }
-        g2.setPaint(Color.BLACK);
+        g2.setPaint(white);
         g2.drawLine(30, size.height - 30, 30, 0);
         g2.drawLine(30, size.height - 30, size.width, size.height - 30);
         java.util.List<Float> xSteps = new ArrayList<Float>();
@@ -233,7 +235,6 @@ public class Graph extends JComponent {
         }
         ySteps.add(1f);
         if (mouseOnComponent && mouseX > 30 && mouseY < size.height-30) {
-            g2.setPaint(Color.BLACK);
             g2.drawLine(mouseX, 0, mouseX, size.height-30);
             g2.drawLine(30, mouseY, size.width, mouseY);
 
@@ -249,20 +250,19 @@ public class Graph extends JComponent {
                     arrowPos = 37;
                 if (arrowPos > size.width-7)
                     arrowPos = size.width-7;
-                g2.setPaint(getForeground());
+                g2.setPaint(backPanels);
                 g2.fillRect(rectPos, posY - 65, 100, 50);
-                g2.setPaint(Color.BLACK);
+                g2.setPaint(white);
                 g2.drawRect(rectPos, posY - 65, 100, 50);
-                g2.setPaint(getForeground());
+                g2.setPaint(backPanels);
                 g2.fillPolygon(
                     new int[] { arrowPos, arrowPos+7, arrowPos-7 },
                     new int[] { posY-5, posY-15, posY-15 },
                     3
                 );
-                g2.setPaint(Color.BLACK);
+                g2.setPaint(white);
                 g2.drawLine(arrowPos, posY-5, arrowPos+7, posY-15);
                 g2.drawLine(arrowPos, posY-5, arrowPos-7, posY-15);
-                g2.setPaint(Color.WHITE);
                 g2.drawString(getX((mouseX-30)/(float)(size.width-30)).toString(), rectPos + 10, posY-40);
                 g2.drawString(getY((mouseX-30)/(float)(size.width-30))+"", rectPos + 40, posY-25);
             }
@@ -278,20 +278,19 @@ public class Graph extends JComponent {
                     arrowPos = 37;
                 if (arrowPos > size.width-7)
                     arrowPos = size.width-7;
-                g2.setPaint(getForeground());
+                g2.setPaint(backPanels);
                 g2.fillRect(rectPos, posY + 15, 100, 50);
-                g2.setPaint(Color.BLACK);
+                g2.setPaint(white);
                 g2.drawRect(rectPos, posY + 15, 100, 50);
-                g2.setPaint(getForeground());
+                g2.setPaint(backPanels);
                 g2.fillPolygon(
                     new int[] { arrowPos, arrowPos+7, arrowPos-7 },
                     new int[] { posY+6, posY+16, posY+16 },
                     3
                 );
-                g2.setPaint(Color.BLACK);
+                g2.setPaint(white);
                 g2.drawLine(arrowPos, posY+6, arrowPos+7, posY+15);
                 g2.drawLine(arrowPos, posY+6, arrowPos-7, posY+15);
-                g2.setPaint(Color.WHITE);
                 g2.drawString(getX((mouseX-30)/(float)(size.width-30)).toString(), rectPos + 10, posY+40);
                 g2.drawString(getY((mouseX-30)/(float)(size.width-30))+"", rectPos + 40, posY+55);
             }
@@ -319,7 +318,7 @@ public class Graph extends JComponent {
                     int mousePosY = (int)(size.height - 30 - closestYMatch*(size.height-30));
                     int value = (int)(minY + (maxY - minY)*closestYMatch);
                     LocalDate time = minX.plusDays((long)(days * closestXMatch));
-                    g2.setPaint(getForeground());
+                    g2.setPaint(backPanels);
                     int offsetY1 = mousePosY;
                     if (offsetY1 < 10)
                         offsetY1 = 10;
@@ -353,7 +352,7 @@ public class Graph extends JComponent {
                         new int[] {size.height-25, size.height-25, size.height-30, size.height-25, size.height-25, size.height - 5, size.height - 5},
                         7
                     );
-                    g2.setPaint(Color.WHITE);
+                    g2.setPaint(white);
                     g2.drawString(value+"", 7, offsetY1+4);
                     g2.drawString(time.toString(), offsetX1-31, size.height-10);
                 }
