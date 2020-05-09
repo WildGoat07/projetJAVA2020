@@ -217,14 +217,6 @@ public class Graph<T extends Comparable<T>> extends JComponent {
             float val = operation.convertToFloat(map.entrySet().iterator().next().getValue());
             lastY = size.height - 30 - (int)((val - minYi) / (maxYi - minYi) * (size.height - 30));
         }
-        if (specialDate != null) {
-            g2.setPaint(Functions.getInverse(getForeground()));
-            float perc = minX.until(specialDate, ChronoUnit.DAYS)/(float)days;
-            if (perc >= 0 && perc <= 1) {
-                int x = leftSpace + (int)(perc*(size.width-leftSpace));
-                g2.drawLine(x, 0, x, size.height-30);
-            }
-        }
         g2.setPaint(white);
         g2.drawLine(leftSpace, size.height - 30, leftSpace, 0);
         g2.drawLine(leftSpace, size.height - 30, size.width, size.height - 30);
@@ -238,6 +230,14 @@ public class Graph<T extends Comparable<T>> extends JComponent {
             g2.drawLine(x, lastY, x, y);
             lastX = x;
             lastY = y;
+        }
+        if (specialDate != null) {
+            g2.setPaint(Functions.getInverse(getForeground()));
+            float perc = minX.until(specialDate, ChronoUnit.DAYS)/(float)days;
+            if (perc >= 0 && perc <= 1) {
+                int x = leftSpace + (int)(perc*(size.width-leftSpace));
+                g2.drawLine(x, 0, x, size.height-30);
+            }
         }
         g2.setPaint(white);
         java.util.List<Float> xSteps = new ArrayList<Float>();
@@ -259,7 +259,7 @@ public class Graph<T extends Comparable<T>> extends JComponent {
             g2.drawLine(leftSpace, mouseY, size.width, mouseY);
 
             if (operation.convertToFloat(getY((mouseX-leftSpace)/(float)(size.width-leftSpace))) <= (maxYi-minYi)/2f) {
-                int rectPos = mouseX - leftSpace - 20;
+                int rectPos = mouseX - 50;
                 int arrowPos = mouseX;
                 int posY = size.height - 30 - (int)((operation.convertToFloat(getY((mouseX-leftSpace)/(float)(size.width-leftSpace)))-minYi)/(maxYi - minYi)*(size.height-30));
                 if (rectPos < leftSpace)
@@ -287,7 +287,7 @@ public class Graph<T extends Comparable<T>> extends JComponent {
                 g2.drawString(getY((mouseX-leftSpace)/(float)(size.width-leftSpace))+"", rectPos + 40, posY-25);
             }
             else {
-                int rectPos = mouseX - leftSpace;
+                int rectPos = mouseX - 50;
                 int arrowPos = mouseX;
                 int posY = size.height - 30 - (int)((operation.convertToFloat(getY((mouseX-leftSpace)/(float)(size.width-leftSpace)))-minYi)/(maxYi - minYi)*(size.height-30));
                 if (rectPos < leftSpace)
