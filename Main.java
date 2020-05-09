@@ -44,7 +44,7 @@ public class Main {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (javax.swing.UnsupportedLookAndFeelException e) {
+        } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
         new MainWindow(curr).setVisible(true);

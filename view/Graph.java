@@ -2,7 +2,6 @@ package view;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
-import javax.swing.plaf.ColorUIResource;
 
 import utilities.Functions;
 
@@ -50,6 +49,9 @@ public class Graph extends JComponent {
         addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                mouseX = e.getX();
+                mouseY = e.getY();
+                repaint();
             }
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -294,68 +296,66 @@ public class Graph extends JComponent {
                 g2.drawString(getX((mouseX-30)/(float)(size.width-30)).toString(), rectPos + 10, posY+40);
                 g2.drawString(getY((mouseX-30)/(float)(size.width-30))+"", rectPos + 40, posY+55);
             }
-            if (mouseOnComponent) {
-                Float closestXMatch = 0f;
-                Float closestYMatch = 0f;
-                float closestDist = 2;
-                float currXPerc = (mouseX-30)/(float)(size.width-30);
-                float currYPerc = (size.height - 30 - mouseY)/(float)(size.height-30);
-                for (Float step : xSteps) {
-                    if (Math.abs(step - currXPerc) < closestDist) {
-                        closestDist = Math.abs(step - currXPerc);
-                        closestXMatch = step;
-                    }
+            Float closestXMatch = 0f;
+            Float closestYMatch = 0f;
+            float closestDist = 2;
+            float currXPerc = (mouseX-30)/(float)(size.width-30);
+            float currYPerc = (size.height - 30 - mouseY)/(float)(size.height-30);
+            for (Float step : xSteps) {
+                if (Math.abs(step - currXPerc) < closestDist) {
+                    closestDist = Math.abs(step - currXPerc);
+                    closestXMatch = step;
                 }
-                closestDist = 2;
-                for (Float step : ySteps) {
-                    if (Math.abs(step - currYPerc) < closestDist) {
-                        closestDist = Math.abs(step - currYPerc);
-                        closestYMatch = step;
-                    }
+            }
+            closestDist = 2;
+            for (Float step : ySteps) {
+                if (Math.abs(step - currYPerc) < closestDist) {
+                    closestDist = Math.abs(step - currYPerc);
+                    closestYMatch = step;
                 }
-                {
-                    int mousePosX = (int)(closestXMatch*(size.width-30)+30);
-                    int mousePosY = (int)(size.height - 30 - closestYMatch*(size.height-30));
-                    int value = (int)(minY + (maxY - minY)*closestYMatch);
-                    LocalDate time = minX.plusDays((long)(days * closestXMatch));
-                    g2.setPaint(backPanels);
-                    int offsetY1 = mousePosY;
-                    if (offsetY1 < 10)
-                        offsetY1 = 10;
-                    if (offsetY1 > size.height - 40)
-                        offsetY1 = size.height - 40;
-                    int offsetY2 = mousePosY-10;
-                    int offsetY3 = mousePosY+10;
-                    if (offsetY2 < 0)
-                        offsetY2 = 0;
-                    if (offsetY3 > size.height - 30)
-                        offsetY3 = size.height - 30;
+            }
+            {
+                int mousePosX = (int)(closestXMatch*(size.width-30)+30);
+                int mousePosY = (int)(size.height - 30 - closestYMatch*(size.height-30));
+                int value = (int)(minY + (maxY - minY)*closestYMatch);
+                LocalDate time = minX.plusDays((long)Math.round(days * closestXMatch));
+                g2.setPaint(backPanels);
+                int offsetY1 = mousePosY;
+                if (offsetY1 < 10)
+                    offsetY1 = 10;
+                if (offsetY1 > size.height - 40)
+                    offsetY1 = size.height - 40;
+                int offsetY2 = mousePosY-10;
+                int offsetY3 = mousePosY+10;
+                if (offsetY2 < 0)
+                    offsetY2 = 0;
+                if (offsetY3 > size.height - 30)
+                    offsetY3 = size.height - 30;
 
-                    int offsetX1 = mousePosX;
-                    if (offsetX1 < 65)
-                        offsetX1 = 65;
-                    if (offsetX1 > size.width - 35)
-                        offsetX1 = size.width - 35;
-                    int offsetX2 = mousePosX-10;
-                    int offsetX3 = mousePosX+10;
-                    if (offsetX2 < 30)
-                        offsetX2 = 30;
-                    if (offsetX3 > size.width)
-                        offsetX3 = size.width;
-                    g2.fillPolygon(
-                        new int[] {5, 25, 25, 30, 25, 25, 5},
-                        new int[] {offsetY1 - 10, offsetY1 - 10, offsetY2, mousePosY, offsetY3, offsetY1 + 10, offsetY1+10},
-                        7
-                    );
-                    g2.fillPolygon(
-                        new int[] {offsetX1-35, offsetX2, mousePosX, offsetX3, offsetX1+35, offsetX1+35, offsetX1-35},
-                        new int[] {size.height-25, size.height-25, size.height-30, size.height-25, size.height-25, size.height - 5, size.height - 5},
-                        7
-                    );
-                    g2.setPaint(white);
-                    g2.drawString(value+"", 7, offsetY1+4);
-                    g2.drawString(time.toString(), offsetX1-31, size.height-10);
-                }
+                int offsetX1 = mousePosX;
+                if (offsetX1 < 65)
+                    offsetX1 = 65;
+                if (offsetX1 > size.width - 35)
+                    offsetX1 = size.width - 35;
+                int offsetX2 = mousePosX-10;
+                int offsetX3 = mousePosX+10;
+                if (offsetX2 < 30)
+                    offsetX2 = 30;
+                if (offsetX3 > size.width)
+                    offsetX3 = size.width;
+                g2.fillPolygon(
+                    new int[] {5, 25, 25, 30, 25, 25, 5},
+                    new int[] {offsetY1 - 10, offsetY1 - 10, offsetY2, mousePosY, offsetY3, offsetY1 + 10, offsetY1+10},
+                    7
+                );
+                g2.fillPolygon(
+                    new int[] {offsetX1-35, offsetX2, mousePosX, offsetX3, offsetX1+35, offsetX1+35, offsetX1-35},
+                    new int[] {size.height-25, size.height-25, size.height-30, size.height-25, size.height-25, size.height - 5, size.height - 5},
+                    7
+                );
+                g2.setPaint(white);
+                g2.drawString(value+"", 7, offsetY1+4);
+                g2.drawString(time.toString(), offsetX1-31, size.height-10);
             }
         }
     }
