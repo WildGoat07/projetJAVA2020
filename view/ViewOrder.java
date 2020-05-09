@@ -88,7 +88,7 @@ public class ViewOrder extends JDialog {
             Comparator<Product> priceComparator = new Comparator<Product>() {
                 @Override
                 public int compare(Product o1, Product o2) {
-                    int res = o1.getPrice(duration).compareTo(o2.getPrice(duration));
+                    int res = o1.getPrice(duration, o.getBeginningRental()).compareTo(o2.getPrice(duration, o.getBeginningRental()));
                     if (res == 0)
                         return nameComparator.compare(o1, o2);
                     else
@@ -152,7 +152,7 @@ public class ViewOrder extends JDialog {
                     productList.add(productName, gbc);
                     gbc.gridx++;
                     gbc.weightx = 0;
-                    final JLabel productPrice = new JLabel(prod.getPrice(duration).toString());
+                    final JLabel productPrice = new JLabel(prod.getPrice(duration, o.getBeginningRental()).toString());
                     productPrice.setBorder(new LineBorder(MainWindow.borders, 1));
                     productList.add(productPrice, gbc);
                     MouseListener mouseListener = new MouseListener() {
@@ -202,7 +202,7 @@ public class ViewOrder extends JDialog {
         mainPanel.add(scrollyBoi);
         Price total = new Price();
         for (Product prod : o.getProducts())
-            total.add(prod.getPrice(duration));
+            total.add(prod.getPrice(duration, o.getBeginningRental()));
         mainPanel.add(new JLabel(
             (app.isCurrentFrench()?"Total produits : ":"Total products : ") +
             total.toString()

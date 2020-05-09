@@ -39,7 +39,6 @@ public class Products extends JPanel implements CanUpdate {
     private JSlider minRentedSlider;
     private JSlider maxRentedSlider;
     public JButton newProduct;
-
     private Comparator<Product> currentComparator;
     private Comparator<Product> nameComparator = new Comparator<Product>() {
         @Override
@@ -50,7 +49,7 @@ public class Products extends JPanel implements CanUpdate {
     private Comparator<Product> priceComparator = new Comparator<Product>() {
         @Override
         public int compare(Product o1, Product o2) {
-            int res = o1.getPrice(1).compareTo(o2.getPrice(1));
+            int res = o1.getPrice(1, getTime()).compareTo(o2.getPrice(1, getTime()));
             if (res == 0)
                 return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
             else
@@ -443,8 +442,8 @@ public class Products extends JPanel implements CanUpdate {
                 break;
         }
         if (app.getStock().size() > 0) {
-            float lowestPrice = Collections.min(Functions.convert(app.getStock(), (p) -> p.getPrice(1).floatValue()));
-            float highestPrice = Collections.max(Functions.convert(app.getStock(), (p) -> p.getPrice(1).floatValue()));
+            float lowestPrice = Collections.min(Functions.convert(app.getStock(), (p) -> p.getPrice(1, getTime()).floatValue()));
+            float highestPrice = Collections.max(Functions.convert(app.getStock(), (p) -> p.getPrice(1, getTime()).floatValue()));
             float lowestStock = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
             float highestStock = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
             float lowestRented = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
@@ -462,13 +461,13 @@ public class Products extends JPanel implements CanUpdate {
             minRented.setText((app.isCurrentFrench()?"Loués minimum : ":"Minimum rented : ") + Integer.valueOf((int)choosenLowestRented).toString());
             maxRented.setText((app.isCurrentFrench()?"Loués maximum : ":"Maximum rented : ") + Integer.valueOf((int)choosenHighestRented).toString());
             toDisplay = Functions.where(toDisplay, (p) -> {
-                if (p.getPrice(1).floatValue() < choosenLowestPrice)
+                if (p.getPrice(1, getTime()).floatValue() < choosenLowestPrice)
                     return false;
                 if ((float)app.getProductCountInStock(p) < choosenLowestStock)
                     return false;
                 if ((float)app.getRentedProductCount(p) < choosenLowestRented)
                     return false;
-                if (p.getPrice(1).floatValue() > choosenHighestPrice)
+                if (p.getPrice(1, getTime()).floatValue() > choosenHighestPrice)
                     return false;
                 if ((float)app.getProductCountInStock(p) > choosenHighestStock)
                     return false;
@@ -602,7 +601,7 @@ public class Products extends JPanel implements CanUpdate {
             productData.add(productName, gbc);
             gbc.gridx++;
             gbc.weightx = 0;
-            final JLabel productPrice = new JLabel(product.getPrice(1).toString());
+            final JLabel productPrice = new JLabel(product.getPrice(1, getTime()).toString());
             productPrice.setBorder(new LineBorder(MainWindow.borders, 1));
             productData.add(productPrice, gbc);
             gbc.gridx++;

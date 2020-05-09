@@ -90,7 +90,7 @@ public class ViewProduct extends JDialog {
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Catégorie : ":"Category : ")+Functions.getProductType(p, app.isCurrentFrench())));
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Nom : ":"Name : ")+p.getTitle()));
         mainPanel.add(new JLabel("ID : "+p.getID().toString()));
-        mainPanel.add(new JLabel((app.isCurrentFrench()?"Prix pour un jour : ":"Price for one day : ")+p.getPrice(1).toString()));
+        mainPanel.add(new JLabel((app.isCurrentFrench()?"Prix pour un jour (aujourd'hui) : ":"Price for one day (today) : ")+p.getPrice(1, LocalDate.now()).toString()));
         Component specificCompo = null;
         if (p instanceof Book) {
             Book prod = (Book)p;
