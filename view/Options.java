@@ -13,6 +13,8 @@ public class Options extends JDialog {
     private static final long serialVersionUID = 1L;
 
     public Options(Application app) {
+        super(MainWindow.instance);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         setSize(300, 150);
         Window itself = this;
         MainWindow.instance.addNewSubWindow(this);
@@ -59,6 +61,17 @@ public class Options extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 app.setFrench(lang.isSelected());
+                boolean curr = lang.isSelected();
+                MainWindow.addChange(new Change(){
+                    @Override
+                    public void undo() {
+                        app.setFrench(!curr);
+                    }
+                    @Override
+                    public void redo() {
+                        app.setFrench(curr);
+                    }
+                });
                 MainWindow.instance.triggerChange();
             }
         });
