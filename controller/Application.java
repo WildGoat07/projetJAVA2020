@@ -65,8 +65,14 @@ public class Application {
         int registered = 0;
         {
             ProductInStock inStock = productExistsInStock(p);
-            if (inStock != null)
-                registered = inStock.quantity;
+            if (inStock != null) {
+                for (Map.Entry<LocalDate, Integer> entry : inStock.quantities.entrySet()) {
+                    if (entry.getKey().isAfter(time))
+                        break;
+                    else
+                        registered += entry.getValue();
+                }
+            }
         }
         if (registered == 0)
             return 0;
@@ -87,14 +93,21 @@ public class Application {
     /**
      * Gets the quantity of a single product (in stock and rented)
      * @param p product to find
+     * @param time instant at which to look for
      * @return the number of products in this small and decaying dead world
      */
-    public int getRegisteredProductCount(Product p) {
+    public int getRegisteredProductCount(Product p, LocalDate time) {
         ProductInStock inStock = productExistsInStock(p);
-        if (inStock != null)
-            return inStock.quantity;
-        else
-            return 0;
+        int registered = 0;
+        if (inStock != null) {
+            for (Map.Entry<LocalDate, Integer> entry : inStock.quantities.entrySet()) {
+                if (entry.getKey().isAfter(time))
+                    break;
+                else
+                    registered += entry.getValue();
+            }
+        }
+        return registered;
     }
     /**
      * Gets the quantity of a single rented product (not in stock) at a specific time
@@ -103,7 +116,7 @@ public class Application {
      * @return the number of rented products
      */
     public int getRentedProductCount(Product p, LocalDate time) {
-        return getRegisteredProductCount(p) - getProductCountInStock(p, time);
+        return getRegisteredProductCount(p, time) - getProductCountInStock(p, time);
     }
     /**
      * Gets the quantity of a single rented product (not in stock) at the current time
@@ -186,9 +199,14 @@ public class Application {
     private class ProductMovement implements Comparable<ProductMovement> {
         public boolean productIn;
         public LocalDate when;
+        public int count;
         public ProductMovement(boolean in, LocalDate date) {
+            this(in, date, 1);
+        }
+        public ProductMovement(boolean in, LocalDate date, int count) {
             productIn = in;
             when = date;
+            this.count = count;
         }
         @Override
         public int compareTo(ProductMovement o) {
@@ -207,15 +225,26 @@ public class Application {
                 movements.add(new ProductMovement(false, order.getBeginningRental()));
                 movements.add(new ProductMovement(true, order.getEndingRental()));
             }
+        for (Map.Entry<LocalDate, Integer> input : productExistsInStock(p).quantities.entrySet())
+            movements.add(new ProductMovement(true, input.getKey(), input.getValue()));
         Collections.sort(movements);
-        int lowest = getRegisteredProductCount(p);
+        int lowest = 0;
         int currState = lowest;
         for (ProductMovement productMovement : movements) {
-            currState += productMovement.productIn?1:-1;
+            currState += (productMovement.productIn?1:-1)*productMovement.count;
             if (lowest > currState)
                 lowest = currState;
         }
         return lowest;
+    }
+    /**
+     * Returns a sorted map of every product input
+     * @param p product to look for
+     * @return the sorted map of the product's input
+     */
+    public Map<LocalDate, Integer> getProductInput(Product p) {
+        ProductInStock prod = productExistsInStock(p);
+        return prod == null?null:new HashMap<LocalDate, Integer>(prod.quantities);
     }
     /**
      * Gets the lowest a product has been in stock, ever
@@ -232,7 +261,7 @@ public class Application {
                 movements.add(new ProductMovement(true, order.getEndingRental()));
             }
         Collections.sort(movements);
-        int lowest = getRegisteredProductCount(p);
+        int lowest = getRegisteredProductCount(p, beg);
         int currState = lowest;
         boolean entered = false;
         boolean inside = false;
@@ -260,13 +289,24 @@ public class Application {
      * Adds a new product in the stock
      * @param p product to add
      * @param count the quantity of this product
+     * @param time when to add this quantity
+      * @throws InvalidClassException count is negative
      */
-    public void addProduct(Product p, int count) {
+    public void addProduct(Product p, int count, LocalDate time) {
+        if (count < 0)
+            throw new InvalidParameterException("count can't be negative.");
         ProductInStock inStock = productExistsInStock(p);
-        if (inStock != null)
-            inStock.quantity += count;
-        else
-            stock.add(new ProductInStock(p, count));
+        if (inStock != null) {
+            if (inStock.quantities.containsKey(time))
+                inStock.quantities.put(time, inStock.quantities.get(time) + count);
+            else
+                inStock.quantities.put(time, count);
+        }
+        else {
+            ProductInStock prod = new ProductInStock(p);
+            stock.add(prod);
+            prod.quantities.put(time, count);
+        }
     }
     /**
      * Returns true if a product can be removed safely, false otherwise
@@ -274,26 +314,37 @@ public class Application {
      * @return true if safe, false if unsafe
      */
     public boolean canRemoveProduct(Product p) {
-        return getLowestStockProduct(p) == getRegisteredProductCount(p);
+        for (Order order : orders) {
+            if (order.getProducts().contains(p))
+                return false;
+        }
+        return true;
     }
     /**
      * Returns true if a product can be removed safely, false otherwise
      * @param p product to try to remove
      * @param count quantity to remove
+     * @param time when to remove the products
      * @return true if safe, false if unsafe
      */
-    public boolean canRemoveProduct(Product p, int count) {
-        return getLowestStockProduct(p) >= count;
+    public boolean canRemoveProduct(Product p, int count, LocalDate time) {
+        return getProductCountInStock(p, time) >= count;
     }
     /**
      * Removes a certain quantity of a product from the stock
      * @param p product to remove
      * @param count quantity to remove
+     * @param time when to remove
      * @throws InvalidParameterException there is no product in stock, or not enough
      */
-    public void removeProduct(Product p, int count) throws InvalidParameterException {
-        if (canRemoveProduct(p, count))
-            productExistsInStock(p).quantity -= count;
+    public void removeProduct(Product p, int count, LocalDate time) throws InvalidParameterException {
+        if (canRemoveProduct(p, count, time)) {
+            ProductInStock prod = productExistsInStock(p);
+            if (prod.quantities.containsKey(time))
+                prod.quantities.put(time, prod.quantities.get(time) - count);
+            else
+                prod.quantities.put(time, -count);
+        }
         else
             throw new InvalidParameterException("Not enough product in stock to remove");
     }
@@ -303,17 +354,14 @@ public class Application {
      * @throws InvalidParameterException the product is required in an order
      */
     public void removeProduct(Product p) throws InvalidParameterException {
-        ProductInStock currProduct;
-        ListIterator<ProductInStock> it = stock.listIterator();
+        if (!canRemoveProduct(p))
+            throw new InvalidParameterException("This product is mentioned in an order");
+ListIterator<ProductInStock> it = stock.listIterator();
         while (it.hasNext()) {
-            currProduct = it.next();
+            ProductInStock currProduct = it.next();
             if (currProduct.product.equals(p)) {
-                if (canRemoveProduct(p)) {
                     it.remove();
                     return;
-                }
-                else
-                    throw new InvalidParameterException("This product is mentioned in an order");
             }
         }
     }
@@ -372,16 +420,7 @@ public class Application {
      * @return list of available products
      */
     public List<Product> getAvailableProducts(LocalDate time) {
-        List<Product> result = new ArrayList<Product>();
-        for (ProductInStock inStock : stock) {
-            int rented = 0;
-            for (Order order : orders)
-                if (order.getProducts().contains(inStock.product) && time.isAfter(order.getBeginningRental()) && time.isBefore(order.getEndingRental()))
-                    rented++;
-            if (rented < inStock.quantity)
-                result.add(inStock.product);
-            }
-        return result;
+        return Functions.convert(Functions.where(stock, (prod) -> getProductCountInStock(prod.product, time) > 0), (prod) -> prod.product);
     }
     /**
      * Gets a list of all the rented products at the current time
@@ -420,15 +459,6 @@ public class Application {
      * @return list of out of stock products
      */
     public List<Product> geUnavailableProducts(LocalDate time) {
-        List<Product> result = new ArrayList<Product>();
-        for (ProductInStock inStock : stock) {
-            int rented = 0;
-            for (Order order : orders)
-                if (order.getProducts().contains(inStock.product) && (time.isAfter(order.getBeginningRental()) || time.isEqual(order.getBeginningRental())) && time.isBefore(order.getEndingRental()))
-                    rented++;
-            if (rented == inStock.quantity)
-                result.add(inStock.product);
-        }
-        return result;
+        return Functions.convert(Functions.where(stock, (prod) -> getProductCountInStock(prod.product, time) == 0), (prod) -> prod.product);
     }
 }
