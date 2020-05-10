@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+
+import utilities.Functions;
 import utilities.Price;
 
 /**
@@ -12,13 +14,14 @@ import utilities.Price;
 public final class Order implements Serializable {
     private static final long serialVersionUID = 6157970630117489981L;
     transient private Person customer;
-    private LocalDate beginDate;
-    private LocalDate endDate;
-    transient private List<Product> products;
-    private List<UUID> productIds;
-    private UUID customerID;
-    private Price reduction;
-    private UUID id;
+    private final LocalDate beginDate;
+    private final LocalDate endDate;
+    transient private HashMap<Product, Price> products;
+    private final UUID customerID;
+    private final Price reduction;
+    private final UUID id;
+    private final HashMap<UUID, Price> productIds;
+    private boolean loyalReduction;
     /**
      * Constructor.
      * The order has no reduction.
@@ -26,7 +29,7 @@ public final class Order implements Serializable {
      * @param beginDate beginning of the rental
      * @param endDate ending of the rental
      */
-    public Order(Person customer, LocalDate beginDate, LocalDate endDate) {
+    public Order(final Person customer, final LocalDate beginDate, final LocalDate endDate) {
         this(customer, beginDate, endDate, new Price());
     }
     /**
@@ -36,15 +39,23 @@ public final class Order implements Serializable {
      * @param endDate ending of the rental
      * @param reduction negative price for the reduction applied
      */
-    public Order(Person customer, LocalDate beginDate, LocalDate endDate, Price reduction) {
+    public Order(final Person customer, final LocalDate beginDate, final LocalDate endDate, final Price reduction) {
         this.customer = customer;
         this.beginDate = beginDate;
         this.endDate = endDate;
         this.reduction = reduction;
-        products = new ArrayList<Product>();
-        productIds = new ArrayList<UUID>();
+        products = new HashMap<Product, Price>();
+        productIds = new HashMap<UUID, Price>();
         customerID = customer.getID();
         id = UUID.randomUUID();
+        loyalReduction = customer.isLoyal();
+    }
+    /**
+     * Returns true if this order has the -10% reduction from the loyalty of the customer
+     * @return true if the reduction applies, else otherwise
+     */
+    public boolean loyalReductionApplied() {
+        return loyalReduction;
     }
     /**
      * Gets the date of the beginning of the rental
@@ -65,17 +76,17 @@ public final class Order implements Serializable {
      * @param people list of people to search into
      * @param products list of products to search into
      */
-    public void linkData(List<Person> people, List<Product> products) {
-        this.products = new ArrayList<Product>();
-        for (UUID id : productIds) {
-            for (Product product : products) {
-                if (id.equals(product.getID())) {
-                    this.products.add(product);
+    public void linkData(final List<Person> people, final List<Product> products) {
+        this.products = new HashMap<Product, Price>();
+        for (final Map.Entry<UUID, Price> id : productIds.entrySet()) {
+            for (final Product product : products) {
+                if (id.getKey().equals(product.getID())) {
+                    this.products.put(product, id.getValue());
                     break;
                 }
             }
         }
-        for (Person person : people) {
+        for (final Person person : people) {
             if (person.getID().equals(customerID)) {
                 this.customer = person;
                 break;
@@ -107,24 +118,32 @@ public final class Order implements Serializable {
      * Adds a new product to the order
      * @param product product to add
      */
-    public void addProduct(Product product) {
-        if (!products.contains(product)) {
-            products.add(product);
-            productIds.add(product.getID());
+    public void addProduct(final Product product) {
+        if (!products.containsKey(product)) {
+            final long days = beginDate.until(endDate, ChronoUnit.DAYS);
+            products.put(product, product.getPrice(days, getBeginningRental()));
+            productIds.put(product.getID(), product.getPrice(days, getBeginningRental()));
         }
     }
     /**
      * Gets a read only list of all the products in the order
      * @return read only list of the products
      */
-    public List<Product> getProducts() {
-        return new ArrayList<Product>(products);
+    public Collection<Product> getProducts() {
+        return products.keySet();
+    }
+    /**
+     * Gets a read only map of the price of every product at the time the order was done
+     * @return the map of the prices
+     */
+    public Map<Product, Price> getPrices() {
+        return Functions.convert(products, (item) -> new Price(item));
     }
     /**
      * Removes a product from the order
      * @param product product to remove
      */
-    public void removeProduct(Product product) {
+    public void removeProduct(final Product product) {
         products.remove(product);
         productIds.remove(product.getID());
     }
@@ -133,11 +152,10 @@ public final class Order implements Serializable {
      * @return price of the current order
      */
     public Price getCost() {
-        Price total = new Price();
-        long days = beginDate.until(endDate, ChronoUnit.DAYS);
-        for (Product product : products)
-            total.add(product.getPrice(days, beginDate));
-        if (customer.isLoyal())
+        final Price total = new Price();
+        for (final Price price : products.values())
+            total.add(price);
+        if (loyalReduction)
             total.multiply(.9f);
         total.add(reduction);
         if (total.compareTo(new Price()) == -1)

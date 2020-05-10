@@ -1,17 +1,8 @@
 package view;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Locale;
-
-import javax.swing.filechooser.FileFilter;
 
 import controller.Application;
 import model.*;
