@@ -21,6 +21,7 @@ public final class Order implements Serializable {
     private final Price reduction;
     private final UUID id;
     private final HashMap<UUID, Price> productIds;
+    private boolean loyalReduction;
     /**
      * Constructor.
      * The order has no reduction.
@@ -47,6 +48,14 @@ public final class Order implements Serializable {
         productIds = new HashMap<UUID, Price>();
         customerID = customer.getID();
         id = UUID.randomUUID();
+        loyalReduction = customer.isLoyal();
+    }
+    /**
+     * Returns true if this order has the -10% reduction from the loyalty of the customer
+     * @return true if the reduction applies, else otherwise
+     */
+    public boolean loyalReductionApplied() {
+        return loyalReduction;
     }
     /**
      * Gets the date of the beginning of the rental
@@ -146,7 +155,7 @@ public final class Order implements Serializable {
         final Price total = new Price();
         for (final Price price : products.values())
             total.add(price);
-        if (customer.isLoyal())
+        if (loyalReduction)
             total.multiply(.9f);
         total.add(reduction);
         if (total.compareTo(new Price()) == -1)
