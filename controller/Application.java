@@ -197,14 +197,9 @@ public class Application {
         }
     }
     private class ProductMovement implements Comparable<ProductMovement> {
-        public boolean productIn;
         public LocalDate when;
         public int count;
-        public ProductMovement(boolean in, LocalDate date) {
-            this(in, date, 1);
-        }
-        public ProductMovement(boolean in, LocalDate date, int count) {
-            productIn = in;
+        public ProductMovement(LocalDate date, int count) {
             when = date;
             this.count = count;
         }
@@ -222,18 +217,19 @@ public class Application {
         List<ProductMovement> movements = new ArrayList<ProductMovement>();
         for (Order order : orders)
             if (order.getProducts().contains(p)) {
-                movements.add(new ProductMovement(false, order.getBeginningRental()));
-                movements.add(new ProductMovement(true, order.getEndingRental()));
+                movements.add(new ProductMovement(order.getBeginningRental(), -1));
+                movements.add(new ProductMovement(order.getEndingRental(), 1));
             }
-        for (Map.Entry<LocalDate, Integer> input : productExistsInStock(p).quantities.entrySet())
-            movements.add(new ProductMovement(true, input.getKey(), input.getValue()));
+        for (Map.Entry<LocalDate, Integer> input : getProductInput(p).entrySet())
+            movements.add(new ProductMovement(input.getKey(), input.getValue()));
         Collections.sort(movements);
-        int lowest = 0;
-        int currState = lowest;
+        movements.add(new ProductMovement(movements.get(movements.size()-1).when.plusDays(1), 0));
+        int lowest = Integer.MAX_VALUE;
+        int currState = 0;
         for (ProductMovement productMovement : movements) {
-            currState += (productMovement.productIn?1:-1)*productMovement.count;
             if (lowest > currState)
                 lowest = currState;
+            currState += productMovement.count;
         }
         return lowest;
     }
@@ -247,7 +243,7 @@ public class Application {
         return prod == null?null:new HashMap<LocalDate, Integer>(prod.quantities);
     }
     /**
-     * Gets the lowest a product has been in stock, ever
+     * Gets the lowest a product has been in stock, ever in a range
      * @param p product to parse
      * @param beg the low bound
      * @param end the upper bound
@@ -257,12 +253,16 @@ public class Application {
         List<ProductMovement> movements = new ArrayList<ProductMovement>();
         for (Order order : orders)
             if (order.getProducts().contains(p)) {
-                movements.add(new ProductMovement(false, order.getBeginningRental()));
-                movements.add(new ProductMovement(true, order.getEndingRental()));
+                movements.add(new ProductMovement(order.getBeginningRental(), -1));
+                movements.add(new ProductMovement(order.getEndingRental(), 1));
             }
+        for (Map.Entry<LocalDate, Integer> input : getProductInput(p).entrySet())
+            movements.add(new ProductMovement(input.getKey(), input.getValue()));
+        movements.add(new ProductMovement(beg.plusDays(1), 0));
         Collections.sort(movements);
-        int lowest = getRegisteredProductCount(p, beg);
-        int currState = lowest;
+        movements.add(new ProductMovement(movements.get(movements.size()-1).when.plusDays(1), 0));
+        int lowest = Integer.MAX_VALUE;
+        int currState = 0;
         boolean entered = false;
         boolean inside = false;
         for (ProductMovement productMovement : movements) {
@@ -274,7 +274,37 @@ public class Application {
                 lowest = currState;
             if (productMovement.when.isAfter(end) && inside)
                 inside = false;
-            currState += productMovement.productIn?1:-1;
+            currState += productMovement.count;
+        }
+        return lowest;
+    }
+    /**
+     * Gets the lowest a product has been in stock, ever from a beginning date
+     * @param p product to parse
+     * @param beg the low bound
+     * @return the lowest value a product has ever been in stock
+     */
+    public int getLowestStockProduct(Product p, LocalDate beg) {
+        List<ProductMovement> movements = new ArrayList<ProductMovement>();
+        for (Order order : orders)
+            if (order.getProducts().contains(p)) {
+                movements.add(new ProductMovement(order.getBeginningRental(), -1));
+                movements.add(new ProductMovement(order.getEndingRental(), 1));
+            }
+        for (Map.Entry<LocalDate, Integer> input : getProductInput(p).entrySet())
+            movements.add(new ProductMovement(input.getKey(), input.getValue()));
+        movements.add(new ProductMovement(beg.plusDays(1), 0));
+        Collections.sort(movements);
+        movements.add(new ProductMovement(movements.get(movements.size()-1).when.plusDays(1), 0));
+        int lowest = Integer.MAX_VALUE;
+        int currState = 0;
+        boolean entered = false;
+        for (ProductMovement productMovement : movements) {
+            if (productMovement.when.isAfter(beg) && !entered)
+                entered = true;
+            if (entered && lowest > currState)
+                lowest = currState;
+            currState += productMovement.count;
         }
         return lowest;
     }
@@ -328,7 +358,7 @@ public class Application {
      * @return true if safe, false if unsafe
      */
     public boolean canRemoveProduct(Product p, int count, LocalDate time) {
-        return getProductCountInStock(p, time) >= count;
+        return getLowestStockProduct(p, time) >= count;
     }
     /**
      * Removes a certain quantity of a product from the stock

@@ -362,7 +362,7 @@ public class Products extends JPanel implements CanUpdate {
                             Product prod = dialog.getResult();
                             if (prod != null) {
                                     boolean prodExists = app.productExists(prod);
-                                    app.addProduct(prod, dialog.getQuantity());
+                                    app.addProduct(prod, dialog.getQuantity(), dialog.getWhen());
                                     update();
                                     revalidate();
                                     MainWindow.addChange(new Change() {
@@ -370,7 +370,7 @@ public class Products extends JPanel implements CanUpdate {
                                         public void undo() {
                                             try {
                                                 if (prodExists)
-                                                    app.removeProduct(prod, dialog.getQuantity());
+                                                    app.removeProduct(prod, dialog.getQuantity(), dialog.getWhen());
                                                 else
                                                     app.removeProduct(prod);
                                                 update();
@@ -380,7 +380,7 @@ public class Products extends JPanel implements CanUpdate {
                                         }
                                         @Override
                                         public void redo() {
-                                            app.addProduct(prod, dialog.getQuantity());
+                                            app.addProduct(prod, dialog.getQuantity(), dialog.getWhen());
                                             update();
                                             revalidate();
                                         }
