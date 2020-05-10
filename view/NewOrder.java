@@ -90,7 +90,8 @@ public class NewOrder extends JDialog {
         changeBegDate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DatePicker picker = new DatePicker(app.isCurrentFrench() ? Locale.FRENCH : Locale.ENGLISH, itself);
+                System.out.println(begDate);
+                DatePicker picker = new DatePicker(begDate, app.isCurrentFrench() ? Locale.FRENCH : Locale.ENGLISH, itself);
                 picker.addWindowListener(new WindowListener() {
                     @Override
                     public void windowOpened(WindowEvent e) {
@@ -102,7 +103,7 @@ public class NewOrder extends JDialog {
                         if (res != null) {
                             begDate = res;
                             changeBegDate.setText(begDate.toString());
-                            revalidate();
+                            changeBegDate.revalidate();
                         }
                     }
 
@@ -234,7 +235,7 @@ public class NewOrder extends JDialog {
                 previous.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        setSize(350, 180);
+                        setSize(350, 200);
                         placeholder.removeAll();
                         placeholder.add(mainPanel);
                         placeholder.revalidate();

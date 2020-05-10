@@ -20,6 +20,7 @@ public class NewProduct extends JDialog {
     private static final long serialVersionUID = -7013987017519737591L;
     private File productImg;
     private LocalDate productRelease;
+    private LocalDate whenAdd;
     private Product result;
     private int quantity;
     @SuppressWarnings("unchecked")
@@ -61,10 +62,11 @@ public class NewProduct extends JDialog {
         catch (IOException e){}
         result = null;
         quantity = 0;
+        whenAdd = LocalDate.now();
         JPanel mainPanel = new JPanel();
         add(mainPanel);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        setSize(300, 150);
+        setSize(300, 200);
         setTitle(app.isCurrentFrench() ? "Ajouter un produit" : "Add a product");
 
         JComboBox<Object> productList = new JComboBox<Object>();
@@ -86,7 +88,53 @@ public class NewProduct extends JDialog {
         mainPanel.add(Functions.alignHorizontal(
                 new Component[] { new JLabel(app.isCurrentFrench() ? "Quantité :" : "Quantity :"), quantity }));
         quantityPanel.setLayout(new BoxLayout(quantityPanel, BoxLayout.X_AXIS));
-
+        JButton addingDate = new JButton(whenAdd.toString(), new ImageIcon("images/cal.png"));
+        JButton resetAddingDate = new JButton(app.isCurrentFrench()?"Aujourd'hui":"Today");
+        mainPanel.add(Functions.alignHorizontal(new Component[]{addingDate, resetAddingDate}));
+        resetAddingDate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                whenAdd = LocalDate.now();
+                addingDate.setText(whenAdd.toString());
+                addingDate.revalidate();
+            }
+        });
+        addingDate.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DatePicker picker = new DatePicker(currLanguage, itself);
+                picker.addWindowListener(new WindowListener() {
+                    @Override
+                    public void windowOpened(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        LocalDate date = picker.getResult();
+                        if (date != null) {
+                            whenAdd = date;
+                            addingDate.setText(whenAdd.toString());
+                            addingDate.revalidate();
+                        }
+                    }
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowIconified(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowDeiconified(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowActivated(WindowEvent e) {
+                    }
+                    @Override
+                    public void windowDeactivated(WindowEvent e) {
+                    }
+                });
+                picker.setVisible(true);
+            }
+        });
         JPanel newProd = new JPanel();
         newProd.setVisible(false);
         mainPanel.add(newProd);
@@ -164,18 +212,18 @@ public class NewProduct extends JDialog {
         }));
         if (app.getStock().size() == 0) {
             newProd.setVisible(true);
-            setSize(400, 300);
+            setSize(400, 350);
         }
         productList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (productList.getSelectedIndex() == productList.getItemCount()-1) {
                     newProd.setVisible(true);
-                    setSize(400, 300);
+                    setSize(400, 350);
                 }
                 else {
                     newProd.setVisible(false);
-                    setSize(300, 150);
+                    setSize(300, 200);
                 }
             }
         });
@@ -371,8 +419,11 @@ public class NewProduct extends JDialog {
     }
     public int getQuantity() {
         return quantity;
-    } 
+    }
     public Product getResult() {
         return result;
+    }
+    public LocalDate getWhen() {
+        return whenAdd;
     }
 }

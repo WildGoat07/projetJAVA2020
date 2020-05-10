@@ -1,6 +1,8 @@
 package controller;
 
 import model.Product;
+import java.time.LocalDate;
+import java.util.*;
 
 import java.io.Serializable;
 
@@ -10,9 +12,9 @@ import java.io.Serializable;
 public class ProductInStock implements Serializable {
     private static final long serialVersionUID = 5925207580461978258L;
     public Product product;
-    public int quantity;
-    public ProductInStock(Product p, int q) {
+    public Map<LocalDate, Integer> quantities;
+    public ProductInStock(Product p) {
         product = p;
-        quantity = q;
+        quantities = new TreeMap<LocalDate, Integer>();
     }
 }

@@ -110,7 +110,7 @@ public class DatePicker extends JDialog {
             month = new JLabel();
             month.setBorder(new EmptyBorder(0, 50, 0, 0));
             center.add(month, BorderLayout.CENTER);
-            year = new JSpinner(new SpinnerNumberModel(2020, 1970, 2999, 1));
+            year = new JSpinner(new SpinnerNumberModel(usedDate.getYear(), 1970, 2999, 1));
             year.addChangeListener(new ChangeListener(){
                 @Override
                 public void stateChanged(ChangeEvent e) {

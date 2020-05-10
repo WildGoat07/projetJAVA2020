@@ -105,22 +105,10 @@ public class ViewProduct extends JDialog {
             specificCompo = new JLabel((app.isCurrentFrench()?"Réalisateur : ":"Director : ")+prod.getDirector());
         }
         mainPanel.add(specificCompo);
-        mainPanel.add(new JLabel((app.isCurrentFrench()?"En stock (aujourd'hui) : ":"In stock (today) : ")+app.getProductCountInStock(p)+"/"+app.getRegisteredProductCount(p)));
-        mainPanel.add(new JLabel((app.isCurrentFrench()?"Loués (aujourd'hui) : ":"Rented (today) : ")+app.getRentedProductCount(p)+"/"+app.getRegisteredProductCount(p)));
-        JSpinner nbToRemove = new JSpinner(new SpinnerNumberModel(0, 0, app.getLowestStockProduct(p), 1));
-        JButton removeNbProducts = new JButton(app.isCurrentFrench()?"Retirer":"Remove", new ImageIcon("images/trash.png"));
-        mainPanel.add(Functions.alignHorizontal(new Component[] {
-            new JLabel(app.isCurrentFrench()?"Retirer des produits : ":"Remove products : "),
-            nbToRemove,
-            removeNbProducts
-        }));
-        removeNbProducts.setEnabled(false);
-        nbToRemove.addChangeListener(new ChangeListener(){
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                removeNbProducts.setEnabled((int)nbToRemove.getValue() > 0);
-            }
-        });
+        mainPanel.add(new JLabel((app.isCurrentFrench()?"En stock (aujourd'hui) : ":"In stock (today) : ")+app.getProductCountInStock(p)+"/"+app.getRegisteredProductCount(p, LocalDate.now())));
+        mainPanel.add(new JLabel((app.isCurrentFrench()?"Loués (aujourd'hui) : ":"Rented (today) : ")+app.getRentedProductCount(p)+"/"+app.getRegisteredProductCount(p, LocalDate.now())));
+        JButton removeNbProducts = new JButton(app.isCurrentFrench()?"Retirer une quantité de produits":"Remove a quantity of products", new ImageIcon("images/trash.png"));
+        mainPanel.add(removeNbProducts);
         JButton viewPrice = new JButton(app.isCurrentFrench()?"Voir le graphe des prix":"Show the price graph");
         JButton viewStock = new JButton(app.isCurrentFrench()?"Voir le graphe du stock":"Show the stock graph");
         viewStock.addActionListener(new ActionListener() {
@@ -161,78 +149,49 @@ public class ViewProduct extends JDialog {
                         data.add(new ProductIO(order.getBeginningRental(), false));
                         data.add(new ProductIO(order.getEndingRental(), true));
                     }
-                data.sort(new Comparator<ProductIO>() {
-                    @Override
-                    public int compare(ProductIO o1, ProductIO o2) {
-                        return o1.time.compareTo(o2.time);
-                    }
-                });
+                for (Map.Entry<LocalDate, Integer> input : app.getProductInput(p).entrySet())
+                    data.add(new ProductIO(input.getKey(), true, input.getValue()));
+
+                Collections.sort(data);
                 Map<LocalDate, Integer> stock = new HashMap<LocalDate, Integer>();
-                int currStock = app.getRegisteredProductCount(p);
+                int currStock = 0;
                 for (ProductIO productIO : data) {
-                    currStock += productIO.isInput?1:-1;
+                    currStock += (productIO.isInput?1:-1)*productIO.count;
                     stock.put(productIO.time, currStock);
                 }
-                if (stock.size() > 0) {
-                    LocalDate min = Collections.min(stock.keySet());
-                    LocalDate max = Collections.max(stock.keySet());
-                    long days = min.until(max, ChronoUnit.DAYS);
-                    Integer maxValue = (int)(app.getRegisteredProductCount(p)*1.1f);
-                    if (maxValue == (app.getRegisteredProductCount(p)))
-                        maxValue++;
-                    stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-                    stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-                    Graph<Integer> graph = new Graph<Integer>(new Graph.Converter<Integer>() {
-        
-                        @Override
-                        public int convertToInt(Integer value) {
-                            return value;
-                        }
-        
-                        @Override
-                        public Integer convert(int value) {
-                            return value;
-                        }
-        
-                        @Override
-                        public float convertToFloat(Integer value) {
-                            return value;
-                        }
-                    },stock, 0, maxValue);
-                    graph.setSpecialDate(LocalDate.now());
-                    graph.setLeftSpace(40);
-                    dialog.add(graph);
+                LocalDate min = Collections.min(stock.keySet());
+                LocalDate max = Collections.max(stock.keySet());
+                long days = min.until(max, ChronoUnit.DAYS);
+                Integer maxValue = (int)(Collections.max(stock.values())*1.1f);
+                if (maxValue == Collections.max(stock.values()))
+                    maxValue++;
+                int lastValue;
+                {
+                    java.util.List<Integer> values = Functions.convert(stock.values(), (item)->item);
+                    lastValue = values.get(values.size()-1);
                 }
-                else {
-                    LocalDate min = LocalDate.now().minusDays(1);
-                    LocalDate max = LocalDate.now().plusDays(1);
-                    long days = min.until(max, ChronoUnit.DAYS);
-                    Integer maxValue = (int)(app.getRegisteredProductCount(p)*1.1f);
-                    if (maxValue == (app.getRegisteredProductCount(p)))
-                        maxValue++;
-                    stock.put(min.minusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-                    stock.put(max.plusDays((long)(days*.15f)), app.getRegisteredProductCount(p));
-                    Graph<Integer> graph = new Graph<Integer>(new Graph.Converter<Integer>() {
-        
-                        @Override
-                        public int convertToInt(Integer value) {
-                            return value;
-                        }
-        
-                        @Override
-                        public Integer convert(int value) {
-                            return value;
-                        }
-        
-                        @Override
-                        public float convertToFloat(Integer value) {
-                            return value;
-                        }
-                    },stock, 0, maxValue);
-                    graph.setSpecialDate(LocalDate.now());
-                    graph.setLeftSpace(40);
-                    dialog.add(graph);
-                }
+                stock.put(min.minusDays((long)Math.max(1, days*.15f)), 0);
+                stock.put(max.plusDays((long)Math.max(1, days*.15f)), lastValue);
+                Graph<Integer> graph = new Graph<Integer>(new Graph.Converter<Integer>() {
+    
+                    @Override
+                    public int convertToInt(Integer value) {
+                        return value;
+                    }
+    
+                    @Override
+                    public Integer convert(int value) {
+                        return value;
+                    }
+    
+                    @Override
+                    public float convertToFloat(Integer value) {
+                        return value;
+                    }
+                },stock, 0, maxValue);
+                graph.setSpecialDate(LocalDate.now());
+                graph.setLeftSpace(40);
+                dialog.add(graph);
                 dialog.setVisible(true);
             }
         });
@@ -314,8 +273,8 @@ public class ViewProduct extends JDialog {
                         else
                             maxValue.multiply(1.1f);
                     }
-                    prices.put(min.minusDays((long)(days*.15f)), p.getInitialPrice());
-                    prices.put(max.plusDays((long)(days*.15f)), p.getInitialPrice());
+                    prices.put(min.minusDays((long)((days*.15f))), p.getInitialPrice());
+                    prices.put(max.plusDays((long)((days*.15f))), p.getInitialPrice());
                     Graph<Price> graph = new Graph<Price>(new Graph.Converter<Price>() {
         
                         @Override
@@ -360,35 +319,93 @@ public class ViewProduct extends JDialog {
         removeNbProducts.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    int toRemove = (int)nbToRemove.getValue();
-                    app.removeProduct(p, toRemove);
-                    MainWindow.addChange(new Change(){
+                    DatePicker picker = new DatePicker(Locale.getDefault(), itself);
+                    picker.setTitle(app.isCurrentFrench()?"Quand retirer ces produits ?":"When to remove these products ?");
+                    picker.addWindowListener(new WindowListener() {
                         @Override
-                        public void undo() {
-                            app.addProduct(p, toRemove);
-                            MainWindow.instance.products.update();
-                            MainWindow.instance.products.revalidate();
+                        public void windowOpened(WindowEvent e) {
                         }
                         @Override
-                        public void redo() {
-                                app.removeProduct(p, toRemove);
-                                MainWindow.instance.products.update();
-                                MainWindow.instance.products.revalidate();
+                        public void windowClosing(WindowEvent e) {
+                            picker.setVisible(false);
+                            LocalDate date = picker.getResult();
+                            if (date != null) {
+                                JDialog counter = new JDialog(itself, app.isCurrentFrench()?"Combien en retirer ?":"How much to remove ?");
+                                JPanel counterPanel = new JPanel();
+                                counterPanel.setLayout(new BoxLayout(counterPanel, BoxLayout.Y_AXIS));
+                                counter.add(counterPanel);
+                                counter.setLocationRelativeTo(itself);
+                                counter.setSize(200, 100);
+                                counter.setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
+                                JSpinner quantity = new JSpinner(new SpinnerNumberModel(1, 1, Math.max(app.getLowestStockProduct(p, date), 1), 1));
+                                counterPanel.add(quantity);
+                                JButton removeTheseThings = new JButton(app.isCurrentFrench()?"Retirer":"Remove", removeNbProducts.getIcon());
+                                counterPanel.add(removeTheseThings);
+                                if (app.getLowestStockProduct(p, date) == 0) {
+                                    quantity.setValue(0);
+                                    quantity.setEnabled(false);
+                                    removeTheseThings.setEnabled(false);
+                                    removeTheseThings.setToolTipText(app.isCurrentFrench()?"Le stock est déjà à zéro à cette date":"The stock is already at zero at this date");
+                                    quantity.setToolTipText(app.isCurrentFrench()?"Le stock est déjà à zéro à cette date":"The stock is already at zero at this date");
+                                }
+                                removeTheseThings.addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        int toRemove = (int)quantity.getValue();
+                                        app.removeProduct(p, toRemove, date);
+                                        MainWindow.addChange(new Change(){
+                                            @Override
+                                            public void undo() {
+                                                app.addProduct(p, toRemove, date);
+                                                MainWindow.instance.products.update();
+                                                MainWindow.instance.products.revalidate();
+                                            }
+                                            @Override
+                                            public void redo() {
+                                                    app.removeProduct(p, toRemove, date);
+                                                    MainWindow.instance.products.update();
+                                                    MainWindow.instance.products.revalidate();
+                                            }
+                                        });
+                                        itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
+                                    }
+                                });
+                                counter.setVisible(true);
+                            }
+                        }
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowIconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeiconified(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowActivated(WindowEvent e) {
+                        }
+                        @Override
+                        public void windowDeactivated(WindowEvent e) {
                         }
                     });
-                    itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
+                    picker.setVisible(true);        
             }
         });
         deleteProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    int nbInStock = app.getProductCountInStock(p);
+                    Map<LocalDate, Integer> history = app.getProductInput(p);
                     app.removeProduct(p);
                     MainWindow.addChange(new Change(){
                         @Override
                         public void undo() {
-                            app.addProduct(p, nbInStock);
-                            MainWindow.instance.products.update();
+                            for (Map.Entry<LocalDate, Integer> entry : history.entrySet())
+                                if (entry.getValue() > 0)
+                                    app.addProduct(p, entry.getValue(), entry.getKey());
+                                else
+                                    app.removeProduct(p, -entry.getValue(), entry.getKey());
+                                MainWindow.instance.products.update();
                             MainWindow.instance.products.revalidate();
                         }
                         @Override
@@ -402,12 +419,22 @@ public class ViewProduct extends JDialog {
             }
         });
     }
-    private class ProductIO {
+    private class ProductIO implements Comparable<ProductIO> {
         public LocalDate time;
         public boolean isInput;
+        public int count;
         public ProductIO(LocalDate t, boolean i) {
+            this(t, i, 1);
+        }
+        public ProductIO(LocalDate t, boolean i, int count) {
             time = t;
             isInput = i;
+            this.count = count;
+        }
+
+        @Override
+        public int compareTo(ProductIO o) {
+            return time.compareTo(o.time);
         }
     }
 }
