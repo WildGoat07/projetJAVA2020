@@ -11,9 +11,17 @@ public class Person implements Serializable {
     private UUID id;
     protected String name;
     protected String surname;
-    public Person(String name, String surname) {
+    protected boolean loyal;
+    /**
+     * Constructor.
+     * @param name name of the customer
+     * @param surname surname of the customer
+     * @param loyal true if the customer is loyal
+     */
+    public Person(String name, String surname, boolean loyal) {
         this.name = name;
         this.surname = surname;
+        this.loyal = loyal;
         id = UUID.randomUUID();
     }
     /**
@@ -31,11 +39,39 @@ public class Person implements Serializable {
         return name;
     }
     /**
+     * Changes the name of the customer
+     * @param newName the new name
+     */
+    public void setName(String newName) {
+        name = newName;
+    }
+    /**
+     * Returns true if the customer is loyal
+     * @return true if loyal, else otherwise
+     */
+    public boolean isLoyal() {
+        return loyal;
+    }
+    /**
+     * Changes the loyalty of a customer
+     * @param loyal true if loyal, false otherwise
+     */
+    public void setLoyalty(boolean loyal) {
+        this.loyal = loyal;
+    }
+    /**
      * Gets the surname of the person
      * @return surname of the person
      */
     public String getSurname() {
         return surname;
+    }
+    /**
+     * Changes the surname of the customer
+     * @param newSurname the new surname
+     */
+    public void setSurname(String newSurname) {
+        surname = newSurname;
     }
     @Override
     public String toString() {

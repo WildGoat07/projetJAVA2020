@@ -72,10 +72,7 @@ public class NewPerson extends JDialog {
         validate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (loyalCustomer.isSelected())
-                    result = new LoyalCustomer(personName.getText(), personSurname.getText());
-                else
-                    result = new Person(personName.getText(), personSurname.getText());
+                result = new Person(personName.getText(), personSurname.getText(), loyalCustomer.isSelected());
                 itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
             }
         });

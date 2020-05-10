@@ -42,7 +42,7 @@ public class People extends JPanel implements CanUpdate {
     private Comparator<Person> loyalComparator = new Comparator<Person>(){
         @Override
         public int compare(Person o1, Person o2) {
-            int res = Boolean.valueOf(o1 instanceof LoyalCustomer).compareTo(o2 instanceof LoyalCustomer) * -1;
+            int res = Boolean.valueOf(o1.isLoyal()).compareTo(o2.isLoyal()) * -1;
             if (res == 0)
                 return nameComparator.compare(o1, o2);
             else
@@ -148,10 +148,10 @@ public class People extends JPanel implements CanUpdate {
         java.util.List<Person> toDisplay = app.getPeople();
         switch (customTypes.getSelectedIndex()) {
             case 1:
-            toDisplay = Functions.where(toDisplay, (p) -> p instanceof LoyalCustomer);
+            toDisplay = Functions.where(toDisplay, (p) -> p.isLoyal());
             break;
             case 2:
-            toDisplay = Functions.where(toDisplay, (p) -> !(p instanceof LoyalCustomer));
+            toDisplay = Functions.where(toDisplay, (p) -> !(p.isLoyal()));
             break;
         }
         Collections.sort(toDisplay, currentComparator);
@@ -233,7 +233,7 @@ public class People extends JPanel implements CanUpdate {
             customerData.add(customerSurname, gbc);
             gbc.gridx++;
             gbc.weightx = 0;
-            final JLabel loyalCustomer = new JLabel(person instanceof LoyalCustomer?(
+            final JLabel loyalCustomer = new JLabel(person.isLoyal()?(
                 app.isCurrentFrench()?"Oui":"Yes"
             ): (
                 app.isCurrentFrench()?"Non":"No"

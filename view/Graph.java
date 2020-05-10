@@ -63,7 +63,10 @@ public class Graph<T extends Comparable<T>> extends JComponent {
         while (minX.plusDays((long)(perc*days)).isAfter(curr.getKey()) ||
         minX.plusDays((long)(perc*days)).isEqual(curr.getKey())) {
             res = curr.getValue();
-            curr = iterator.next();
+            if (iterator.hasNext())
+                curr = iterator.next();
+            else
+                return res;
         }
         return res;
     }

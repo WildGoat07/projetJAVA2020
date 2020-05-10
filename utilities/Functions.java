@@ -1,6 +1,7 @@
 package utilities;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -14,6 +15,7 @@ import java.awt.*;
 import java.io.*;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.time.LocalDate;
 
 /**
  * Utility functions
@@ -88,6 +90,21 @@ public class Functions {
     public static <T, U> java.util.List<U> convert(Iterable<T> list, Function<T, U> fct) {
         final java.util.List<U> result = new ArrayList<U>();
         list.forEach((p) -> result.add(fct.apply(p)));
+        return result;
+    }
+    /**
+     * Uses a function to convert every item in the map into another type
+     * @param <T> key type
+     * @param <U> initial type
+     * @param <V> final type
+     * @param list list to convert
+     * @param fct function to use to convert
+     * @return the map with converted items
+     */
+    public static <T, U, V> Map<T, V> convert(Map<T, U> map, Function<U, V> fct) {
+        Map<T, V> result = new HashMap<T, V>();
+        for (Entry<T, U> entry : map.entrySet())
+            result.put(entry.getKey(), fct.apply(entry.getValue()));
         return result;
     }
     /**
@@ -205,5 +222,24 @@ public class Functions {
     public static String removeDiacritics(String input) {
         //https://stackoverflow.com/a/3322174/13270517
         return Normalizer.normalize(input, Form.NFD).replaceAll("\\p{M}", "");
+    }
+    /**
+     * Returns the value from a chronological sorted map. It returns null if the date is before any entry or if there are no entry.
+     * @param <T> type of the value
+     * @param map the sorted map
+     * @param when the date to look for
+     * @return the value corresponding to the date
+     */
+    public static <T> T findValue(Map<LocalDate, T> map, LocalDate when) {
+        Set<Entry<LocalDate, T>> values = map.entrySet();
+        T curr = null;
+        for (Entry<LocalDate,T> entry : values) {
+            if (entry.getKey().isAfter(when)) {
+                return curr;
+            }
+            else
+                curr = entry.getValue();
+        }
+        return curr;
     }
 }
