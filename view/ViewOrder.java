@@ -207,7 +207,7 @@ public class ViewOrder extends JDialog {
             (app.isCurrentFrench()?"Total produits : ":"Total products : ") +
             total.toString()
         ));
-        if (o.getCustomer().isLoyal()) {
+        if (o.loyalReductionApplied()) {
             JLabel reduc = new JLabel(
                 (app.isCurrentFrench()?"Client fidèle : ":"Loyal customer : ")+
                 Price.multiply(-.1f, total).toString()+
