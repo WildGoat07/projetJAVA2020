@@ -68,11 +68,18 @@ public abstract class Product implements Serializable {
         history.put(when, newPrice);
     }
     /**
+     * Removes a change of the price
+     * @param when
+     */
+    public void removePriceChange(LocalDate when) {
+        history.remove(when);
+    }
+    /**
      * Returns a sorted map by the date of the history of the changes that happened
      * @return the sorted map of the changes
      */
     public Map<LocalDate, Price> getHistory() {
-        return new HashMap<LocalDate, Price>(history);
+        return Functions.convert(history, (item) -> new Price(item));
     }
     /**
      * Returns the unique identifier of this product

@@ -93,6 +93,21 @@ public class Functions {
         return result;
     }
     /**
+     * Uses a function to convert every item in the map into another type
+     * @param <T> key type
+     * @param <U> initial type
+     * @param <V> final type
+     * @param list list to convert
+     * @param fct function to use to convert
+     * @return the map with converted items
+     */
+    public static <T, U, V> Map<T, V> convert(Map<T, U> map, Function<U, V> fct) {
+        Map<T, V> result = new HashMap<T, V>();
+        for (Entry<T, U> entry : map.entrySet())
+            result.put(entry.getKey(), fct.apply(entry.getValue()));
+        return result;
+    }
+    /**
      * Resizes an image
      * @param x width of the image
      * @param y height of the image
@@ -225,6 +240,6 @@ public class Functions {
             else
                 curr = entry.getValue();
         }
-        return null;
+        return curr;
     }
 }

@@ -51,15 +51,10 @@ public class ViewProduct extends JDialog {
             }
         });
         JPanel mainPanel = new JPanel();
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        add(mainPanel, gbc);
+        setLayout(new FlowLayout());
+        add(mainPanel);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        setSize(450, 250);
+        setSize(450, 300);
         setLocationRelativeTo(MainWindow.instance);
         mainPanel.add(Box.createRigidArea(new Dimension(1, 20)));
         setTitle(p.getTitle());
@@ -81,7 +76,7 @@ public class ViewProduct extends JDialog {
                 stream.reset();
                 setIconImage(Functions.resizeImage(16, 16, thumbnail));
                 stream.close();
-                setSize(1000, 450);
+                setSize(450, 300+finalY);
             }
             else
                 setIconImage(ImageIO.read(new File("images/icon.png")));
@@ -278,30 +273,30 @@ public class ViewProduct extends JDialog {
                     LocalDate min = Collections.min(prices.keySet());
                     LocalDate max = Collections.max(prices.keySet());
                     long days = min.until(max, ChronoUnit.DAYS);
-                    Price maxValue = Collections.max(prices.values());
+                    Price maxValue = new Price(Collections.max(prices.values()));
                     {
                         if (Price.multiply(maxValue, 1.1f).intValue() == maxValue.intValue())
                             maxValue.add(new Price(1));
                         else
                             maxValue.multiply(1.1f);
                     }
-                    prices.put(min.minusDays((long)(days*.15f)), p.getInitialPrice());
-                    prices.put(max.plusDays((long)(days*.15f)), p.getPrice(1, max.plusDays(1)));
+                    prices.put(min.minusDays(Math.max(1, (long)(days*.15f))), p.getInitialPrice());
+                    prices.put(max.plusDays(Math.max(1, (long)(days*.15f))), p.getPrice(1, max.plusDays(1)));
                     Graph<Price> graph = new Graph<Price>(new Graph.Converter<Price>() {
         
                         @Override
                         public int convertToInt(Price value) {
-                            return value.intValue();
+                            return Price.multiply(value, 4).intValue();
                         }
         
                         @Override
                         public Price convert(int value) {
-                            return new Price(value);
+                            return new Price(value/4f);
                         }
         
                         @Override
                         public float convertToFloat(Price value) {
-                            return value.floatValue();
+                            return Price.multiply(value, 4).floatValue();
                         }
                     },prices, new Price(), maxValue);
                     graph.setSpecialDate(LocalDate.now());
@@ -325,17 +320,17 @@ public class ViewProduct extends JDialog {
         
                         @Override
                         public int convertToInt(Price value) {
-                            return value.intValue();
+                            return Price.multiply(value, 4).intValue();
                         }
         
                         @Override
                         public Price convert(int value) {
-                            return new Price(value);
+                            return new Price(value/4f);
                         }
         
                         @Override
                         public float convertToFloat(Price value) {
-                            return value.floatValue();
+                            return Price.multiply(value, 4).floatValue();
                         }
                     },prices, new Price(), maxValue);
                     graph.setSpecialDate(LocalDate.now());
@@ -346,6 +341,16 @@ public class ViewProduct extends JDialog {
             }
         });
         mainPanel.add(Functions.alignHorizontal(new Component[]{viewPrice, viewStock}));
+        JButton editProduct = new JButton(app.isCurrentFrench()?"Éditer le produit":"Edit the product");
+        mainPanel.add(editProduct);
+        editProduct.addActionListener(new ActionListener(){
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
+                new EditProduct(app, p, caller).setVisible(true);
+            }
+        });
         JButton deleteProduct = new JButton(app.isCurrentFrench()?"Supprimer le produit":"Delete the product",  new ImageIcon("images/trash.png"));
         mainPanel.add(deleteProduct);
         if (!app.canRemoveProduct(p)) {
@@ -396,9 +401,6 @@ public class ViewProduct extends JDialog {
                     itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
             }
         });
-
-        gbc.weightx = 1;
-        gbc.gridx = 1;
     }
     private class ProductIO {
         public LocalDate time;
