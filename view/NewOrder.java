@@ -90,7 +90,6 @@ public class NewOrder extends JDialog {
         changeBegDate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(begDate);
                 DatePicker picker = new DatePicker(begDate, app.isCurrentFrench() ? Locale.FRENCH : Locale.ENGLISH, itself);
                 picker.addWindowListener(new WindowListener() {
                     @Override
