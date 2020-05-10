@@ -67,6 +67,16 @@ public class ViewPerson extends JDialog {
                 isLoyal.revalidate();
             }
         });
+        JButton edit = new JButton(app.isCurrentFrench()?"Éditer":"Edit");
+        mainPanel.add(edit);
+        edit.addActionListener(new ActionListener(){
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
+                new EditPerson(app, p, caller).setVisible(true);
+            }
+        });
         JButton delete = new JButton(app.isCurrentFrench()?"Supprimer":"Delete", new ImageIcon("images/trash.png"));
         delete.addActionListener(new ActionListener() {
             @Override

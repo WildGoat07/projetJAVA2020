@@ -39,6 +39,13 @@ public class Person implements Serializable {
         return name;
     }
     /**
+     * Changes the name of the customer
+     * @param newName the new name
+     */
+    public void setName(String newName) {
+        name = newName;
+    }
+    /**
      * Returns true if the customer is loyal
      * @return true if loyal, else otherwise
      */
@@ -49,7 +56,7 @@ public class Person implements Serializable {
      * Changes the loyalty of a customer
      * @param loyal true if loyal, false otherwise
      */
-    public void setLoyal(boolean loyal) {
+    public void setLoyalty(boolean loyal) {
         this.loyal = loyal;
     }
     /**
@@ -58,6 +65,13 @@ public class Person implements Serializable {
      */
     public String getSurname() {
         return surname;
+    }
+    /**
+     * Changes the surname of the customer
+     * @param newSurname the new surname
+     */
+    public void setSurname(String newSurname) {
+        surname = newSurname;
     }
     @Override
     public String toString() {
