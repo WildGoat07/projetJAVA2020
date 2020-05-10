@@ -58,12 +58,12 @@ public class ViewPerson extends JDialog {
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Nom : ":"Surname : ")+p.getSurname()));
         mainPanel.add(new JLabel("ID : "+p.getID().toString()));
         JCheckBox isLoyal = new JCheckBox(app.isCurrentFrench()?"Client fidèle":"Loyal customer");
-        isLoyal.setSelected(p instanceof LoyalCustomer);
+        isLoyal.setSelected(p.isLoyal());
         mainPanel.add(isLoyal);
         isLoyal.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                isLoyal.setSelected(p instanceof LoyalCustomer);
+                isLoyal.setSelected(p.isLoyal());
                 isLoyal.revalidate();
             }
         });
