@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import model.*;
 import utilities.*;
@@ -17,7 +18,7 @@ import controller.Application;
 public class ViewOrder extends JDialog {
     private static final long serialVersionUID = 1L;
     private Runnable update;
-    private Comparator<Product> currentComparator;
+    private Comparator<Map.Entry<Product, Price>> currentComparator;
     public ViewOrder(Application app, Order o) {
         super(MainWindow.instance);
         setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
@@ -79,24 +80,24 @@ public class ViewOrder extends JDialog {
         JPanel productList = new JPanel();
         productList.setLayout(new GridBagLayout());
         {
-            Comparator<Product> nameComparator = new Comparator<Product>() {
+            Comparator<Map.Entry<Product, Price>> nameComparator = new Comparator<Map.Entry<Product, Price>>() {
                 @Override
-                public int compare(Product o1, Product o2) {
-                    return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
+                public int compare(Map.Entry<Product, Price> o1, Map.Entry<Product, Price> o2) {
+                    return Functions.simplify(o1.getKey().getTitle()).compareTo(Functions.simplify(o2.getKey().getTitle()));
                 }
             };
-            Comparator<Product> priceComparator = new Comparator<Product>() {
+            Comparator<Map.Entry<Product, Price>> priceComparator = new Comparator<Map.Entry<Product, Price>>() {
                 @Override
-                public int compare(Product o1, Product o2) {
-                    int res = o1.getPrice(duration, o.getBeginningRental()).compareTo(o2.getPrice(duration, o.getBeginningRental()));
+                public int compare(Map.Entry<Product, Price> o1, Map.Entry<Product, Price> o2) {
+                    int res = o1.getValue().compareTo(o2.getValue());
                     if (res == 0)
                         return nameComparator.compare(o1, o2);
                     else
                         return res;
                 }
             };
-            Comparator<Product> reverseNameComparator = nameComparator.reversed();
-            Comparator<Product> reversePriceComparator = priceComparator.reversed();
+            Comparator<Map.Entry<Product, Price>> reverseNameComparator = nameComparator.reversed();
+            Comparator<Map.Entry<Product, Price>> reversePriceComparator = priceComparator.reversed();
             currentComparator = nameComparator;
             update = () -> {
                 GridBagConstraints gbc = new GridBagConstraints();
@@ -142,23 +143,23 @@ public class ViewOrder extends JDialog {
                     }
                 });
                 gbc.gridy++;
-                java.util.List<Product> toDisplay = o.getProducts();
+                java.util.List<Map.Entry<Product, Price>> toDisplay = Functions.convert(o.getPrices().entrySet(), (item) -> item);
                 toDisplay.sort(currentComparator);
-                for (Product prod : toDisplay) {
+                for (Map.Entry<Product, Price> prod : toDisplay) {
                     gbc.gridx = 0;
                     gbc.weightx = 1;
-                    final JLabel productName = new JLabel(prod.getTitle());
+                    final JLabel productName = new JLabel(prod.getKey().getTitle());
                     productName.setBorder(new LineBorder(MainWindow.borders, 1));
                     productList.add(productName, gbc);
                     gbc.gridx++;
                     gbc.weightx = 0;
-                    final JLabel productPrice = new JLabel(prod.getPrice(duration, o.getBeginningRental()).toString());
+                    final JLabel productPrice = new JLabel(prod.getValue().toString());
                     productPrice.setBorder(new LineBorder(MainWindow.borders, 1));
                     productList.add(productPrice, gbc);
                     MouseListener mouseListener = new MouseListener() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            new ViewProduct(app, prod, itself).setVisible(true);
+                            new ViewProduct(app, prod.getKey(), itself).setVisible(true);
                         }
                         @Override
                         public void mousePressed(MouseEvent e) {
