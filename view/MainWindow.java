@@ -402,7 +402,7 @@ public class MainWindow extends JFrame {
             JOptionPane.YES_NO_CANCEL_OPTION);
             if (res == JOptionPane.YES_OPTION)
                 return Save();
-            return res != JOptionPane.CANCEL_OPTION;
+            return res != JOptionPane.CANCEL_OPTION && res != JOptionPane.CLOSED_OPTION;
         }
         else
             return true;
