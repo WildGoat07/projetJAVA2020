@@ -107,7 +107,7 @@ public final class Order implements Serializable {
      * @param p product to test
      * @return the ending of the rental
      */
-    public LocalDate getEndingBorrowing(Product p) {
+    public LocalDate getEndOfBorrowing(Product p) {
         return getBeginningRental().plusDays(Functions.find(products, (b) -> b.getProduct().equals(p)).getDays());
     }
     /**

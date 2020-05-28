@@ -78,7 +78,7 @@ public class Application {
         if (registered == 0)
             return 0;
         for (Order order : orders)
-            if ((order.getBeginningRental().isBefore(time) || order.getBeginningRental().isEqual(time)) && order.getEndingBorrowing(p).isAfter(time))
+            if ((order.getBeginningRental().isBefore(time) || order.getBeginningRental().isEqual(time)) && order.getEndOfBorrowing(p).isAfter(time))
                 if (order.getProducts().contains(p))
                     registered--;
         return registered;
@@ -191,7 +191,7 @@ public class Application {
             for (Product product : o.getProducts()) {
                 if (productExistsInStock(product) == null)
                     throw new InvalidParameterException("One of the products of the order doesn't exists");
-                if (getLowestStockProduct(product, o.getBeginningRental(), o.getEndingBorrowing(product)) == 0)
+                if (getLowestStockProduct(product, o.getBeginningRental(), o.getEndOfBorrowing(product)) == 0)
                     throw new InvalidParameterException("There is no more product in stock");
             }
             orders.add(o);
@@ -219,7 +219,7 @@ public class Application {
         for (Order order : orders)
             if (order.getProducts().contains(p)) {
                 movements.add(new ProductMovement(order.getBeginningRental(), -1));
-                movements.add(new ProductMovement(order.getEndingBorrowing(p), 1));
+                movements.add(new ProductMovement(order.getEndOfBorrowing(p), 1));
             }
         for (Map.Entry<LocalDate, Integer> input : getProductInput(p).entrySet())
             movements.add(new ProductMovement(input.getKey(), input.getValue()));
@@ -255,7 +255,7 @@ public class Application {
         for (Order order : orders)
             if (order.getProducts().contains(p)) {
                 movements.add(new ProductMovement(order.getBeginningRental(), -1));
-                movements.add(new ProductMovement(order.getEndingBorrowing(p), 1));
+                movements.add(new ProductMovement(order.getEndOfBorrowing(p), 1));
             }
         for (Map.Entry<LocalDate, Integer> input : getProductInput(p).entrySet())
             movements.add(new ProductMovement(input.getKey(), input.getValue()));
@@ -290,7 +290,7 @@ public class Application {
         for (Order order : orders)
             if (order.getProducts().contains(p)) {
                 movements.add(new ProductMovement(order.getBeginningRental(), -1));
-                movements.add(new ProductMovement(order.getEndingBorrowing(p), 1));
+                movements.add(new ProductMovement(order.getEndOfBorrowing(p), 1));
             }
         for (Map.Entry<LocalDate, Integer> input : getProductInput(p).entrySet())
             movements.add(new ProductMovement(input.getKey(), input.getValue()));
@@ -470,7 +470,7 @@ ListIterator<ProductInStock> it = stock.listIterator();
         for (ProductInStock inStock : stock) {
             int rented = 0;
             for (Order order : orders)
-                if (order.getProducts().contains(inStock.product) && (time.isAfter(order.getBeginningRental()) || time.isEqual(order.getBeginningRental())) && time.isBefore(order.getEndingBorrowing(inStock.product)))
+                if (order.getProducts().contains(inStock.product) && (time.isAfter(order.getBeginningRental()) || time.isEqual(order.getBeginningRental())) && time.isBefore(order.getEndOfBorrowing(inStock.product)))
                     rented++;
             if (rented > 0)
                 result.add(inStock.product);
@@ -495,7 +495,7 @@ ListIterator<ProductInStock> it = stock.listIterator();
         for (Order order : orders)
             if (order.getProducts().contains(p)) {
                 movements.add(new ProductMovement(order.getBeginningRental(), -1));
-                movements.add(new ProductMovement(order.getEndingBorrowing(p), 1));
+                movements.add(new ProductMovement(order.getEndOfBorrowing(p), 1));
             }
         for (Map.Entry<LocalDate, Integer> input : getProductInput(p).entrySet())
             movements.add(new ProductMovement(input.getKey(), input.getValue()));

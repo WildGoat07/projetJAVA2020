@@ -146,7 +146,7 @@ public class ViewProduct extends JDialog {
                 for (Order order : app.getOrders())
                     if (order.getProducts().contains(p)) {
                         data.add(new ProductIO(order.getBeginningRental(), false));
-                        data.add(new ProductIO(order.getEndingBorrowing(p), true));
+                        data.add(new ProductIO(order.getEndOfBorrowing(p), true));
                     }
                 for (Map.Entry<LocalDate, Integer> input : app.getProductInput(p).entrySet())
                     data.add(new ProductIO(input.getKey(), true, input.getValue()));
