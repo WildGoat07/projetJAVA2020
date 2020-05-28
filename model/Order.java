@@ -182,6 +182,14 @@ public final class Order implements Serializable {
         return Functions.toMap(products, (item) -> new Couple<Product, Price>(item.getProduct(), item.getPrice()));
     }
     /**
+     * Gets the duration and price of a product
+     * @param p product to look for
+     * @return the data, or null otherwise
+     */
+    public Borrowing getProductData(Product p) {
+        return Functions.find(products, (b) -> b.getProduct().equals(p));
+    }
+    /**
      * Gets a read only map of the number of days of every product
      * @return the map of the days
      */

@@ -17,7 +17,7 @@ import controller.Application;
 public class ViewOrder extends JDialog {
     private static final long serialVersionUID = 1L;
     private Runnable update;
-    private Comparator<Map.Entry<Product, Price>> currentComparator;
+    private Comparator<Product> currentComparator;
     public ViewOrder(Application app, Order o) {
         super(MainWindow.instance);
         setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
@@ -69,34 +69,40 @@ public class ViewOrder extends JDialog {
             new JLabel(app.isCurrentFrench()?"Client : ":"Customer : "),
             customer
         }));
-        Long duration = Long.valueOf(o.getBeginningRental().until(o.getEndingRental(), ChronoUnit.DAYS));
         mainPanel.add(new JLabel((app.isCurrentFrench()?"Date de départ : ":"Beginning date : ")+o.getBeginningRental().toString()));
-        mainPanel.add(new JLabel((app.isCurrentFrench()?"Date de fin : ":"Ending date : ")+o.getEndingRental().toString()));
-        mainPanel.add(new JLabel((app.isCurrentFrench()?"Durée : ":"Duration : ")+
-                    duration.toString() +
-                    (app.isCurrentFrench()?" jours":" days")));
         mainPanel.add(new JLabel("ID : "+o.getID().toString()));
         JPanel productList = new JPanel();
         productList.setLayout(new GridBagLayout());
         {
-            Comparator<Map.Entry<Product, Price>> nameComparator = new Comparator<Map.Entry<Product, Price>>() {
+            Comparator<Product> nameComparator = new Comparator<Product>() {
                 @Override
-                public int compare(Map.Entry<Product, Price> o1, Map.Entry<Product, Price> o2) {
-                    return Functions.simplify(o1.getKey().getTitle()).compareTo(Functions.simplify(o2.getKey().getTitle()));
+                public int compare(Product o1, Product o2) {
+                    return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
                 }
             };
-            Comparator<Map.Entry<Product, Price>> priceComparator = new Comparator<Map.Entry<Product, Price>>() {
+            Comparator<Product> priceComparator = new Comparator<Product>() {
                 @Override
-                public int compare(Map.Entry<Product, Price> o1, Map.Entry<Product, Price> o2) {
-                    int res = o1.getValue().compareTo(o2.getValue());
+                public int compare(Product o1, Product o2) {
+                    int res = o.getProductData(o1).getPrice().compareTo(o.getProductData(o2).getPrice());
                     if (res == 0)
                         return nameComparator.compare(o1, o2);
                     else
                         return res;
                 }
             };
-            Comparator<Map.Entry<Product, Price>> reverseNameComparator = nameComparator.reversed();
-            Comparator<Map.Entry<Product, Price>> reversePriceComparator = priceComparator.reversed();
+            Comparator<Product> durationComparator = new Comparator<Product>() {
+                @Override
+                public int compare(Product o1, Product o2) {
+                    int res = Long.valueOf(o.getProductData(o1).getDays()).compareTo(o.getProductData(o2).getDays());
+                    if (res == 0)
+                        return nameComparator.compare(o1, o2);
+                    else
+                        return res;
+                }
+            };
+            Comparator<Product> reverseNameComparator = nameComparator.reversed();
+            Comparator<Product> reversePriceComparator = priceComparator.reversed();
+            Comparator<Product> reverseDurationComparator = durationComparator.reversed();
             currentComparator = nameComparator;
             update = () -> {
                 GridBagConstraints gbc = new GridBagConstraints();
@@ -124,6 +130,24 @@ public class ViewOrder extends JDialog {
                 });
                 gbc.gridx++;
                 gbc.weightx = 0;
+                JButton durationField = new JButton(app.isCurrentFrench()?"Jours":"Days");
+                productList.add(durationField, gbc);
+                if (currentComparator == priceComparator)
+                    durationField.setText(durationField.getText()+" ↑");
+                else if (currentComparator == reversePriceComparator)
+                    durationField.setText(durationField.getText()+" ↓");
+                durationField.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (currentComparator == priceComparator)
+                            currentComparator = reversePriceComparator;
+                        else
+                            currentComparator = priceComparator;
+                        update.run();
+                        productList.revalidate();
+                    }
+                });
+                gbc.gridx++;
                 JButton priceField = new JButton(app.isCurrentFrench()?"Prix":"Price");
                 productList.add(priceField, gbc);
                 if (currentComparator == priceComparator)
@@ -142,23 +166,27 @@ public class ViewOrder extends JDialog {
                     }
                 });
                 gbc.gridy++;
-                java.util.List<Map.Entry<Product, Price>> toDisplay = Functions.convert(o.getPrices().entrySet(), (item) -> item);
+                java.util.List<Product> toDisplay = o.getProducts();
                 toDisplay.sort(currentComparator);
-                for (Map.Entry<Product, Price> prod : toDisplay) {
+                for (Product prod : toDisplay) {
                     gbc.gridx = 0;
                     gbc.weightx = 1;
-                    final JLabel productName = new JLabel(prod.getKey().getTitle());
+                    final JLabel productName = new JLabel(prod.getTitle());
                     productName.setBorder(new LineBorder(MainWindow.borders, 1));
                     productList.add(productName, gbc);
                     gbc.gridx++;
                     gbc.weightx = 0;
-                    final JLabel productPrice = new JLabel(prod.getValue().toString());
+                    final JLabel productDuration = new JLabel(o.getProductData(prod).getDays()+"");
+                    productDuration.setBorder(new LineBorder(MainWindow.borders, 1));
+                    productList.add(productDuration, gbc);
+                    gbc.gridx++;
+                    final JLabel productPrice = new JLabel(o.getProductData(prod).getPrice().toString());
                     productPrice.setBorder(new LineBorder(MainWindow.borders, 1));
                     productList.add(productPrice, gbc);
                     MouseListener mouseListener = new MouseListener() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            new ViewProduct(app, prod.getKey(), itself).setVisible(true);
+                            new ViewProduct(app, prod, itself).setVisible(true);
                         }
                         @Override
                         public void mousePressed(MouseEvent e) {
@@ -201,8 +229,8 @@ public class ViewOrder extends JDialog {
         scrollyBoi.setPreferredSize(new Dimension(400, 280));
         mainPanel.add(scrollyBoi);
         Price total = new Price();
-        for (Product prod : o.getProducts())
-            total.add(prod.getPrice(duration, o.getBeginningRental()));
+        for (Price price : o.getPrices().values())
+            total.add(price);
         mainPanel.add(new JLabel(
             (app.isCurrentFrench()?"Total produits : ":"Total products : ") +
             total.toString()
