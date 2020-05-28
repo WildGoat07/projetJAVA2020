@@ -25,7 +25,7 @@ public class Functions {
     /**
      * Returns a new list containing only the items that check the predicate
      * @param <T> type of the items in the list
-     * @param list list of items do check
+     * @param list list of items to check
      * @param test predicate to test every item
      * @return the new list after the predicate test
      */
@@ -36,6 +36,45 @@ public class Functions {
                 result.add(p);
         });
         return result;
+    }
+    /**
+     * Finds the first item in a list based on the predicate
+     * @param <T> type of the items in the list
+     * @param list list of items to check
+     * @param test predicate to test the items
+     * @return the found item, or null otherwise
+     */
+    public static <T> T find(Iterable<T> list, Predicate<T> test) {
+        for (T item : list)
+            if (test.test(item))
+                return item;
+        return null;
+    }
+    /**
+     * Check if one of the items is valid.
+     * @param <T> type of the items in the list
+     * @param list list of items to check
+     * @param pred predicate to check every item
+     * @return true if any item is valid.
+     */
+    public static <T> boolean checkOne(Iterable<T> list, Predicate<T> pred) {
+        for (T item : list)
+            if (pred.test(item))
+                return true;
+        return false;
+    }
+    /**
+     * Check if all of the items are valid.
+     * @param <T> type of the items in the list
+     * @param list list of items to check
+     * @param pred predicate to check every item
+     * @return true if all items are valid.
+     */
+    public static <T> boolean checkAll(Iterable<T> list, Predicate<T> pred) {
+        for (T item : list)
+            if (!pred.test(item))
+                return false;
+        return true;
     }
     /**
      * Returns a new list containing all the items of the first list except for the one in the other
@@ -90,6 +129,38 @@ public class Functions {
     public static <T, U> java.util.List<U> convert(Iterable<T> list, Function<T, U> fct) {
         final java.util.List<U> result = new ArrayList<U>();
         list.forEach((p) -> result.add(fct.apply(p)));
+        return result;
+    }
+    /**
+     * Uses a function to convert every item in the map into a list
+     * @param <T> key type
+     * @param <U> value type
+     * @param <V> output type
+     * @param map map to convert
+     * @param fct function used to convert
+     * @return the new list
+     */
+    public static <T, U, V> java.util.List<V> toList(Map<T, U> map, Function<Map.Entry<T, U>,V> fct) {
+        java.util.List<V> result = new ArrayList<V>();
+        for (Entry<T, U> entry : map.entrySet())
+            result.add(fct.apply(entry));
+        return result;
+    }
+    /**
+     * Uses a function to convert every item in the list into a map
+     * @param <T> item type
+     * @param <U> key type
+     * @param <V> value type
+     * @param list list to convert
+     * @param fct function used to convert
+     * @return the new map
+     */
+    public static <T, U, V> Map<U, V> toMap(Iterable<T> list, Function<T, Couple<U, V>> fct) {
+        Map<U, V> result = new HashMap<U, V>();
+        for (T item : list) {
+            Couple<U, V> val = fct.apply(item);
+            result.put(val.getKey(), val.getValue());
+        }
         return result;
     }
     /**
