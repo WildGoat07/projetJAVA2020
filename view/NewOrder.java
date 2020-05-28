@@ -152,6 +152,8 @@ public class NewOrder extends JDialog {
                 for (Product prod : app.getStock())
                     stock.add(stock.size(), prod);
                 Map<Product, Integer> finalProds = new HashMap<Product, Integer>();
+                JButton seeProduct = new JButton(app.isCurrentFrench()?"Voir produit":"See product");
+                seeProduct.setEnabled(false);
                 JButton previous = new JButton(app.isCurrentFrench() ? "Précédent" : "Previous");
                 previous.addActionListener(new ActionListener() {
                     @Override
@@ -180,6 +182,7 @@ public class NewOrder extends JDialog {
                             selectedList.clearSelection();
                             remove.setEnabled(false);
                             daysCount.setEnabled(false);
+                            seeProduct.setEnabled(true);
                         }
                         else
                             add.setEnabled(false);
@@ -197,6 +200,7 @@ public class NewOrder extends JDialog {
                                 max = 9999;
                             daysCount.setValue((int)finalProds.get(selectedList.getSelectedValue()));
                             spinnerModel.setMaximum((int)max);
+                            seeProduct.setEnabled(true);
                         }
                         else
                             add.setEnabled(false);
@@ -220,6 +224,15 @@ public class NewOrder extends JDialog {
                         stock.add(stock.size(), p);
                         remove.setEnabled(false);
                         daysCount.setEnabled(false);
+                        seeProduct.setEnabled(false);
+                    }
+                });
+                seeProduct.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Product p = productList.getSelectedValue() != null?productList.getSelectedValue():selectedList.getSelectedValue();
+                        ViewProduct dialog = new ViewProduct(app, p, itself);
+                        dialog.setVisible(true);
                     }
                 });
                 daysCount.addChangeListener(new ChangeListener(){
@@ -229,9 +242,15 @@ public class NewOrder extends JDialog {
                     }
                 });
                 mainPanel2.add(Functions.alignHorizontal(new Component[] {
-                    new JScrollPane(productList),
+                    Functions.alignVertical(new Component[] {
+                        new JLabel("Stock :"),
+                        new JScrollPane(productList)
+                    }),
                     Functions.alignVertical(new Component[]{add, remove}),
-                    new JScrollPane(selectedList)
+                    Functions.alignVertical(new Component[] {
+                        new JLabel(app.isCurrentFrench()?"A ajouter :":"To add :"),
+                        new JScrollPane(selectedList)
+                    })
                 }));
                 mainPanel2.add(Functions.alignHorizontal(new Component[]{
                     new JLabel(app.isCurrentFrench()?"Jours :":"Days :"),
@@ -250,8 +269,8 @@ public class NewOrder extends JDialog {
                         itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
                     }
                 });
-                mainPanel2.add(Functions.alignHorizontal(new Component[]{previous, finish}));
-                setSize(700, 500);
+                mainPanel2.add(Functions.alignHorizontal(new Component[]{previous, finish, seeProduct}));
+                setSize(600, 300);
                 itself.revalidate();
             }
         });
