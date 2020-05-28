@@ -5,10 +5,13 @@ import controller.*;
 import utilities.*;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -20,36 +23,42 @@ public class NewOrder extends JDialog {
     private static final long serialVersionUID = 1L;
     private Order result;
     private LocalDate begDate;
-    private LocalDate endDate;
-    private Runnable fillPanels;
 
-    public NewOrder(Application app) {
+    public NewOrder(final Application app) {
         super(MainWindow.instance);
         setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
-        NewOrder itself = this;
+        final NewOrder itself = this;
+        result = null;
+        setTitle(app.isCurrentFrench() ? "Nouvelle commande" : "New order");
         MainWindow.instance.addNewSubWindow(this);
-        addWindowListener(new WindowListener(){
+        addWindowListener(new WindowListener() {
             @Override
-            public void windowOpened(WindowEvent e) {
+            public void windowOpened(final WindowEvent e) {
             }
+
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(final WindowEvent e) {
                 MainWindow.instance.removeSubWindow(itself);
             }
+
             @Override
-            public void windowClosed(WindowEvent e) {
+            public void windowClosed(final WindowEvent e) {
             }
+
             @Override
-            public void windowIconified(WindowEvent e) {
+            public void windowIconified(final WindowEvent e) {
             }
+
             @Override
-            public void windowDeiconified(WindowEvent e) {
+            public void windowDeiconified(final WindowEvent e) {
             }
+
             @Override
-            public void windowActivated(WindowEvent e) {
+            public void windowActivated(final WindowEvent e) {
             }
+
             @Override
-            public void windowDeactivated(WindowEvent e) {
+            public void windowDeactivated(final WindowEvent e) {
             }
         });
         result = null;
@@ -57,40 +66,35 @@ public class NewOrder extends JDialog {
         setLocationRelativeTo(MainWindow.instance);
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
+        } catch (final IOException e) {
         }
-        catch (IOException e) {}
         setLayout(new FlowLayout());
-        JPanel placeholder = new JPanel();
-        JPanel mainPanel = new JPanel();
+        final JPanel placeholder = new JPanel();
+        final JPanel mainPanel1 = new JPanel();
+        mainPanel1.setLayout(new BoxLayout(mainPanel1, BoxLayout.Y_AXIS));
         add(placeholder);
-        placeholder.add(mainPanel);
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        setTitle(app.isCurrentFrench() ? "Ajouter une commande" : "Add an order");
-
-        JComboBox<Person> person = new JComboBox<Person>();
-        {
-            java.util.List<Person> people = app.getPeople();
-            people.sort(new Comparator<Person>() {
-                @Override
-                public int compare(Person o1, Person o2) {
-                    return Functions.simplify(o1.toString()).compareTo(o2.toString());
-                }
-            });
-            for (Person p : people)
-                person.addItem(p);
-        }
-        mainPanel.add(Functions.alignHorizontal(
-                new Component[] { new JLabel(app.isCurrentFrench() ? "Client : " : "Customer : "), person }));
+        placeholder.add(mainPanel1);
+        final JComboBox<Person> persons = new JComboBox<Person>();
+        app.getPeople().forEach((p) -> persons.addItem(p));
+        mainPanel1.add(Functions.alignHorizontal(
+                new Component[] { new JLabel(app.isCurrentFrench() ? "Client :" : "Customer :"), persons }));
         begDate = LocalDate.now();
-        JButton changeBegDate = new JButton(begDate.toString(), new ImageIcon("images/cal.png"));
-        JButton todayBeg = new JButton(app.isCurrentFrench() ? "Aujourd'hui" : "Today");
-        mainPanel.add(Functions.alignHorizontal(
-                new Component[] { new JLabel(app.isCurrentFrench() ? "Date de début : " : "Beginning date : "),
-                        changeBegDate, todayBeg }));
-        changeBegDate.addActionListener(new ActionListener() {
+        JButton addingDate = new JButton(begDate.toString(), new ImageIcon("images/cal.png"));
+        JButton resetAddingDate = new JButton(app.isCurrentFrench() ? "Aujourd'hui" : "Today");
+        mainPanel1.add(Functions.alignHorizontal(new Component[] { addingDate, resetAddingDate }));
+        resetAddingDate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DatePicker picker = new DatePicker(begDate, app.isCurrentFrench() ? Locale.FRENCH : Locale.ENGLISH, itself);
+                begDate = LocalDate.now();
+                addingDate.setText(begDate.toString());
+                addingDate.revalidate();
+            }
+        });
+        addingDate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DatePicker picker = new DatePicker(begDate, app.isCurrentFrench() ? Locale.FRENCH : Locale.ENGLISH,
+                        itself);
                 picker.addWindowListener(new WindowListener() {
                     @Override
                     public void windowOpened(WindowEvent e) {
@@ -98,11 +102,11 @@ public class NewOrder extends JDialog {
 
                     @Override
                     public void windowClosing(WindowEvent e) {
-                        LocalDate res = picker.getResult();
-                        if (res != null) {
-                            begDate = res;
-                            changeBegDate.setText(begDate.toString());
-                            changeBegDate.revalidate();
+                        LocalDate date = picker.getResult();
+                        if (date != null) {
+                            begDate = date;
+                            addingDate.setText(begDate.toString());
+                            addingDate.revalidate();
                         }
                     }
 
@@ -129,134 +133,128 @@ public class NewOrder extends JDialog {
                 picker.setVisible(true);
             }
         });
-        todayBeg.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                begDate = LocalDate.now();
-                changeBegDate.setText(begDate.toString());
-                revalidate();
-            }
-        });
-        endDate = LocalDate.now();
-        JSpinner daysCount = new JSpinner(new SpinnerNumberModel(1, 1, 999, 1));
-        mainPanel.add(Functions.alignHorizontal(new Component[] {
-                new JLabel(app.isCurrentFrench() ? "Nombre de jours : " : "Number of days : "), daysCount }));
-        JSpinner reduction = new JSpinner(new SpinnerNumberModel(0, 0, 999, .1f));
-        mainPanel.add(Functions.alignHorizontal(new Component[] {
-            new JLabel(app.isCurrentFrench()?"Réduction : ":"Reduction : "),
-            reduction,
-            new JLabel(" €")
-        }));
-        JButton next = new JButton(app.isCurrentFrench()?"Suivant":"Next");
+        JSpinner reductionPrice = new JSpinner(new SpinnerNumberModel(0, 0, 9999, .1f));
+        mainPanel1.add(Functions.alignHorizontal(new Component[] {
+                new JLabel(app.isCurrentFrench() ? "Réduction :" : "Reduction :"), reductionPrice, new JLabel(" €") }));
+        JButton next = new JButton(app.isCurrentFrench() ? "Suivant" : "Next");
+        mainPanel1.add(next);
         next.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                JPanel mainPanel2 = new JPanel();
+                mainPanel2.setLayout(new BoxLayout(mainPanel2, BoxLayout.Y_AXIS));
                 placeholder.removeAll();
-                JPanel selectionPanel = new JPanel();
-                endDate = begDate.plusDays((int)daysCount.getValue());
-                placeholder.add(selectionPanel);
-                selectionPanel.setLayout(new BoxLayout(selectionPanel, BoxLayout.Y_AXIS));
-                setSize(450, 450);
-                java.util.List<Product> selected = new ArrayList<Product>();
-                Comparator<Product> comparator = new Comparator<Product>() {
-                    @Override
-                    public int compare(Product o1, Product o2) {
-                        return Functions.simplify(o1.getTitle()).compareTo(Functions.simplify(o2.getTitle()));
-                    }
-                };
-                Supplier<java.util.List<Product>> generateproductList = () -> {
-                    java.util.List<Product> result = Functions.except(app.getStock(), selected);
-                    result.sort(comparator);
-                    return result;
-                };
-                JPanel productsSelection = new JPanel();
-                productsSelection.setLayout(new BoxLayout(productsSelection, BoxLayout.Y_AXIS));
-                JPanel selectedProducts = new JPanel();
-                selectedProducts.setLayout(new BoxLayout(selectedProducts, BoxLayout.Y_AXIS));
-                fillPanels = () -> {
-                    productsSelection.removeAll();
-                    selectedProducts.removeAll();
-                    for (Product product : generateproductList.get()) {
-                        JButton addTo = new JButton(app.isCurrentFrench()?"Ajouter":"Add");
-                        if (app.getLowestStockProduct(product, begDate, endDate) == 0) {
-                            addTo.setEnabled(false);
-                            addTo.setToolTipText(app.isCurrentFrench()?"Produit en rupture pour cette commande":"Product out of stock for this order");
-                        }
-                        productsSelection.add(Functions.alignHorizontal(new Component[] {
-                            new JLabel(product.getTitle().length()>20?product.getTitle().subSequence(0, 20)+"...":product.getTitle()),
-                            addTo
-                        }));
-                        addTo.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                selected.add(product);
-                                selected.sort(comparator);
-                                fillPanels.run();
-                            }
-                        });
-                    }
-                    for (Product product : selected) {
-                        JButton removeFrom = new JButton(app.isCurrentFrench()?"Retirer":"Remove");
-                        selectedProducts.add(Functions.alignHorizontal(new Component[] {
-                            new JLabel(product.getTitle().length()>20?product.getTitle().subSequence(0, 20)+"...":product.getTitle()),
-                            removeFrom
-                        }));
-                        removeFrom.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                selected.remove(product);
-                                fillPanels.run();
-                            }
-                        });
-                    }
-                    placeholder.revalidate();
-                    placeholder.repaint();
-                };
-                fillPanels.run();
-                JScrollPane scrollySelection = new JScrollPane(productsSelection, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                scrollySelection.getVerticalScrollBar().setUnitIncrement(16);
-                scrollySelection.setPreferredSize(new Dimension(200, 300));
-                JScrollPane scrollySelected = new JScrollPane(selectedProducts, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                scrollySelected.getVerticalScrollBar().setUnitIncrement(16);
-                scrollySelected.setPreferredSize(new Dimension(200, 300));
-                selectionPanel.add(Functions.alignHorizontal(new Component[] {
-                    Functions.alignVertical(new Component[] {
-                        new JLabel("Stock"),
-                        scrollySelection
-                    }),
-                    Functions.alignVertical(new Component[] {
-                        new JLabel(app.isCurrentFrench()?"Produits sélectionnés":"Selected products"),
-                        scrollySelected
-                    })
-                }));
-                revalidate();
-                JButton previous = new JButton(app.isCurrentFrench()?"Précédent":"Previous");
+                placeholder.add(mainPanel2);
+                DefaultListModel<Product> stock = new DefaultListModel<Product>();
+                JList<Product> productList = new JList<Product>(stock);
+                DefaultListModel<Product> selection = new DefaultListModel<Product>();
+                JList<Product> selectedList = new JList<Product>(selection);
+                for (Product prod : app.getStock())
+                    stock.add(stock.size(), prod);
+                Map<Product, Integer> finalProds = new HashMap<Product, Integer>();
+                JButton previous = new JButton(app.isCurrentFrench() ? "Précédent" : "Previous");
                 previous.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        setSize(350, 200);
                         placeholder.removeAll();
-                        placeholder.add(mainPanel);
-                        placeholder.revalidate();
-                        placeholder.repaint();
+                        placeholder.add(mainPanel1);
+                        itself.revalidate();
+                        setSize(350, 200);
                     }
                 });
-                JButton finish = new JButton(app.isCurrentFrench()?"Passer la commande":"Finish the order");
-                finish.addActionListener(new ActionListener() {
+                JButton add = new JButton(">");
+                add.setEnabled(false);
+                JButton remove = new JButton("<");
+                remove.setEnabled(false);
+                SpinnerNumberModel spinnerModel = new SpinnerNumberModel(2, 1, 9999, 1);
+                JSpinner daysCount = new JSpinner(spinnerModel);
+                daysCount.setEnabled(false);
+                productList.addListSelectionListener(new ListSelectionListener() {
+                    @Override
+                    public void valueChanged(ListSelectionEvent e) {
+                        if (productList.getSelectedValue() != null) {
+                            if (app.getProductCountInStock(productList.getSelectedValue(), begDate) > 0)
+                                add.setEnabled(true);
+                            else
+                                add.setEnabled(false);
+                            selectedList.clearSelection();
+                            remove.setEnabled(false);
+                            daysCount.setEnabled(false);
+                        }
+                        else
+                            add.setEnabled(false);
+                    }
+                });
+                selectedList.addListSelectionListener(new ListSelectionListener() {
+                    @Override
+                    public void valueChanged(ListSelectionEvent e) {
+                        if (selectedList.getSelectedValue() != null) {
+                            productList.clearSelection();
+                            remove.setEnabled(true);
+                            daysCount.setEnabled(true);
+                            long max = app.getAvailableDayCount(selectedList.getSelectedValue(), begDate);
+                            if (max == -1)
+                                max = 9999;
+                            daysCount.setValue((int)finalProds.get(selectedList.getSelectedValue()));
+                            spinnerModel.setMaximum((int)max);
+                        }
+                        else
+                            add.setEnabled(false);
+                    }
+                });
+                add.addActionListener(new ActionListener(){
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        result = new Order((Person)person.getSelectedItem(), begDate, endDate, new Price(-(double)reduction.getValue()));
-                        selected.forEach((p) -> result.addProduct(p));
+                        Product p = stock.remove(productList.getSelectedIndex());
+                        finalProds.put(p, 1);
+                        daysCount.setValue(1);
+                        selection.add(selection.size(), p);
+                        selectedList.setSelectedValue(p, true);
+                    }
+                });
+                remove.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Product p = selection.remove(selectedList.getSelectedIndex());
+                        finalProds.remove(p);
+                        stock.add(stock.size(), p);
+                        remove.setEnabled(false);
+                        daysCount.setEnabled(false);
+                    }
+                });
+                daysCount.addChangeListener(new ChangeListener(){
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        finalProds.put(selectedList.getSelectedValue(), (int)daysCount.getValue());
+                    }
+                });
+                mainPanel2.add(Functions.alignHorizontal(new Component[] {
+                    new JScrollPane(productList),
+                    Functions.alignVertical(new Component[]{add, remove}),
+                    new JScrollPane(selectedList)
+                }));
+                mainPanel2.add(Functions.alignHorizontal(new Component[]{
+                    new JLabel(app.isCurrentFrench()?"Jours :":"Days :"),
+                    daysCount
+                }));
+                JButton finish = new JButton(app.isCurrentFrench()?"Terminer":"Finish");
+                finish.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (finalProds.containsKey(null))
+                            finalProds.remove(null);
+                        result = new Order((Person)persons.getSelectedItem(), begDate, new Price((double)reductionPrice.getValue()));
+                        for (Map.Entry<Product, Integer> entry : finalProds.entrySet()) {
+                            result.addProduct(entry.getKey(), entry.getValue());
+                        }
                         itself.dispatchEvent(new WindowEvent(itself, WindowEvent.WINDOW_CLOSING));
                     }
                 });
-                selectionPanel.add(Functions.alignHorizontal(new Component[] {
-                    previous,
-                    finish
-                }));
+                mainPanel2.add(Functions.alignHorizontal(new Component[]{previous, finish}));
+                setSize(700, 500);
+                itself.revalidate();
             }
         });
-        mainPanel.add(next);
     }
     public Order getResult() {
         return result;

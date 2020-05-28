@@ -6,6 +6,7 @@ import utilities.Functions;
 import java.io.*;
 import java.security.InvalidParameterException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 /**
  * Defines the company that sells stuff
@@ -482,6 +483,35 @@ ListIterator<ProductInStock> it = stock.listIterator();
      */
     public List<Product> geUnavailableProducts() {
         return geUnavailableProducts(LocalDate.now());
+    }
+    /**
+     * Gets the number of days a product is available from a certain date
+     * @param p product to look onto
+     * @param beg the beginning date
+     * @return the number of days
+     */
+    public long getAvailableDayCount(Product p, LocalDate beg) {
+        List<ProductMovement> movements = new ArrayList<ProductMovement>();
+        for (Order order : orders)
+            if (order.getProducts().contains(p)) {
+                movements.add(new ProductMovement(order.getBeginningRental(), -1));
+                movements.add(new ProductMovement(order.getEndingBorrowing(p), 1));
+            }
+        for (Map.Entry<LocalDate, Integer> input : getProductInput(p).entrySet())
+            movements.add(new ProductMovement(input.getKey(), input.getValue()));
+        movements.add(new ProductMovement(beg.plusDays(1), 0));
+        Collections.sort(movements);
+        movements.add(new ProductMovement(movements.get(movements.size()-1).when.plusDays(1), 0));
+        int currState = 0;
+        boolean entered = false;
+        for (ProductMovement productMovement : movements) {
+            if (productMovement.when.isAfter(beg) && !entered)
+                entered = true;
+            currState += productMovement.count;
+            if (entered && currState == 0)
+                return beg.until(productMovement.when, ChronoUnit.DAYS);
+        }
+        return -1;
     }
     /**
      * Gets a list of all the registered products that are out of stock at a specific time

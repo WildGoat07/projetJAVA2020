@@ -199,6 +199,9 @@ public class ViewOrder extends JDialog {
                             productName.setOpaque(true);
                             productName.setBackground(MainWindow.itemHovered);
                             productName.repaint();
+                            productDuration.setOpaque(true);
+                            productDuration.setBackground(MainWindow.itemHovered);
+                            productDuration.repaint();
                             productPrice.setOpaque(true);
                             productPrice.setBackground(MainWindow.itemHovered);
                             productPrice.repaint();
@@ -208,19 +211,22 @@ public class ViewOrder extends JDialog {
                         public void mouseExited(MouseEvent e) {
                             productName.setOpaque(false);
                             productName.repaint();
+                            productDuration.setOpaque(false);
+                            productDuration.repaint();
                             productPrice.setOpaque(false);
                             productPrice.repaint();
                         }
                     };
                     productName.addMouseListener(mouseListener);
                     productPrice.addMouseListener(mouseListener);
+                    productDuration.addMouseListener(mouseListener);
                     gbc.gridy++;
                 }
                 gbc.gridwidth = 2;
                 gbc.weighty = 1;
                 //dummy filling component
                 productList.add(new JLabel(), gbc);
-                    };
+            };
             update.run();
         }
         mainPanel.add(new JLabel(app.isCurrentFrench()?"Produits :":"Products :"));
