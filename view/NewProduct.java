@@ -102,7 +102,7 @@ public class NewProduct extends JDialog {
         addingDate.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                DatePicker picker = new DatePicker(currLanguage, itself);
+                DatePicker picker = new DatePicker(whenAdd, currLanguage, itself);
                 picker.addWindowListener(new WindowListener() {
                     @Override
                     public void windowOpened(WindowEvent e) {
@@ -146,7 +146,7 @@ public class NewProduct extends JDialog {
             }));
         JSpinner productPrice = new JSpinner(new SpinnerNumberModel(1, .01f, 9999, .1f));
         newProd.add(Functions.alignHorizontal(new Component[] {
-                new JLabel(app.isCurrentFrench() ? "Prix du produit :" : "Product's price"),
+                new JLabel(app.isCurrentFrench() ? "Prix du produit :" : "Product's price :"),
                 productPrice,
                 new JLabel(" €")
             }));

@@ -49,7 +49,7 @@ public class Orders extends JPanel implements CanUpdate {
         public int compare(Order o1, Order o2) {
             int res = o1.getBeginningRental().compareTo(o2.getBeginningRental());
             if (res == 0)
-                return o1.getEndingRental().compareTo(o2.getEndingRental());
+                return o1.getLastBorrowingDate().compareTo(o2.getLastBorrowingDate());
             else
                 return res;
         }
@@ -57,7 +57,7 @@ public class Orders extends JPanel implements CanUpdate {
     private Comparator<Order> endComparator = new Comparator<Order>() {
         @Override
         public int compare(Order o1, Order o2) {
-            int res = o1.getEndingRental().compareTo(o2.getEndingRental());
+            int res = o1.getLastBorrowingDate().compareTo(o2.getLastBorrowingDate());
             if (res == 0)
                 return o1.getBeginningRental().compareTo(o2.getBeginningRental());
             else
@@ -186,7 +186,7 @@ public class Orders extends JPanel implements CanUpdate {
             autoChangeMinDate = true;
             if (app.getOrders().size() > 0) {
                 minDate = Collections.min(Functions.convert(app.getOrders(), (o) -> o.getBeginningRental()));
-                maxDate = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getEndingRental()));
+                maxDate = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getLastBorrowingDate()));
             }
             else {
                 minDate = LocalDate.now();
@@ -482,7 +482,7 @@ public class Orders extends JPanel implements CanUpdate {
         if (autoChangeMinDate && app.getOrders().size() > 0)
             minDate = Collections.min(Functions.convert(app.getOrders(), (o) -> o.getBeginningRental()));
         if (autoChangeMaxDate && app.getOrders().size() > 0)
-            maxDate = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getEndingRental()));
+            maxDate = Collections.max(Functions.convert(app.getOrders(), (o) -> o.getLastBorrowingDate()));
         displayMinDate.setText((app.isCurrentFrench()?"Date minimum : ":"Minimum date : ")+minDate.toString());
         displayMaxDate.setText((app.isCurrentFrench()?"Date maximum : ":"Maximum date : ")+maxDate.toString());
         java.util.List<Order> toDisplay = app.getOrders();
@@ -491,20 +491,20 @@ public class Orders extends JPanel implements CanUpdate {
                 toDisplay = Functions.where(toDisplay, (o) -> {
                     return (o.getBeginningRental().isBefore(currentDate) ||
                             o.getBeginningRental().isEqual(currentDate)) &&
-                            o.getEndingRental().isAfter(currentDate);
+                            o.getLastBorrowingDate().isAfter(currentDate);
                 });
                 break;
             case 2:
                 toDisplay = Functions.where(toDisplay, (o) -> {
                     return o.getBeginningRental().isAfter(currentDate) ||
-                            o.getEndingRental().isEqual(currentDate) ||
-                            o.getEndingRental().isBefore(currentDate);
+                            o.getLastBorrowingDate().isEqual(currentDate) ||
+                            o.getLastBorrowingDate().isBefore(currentDate);
                 });
                 break;
         }
         toDisplay = Functions.where(toDisplay, (o) -> {
-            return (o.getEndingRental().isAfter(minDate) ||
-                    o.getEndingRental().isEqual(minDate)) &&
+            return (o.getLastBorrowingDate().isAfter(minDate) ||
+                    o.getLastBorrowingDate().isEqual(minDate)) &&
                     (o.getBeginningRental().isBefore(maxDate) ||
                     o.getBeginningRental().isEqual(maxDate));
         });
@@ -710,7 +710,7 @@ public class Orders extends JPanel implements CanUpdate {
             orderbeg.setBorder(new LineBorder(MainWindow.borders, 1));
             orderData.add(orderbeg, gbc);
             gbc.gridx++;
-            JLabel orderend = new JLabel(order.getEndingRental().toString());
+            JLabel orderend = new JLabel(order.getLastBorrowingDate().toString());
             orderend.setBorder(new LineBorder(MainWindow.borders, 1));
             orderData.add(orderend, gbc);
             gbc.gridx++;
