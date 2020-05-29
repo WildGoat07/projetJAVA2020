@@ -7,7 +7,6 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import model.*;
@@ -132,17 +131,17 @@ public class ViewOrder extends JDialog {
                 gbc.weightx = 0;
                 JButton durationField = new JButton(app.isCurrentFrench()?"Jours":"Days");
                 productList.add(durationField, gbc);
-                if (currentComparator == priceComparator)
+                if (currentComparator == durationComparator)
                     durationField.setText(durationField.getText()+" ↑");
-                else if (currentComparator == reversePriceComparator)
+                else if (currentComparator == reverseDurationComparator)
                     durationField.setText(durationField.getText()+" ↓");
                 durationField.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (currentComparator == priceComparator)
-                            currentComparator = reversePriceComparator;
+                        if (currentComparator == durationComparator)
+                            currentComparator = reverseDurationComparator;
                         else
-                            currentComparator = priceComparator;
+                            currentComparator = durationComparator;
                         update.run();
                         productList.revalidate();
                     }
