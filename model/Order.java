@@ -108,7 +108,10 @@ public final class Order implements Serializable {
      * @return the ending of the rental
      */
     public LocalDate getEndOfBorrowing(Product p) {
-        return getBeginningRental().plusDays(Functions.find(products, (b) -> b.getProduct().equals(p)).getDays());
+        Borrowing b = Functions.find(products, (bo) -> bo.getProduct().equals(p));
+        if (b == null)
+            return getBeginningRental();
+        return getBeginningRental().plusDays(b.getDays());
     }
     /**
      * Gets the last date of ending of borrowings for the order

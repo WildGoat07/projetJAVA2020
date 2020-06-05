@@ -444,10 +444,10 @@ public class Products extends JPanel implements CanUpdate {
         if (app.getStock().size() > 0) {
             float lowestPrice = Collections.min(Functions.convert(app.getStock(), (p) -> p.getPrice(1, getTime()).floatValue()));
             float highestPrice = Collections.max(Functions.convert(app.getStock(), (p) -> p.getPrice(1, getTime()).floatValue()));
-            float lowestStock = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
-            float highestStock = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p)));
-            float lowestRented = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
-            float highestRented = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p)));
+            float lowestStock = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p, getTime())));
+            float highestStock = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getProductCountInStock(p, getTime())));
+            float lowestRented = Collections.min(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p, getTime())));
+            float highestRented = Collections.max(Functions.convert(app.getStock(), (p) -> (float)app.getRentedProductCount(p, getTime())));
             float choosenLowestPrice = (minPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
             float choosenHighestPrice = (maxPriceSlider.getValue()/100f)*(highestPrice-lowestPrice)+lowestPrice;
             float choosenLowestStock = Math.round((minStockSlider.getValue()/100f)*(highestStock-lowestStock)+lowestStock);
@@ -463,15 +463,15 @@ public class Products extends JPanel implements CanUpdate {
             toDisplay = Functions.where(toDisplay, (p) -> {
                 if (p.getPrice(1, getTime()).floatValue() < choosenLowestPrice)
                     return false;
-                if ((float)app.getProductCountInStock(p) < choosenLowestStock)
+                if ((float)app.getProductCountInStock(p, getTime()) < choosenLowestStock)
                     return false;
-                if ((float)app.getRentedProductCount(p) < choosenLowestRented)
+                if ((float)app.getRentedProductCount(p, getTime()) < choosenLowestRented)
                     return false;
                 if (p.getPrice(1, getTime()).floatValue() > choosenHighestPrice)
                     return false;
-                if ((float)app.getProductCountInStock(p) > choosenHighestStock)
+                if ((float)app.getProductCountInStock(p, getTime()) > choosenHighestStock)
                     return false;
-                if ((float)app.getRentedProductCount(p) > choosenHighestRented)
+                if ((float)app.getRentedProductCount(p, getTime()) > choosenHighestRented)
                     return false;
                 if (comics.isSelected() && p instanceof Comic)
                     return true;
